@@ -1,0 +1,167 @@
+<div class="modal-backdrop" (click)="cancel.emit()">
+  <div class="modal-panel card" (click)="$event.stopPropagation()">
+    <div class="card-header modal-header">
+      <div>
+        <h3>{{ editingId ? 'Editar corrida' : 'Adicionar corrida' }}</h3>
+        <p>Preencha o schema completo do backend. Campos em lista aceitam uma entrada por linha.</p>
+      </div>
+      <button class="btn btn-ghost btn-sm" type="button" (click)="cancel.emit()">Fechar</button>
+    </div>
+
+    <div class="modal-body">
+      <section class="modal-section">
+        <h4 class="section-title">Dados principais</h4>
+        <div class="form-grid">
+          <div class="form-group field-full">
+            <label for="nome_evento">Nome do evento *</label>
+            <input id="nome_evento" type="text" [(ngModel)]="formData.nome_evento" placeholder="Ex: Corrida Circuito PB" />
+          </div>
+          <div class="form-group">
+            <label for="data_realizacao">Data de realização *</label>
+            <input id="data_realizacao" type="text" [(ngModel)]="formData.data_realizacao" placeholder="2026-09-10 ou 10/09/2026" />
+          </div>
+          <div class="form-group">
+            <label for="horario">Horário *</label>
+            <input id="horario" type="text" [(ngModel)]="formData.horario" placeholder="07:00" />
+          </div>
+          <div class="form-group">
+            <label for="cidade">Cidade *</label>
+            <input id="cidade" type="text" [(ngModel)]="formData.cidade" placeholder="João Pessoa" />
+          </div>
+          <div class="form-group">
+            <label for="estado">Estado *</label>
+            <input id="estado" type="text" [(ngModel)]="formData.estado" placeholder="PB" />
+          </div>
+          <div class="form-group">
+            <label for="organizador">Organizador *</label>
+            <input id="organizador" type="text" [(ngModel)]="formData.organizador" placeholder="Nome do organizador" />
+          </div>
+          <div class="form-group">
+            <label for="patrocinado">Patrocinado</label>
+            <select id="patrocinado" [(ngModel)]="formData.patrocinado">
+              <option [ngValue]="true">Sim</option>
+              <option [ngValue]="false">Não</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="data_coleta">Data de coleta</label>
+            <input id="data_coleta" type="text" [(ngModel)]="formData.data_coleta" />
+          </div>
+        </div>
+      </section>
+
+      <section class="modal-section">
+        <h4 class="section-title">Links e mídia</h4>
+        <div class="form-grid">
+          <div class="form-group field-full">
+            <label for="url_imagem">Imagem principal</label>
+            <input id="url_imagem" type="text" [(ngModel)]="formData.url_imagem" placeholder="https://..." />
+          </div>
+          <div class="form-group field-full">
+            <label for="url_inscricao">Link de inscrição *</label>
+            <input id="url_inscricao" type="text" [(ngModel)]="formData.url_inscricao" placeholder="https://..." />
+          </div>
+          <div class="form-group field-full">
+            <label for="site_coleta">Site/coleta</label>
+            <input id="site_coleta" type="text" [(ngModel)]="formData.site_coleta" placeholder="https://..." />
+          </div>
+          <div class="form-group field-full">
+            <label for="link_edital">Link do edital</label>
+            <input id="link_edital" type="text" [(ngModel)]="formData.link_edital" placeholder="https://..." />
+          </div>
+        </div>
+      </section>
+
+      <section class="modal-section">
+        <h4 class="section-title">Descrição e valores</h4>
+        <div class="form-grid">
+          <div class="form-group field-full">
+            <label for="categorias_premiadas">Categorias premiadas</label>
+            <textarea id="categorias_premiadas" rows="3" [(ngModel)]="formData.categorias_premiadas" placeholder="Texto livre para categorias premiadas"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="preco">Preço</label>
+            <input id="preco" type="text" [(ngModel)]="formData.preco" placeholder="R$ 120,00" />
+          </div>
+          <div class="form-group">
+            <label for="precosEntries">Entradas de preço</label>
+            <textarea id="precosEntries" rows="3" [(ngModel)]="formData.precosEntriesText" placeholder="Uma entrada por linha"></textarea>
+          </div>
+          <div class="form-group field-full">
+            <label for="categorias">Categorias</label>
+            <textarea id="categorias" rows="3" [(ngModel)]="formData.categoriasText" placeholder="Uma categoria por linha"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="modal-section">
+        <h4 class="section-title">Percurso e listas</h4>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="local_largada">Local de largada</label>
+            <input id="local_largada" type="text" [(ngModel)]="formData.percurso.local_largada" placeholder="Ex: Orla de Tambaú" />
+          </div>
+          <div class="form-group">
+            <label for="trajeto">Trajeto</label>
+            <input id="trajeto" type="text" [(ngModel)]="formData.percurso.trajeto" placeholder="Descrição do percurso" />
+          </div>
+          <div class="form-group field-full">
+            <label for="distancias">Distâncias</label>
+            <textarea id="distancias" rows="3" [(ngModel)]="formData.distanciasText" placeholder="Uma distância por linha"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="campos_protegidos">Campos protegidos</label>
+            <textarea id="campos_protegidos" rows="3" [(ngModel)]="formData.camposProtegidosText" placeholder="Uma entrada por linha"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="lista_precos">Lista de preços</label>
+            <textarea id="lista_precos" rows="3" [(ngModel)]="formData.listaPrecosText" placeholder="Uma entrada por linha"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="modal-section">
+        <div class="kit-header">
+          <h4 class="section-title">Kits</h4>
+          <button class="btn btn-secondary btn-sm" type="button" (click)="addKit.emit()">Adicionar kit</button>
+        </div>
+
+        <div class="kit-list">
+          <div *ngFor="let kit of formData.kits; let i = index; trackBy: trackByIndex" class="kit-card">
+            <div class="kit-card-header">
+              <strong>Kit {{ i + 1 }}</strong>
+              <button class="btn btn-ghost btn-sm" type="button" (click)="removeKit.emit(i)">Remover</button>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label [attr.for]="'kit_nome_' + i">Nome</label>
+                <input [id]="'kit_nome_' + i" type="text" [(ngModel)]="kit.nome" placeholder="Kit padrão" />
+              </div>
+              <div class="form-group">
+                <label [attr.for]="'kit_local_' + i">Local retirada</label>
+                <input [id]="'kit_local_' + i" type="text" [(ngModel)]="kit.local_retirada" placeholder="Onde retirar" />
+              </div>
+              <div class="form-group">
+                <label [attr.for]="'kit_data_' + i">Data retirada</label>
+                <input [id]="'kit_data_' + i" type="text" [(ngModel)]="kit.data_retirada" placeholder="2026-09-08T10:00:00Z" />
+              </div>
+              <div class="form-group field-full">
+                <label [attr.for]="'kit_itens_' + i">Itens</label>
+                <textarea [id]="'kit_itens_' + i" rows="3" [(ngModel)]="kit.itensText" placeholder="Um item por linha"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="card-footer modal-actions">
+      <button class="btn btn-primary" (click)="save.emit()" [disabled]="loading">
+        {{ editingId ? 'Atualizar' : 'Criar' }}
+      </button>
+      <button class="btn btn-secondary" (click)="cancel.emit()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>

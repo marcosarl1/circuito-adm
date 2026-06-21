@@ -1,0 +1,128 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-lg);
+  background: var(--background);
+}
+
+.login-card {
+  width: min(100%, 420px);
+  overflow: hidden;
+}
+
+.login-header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  padding: var(--space-xl) var(--space-xl) var(--space-lg);
+  border-bottom: 1px solid rgba(142, 202, 230, 0.14);
+  background: rgba(2, 48, 71, 0.18);
+}
+
+.login-logo {
+  width: 144px;
+  height: 144px;
+  margin-bottom: var(--space-md);
+  object-fit: contain;
+}
+
+.login-title {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+.login-title span {
+  color: var(--primary);
+}
+
+.login-subtitle {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.login-body {
+  display: grid;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.field-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.field-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--space-md);
+  border: 1px solid rgba(142, 202, 230, 0.22);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: var(--font-size-md);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--brand-teal-500);
+  box-shadow: 0 0 0 3px rgba(33, 158, 188, 0.16);
+}
+
+.field-password {
+  position: relative;
+  display: flex;
+}
+
+.field-password .field-input {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 44px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.password-toggle:hover {
+  color: var(--foreground);
+  transform: none;
+}
+
+.login-btn {
+  width: 100%;
+  min-height: 46px;
+  font-size: var(--font-size-md);
+  margin-top: var(--space-xs);
+}
+
+.login-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

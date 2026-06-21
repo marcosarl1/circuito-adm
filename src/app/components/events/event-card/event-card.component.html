@@ -1,0 +1,37 @@
+<article class="event-card card">
+  <div class="card-header">
+    <div>
+      <p class="event-date">
+        {{ getEventDate(event) }}<span *ngIf="getEventTime(event)"> · {{ getEventTime(event) }}</span>
+      </p>
+      <h4>{{ getEventTitle(event) }}</h4>
+    </div>
+    <span class="status-badge" [ngClass]="'status-' + (event.status || 'active')">
+      {{ getStatusLabel(event.status) }}
+    </span>
+  </div>
+
+  <div class="card-body">
+    <p class="description">{{ getEventDescription(event) }}</p>
+
+    <div class="event-info">
+      <div class="info-item">
+        <span class="info-label">Local</span>
+        <span>{{ getEventLocation(event) }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Organizador</span>
+        <span>{{ getEventOrganizer(event) }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Distâncias</span>
+        <span>{{ getEventDistances(event) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-footer event-actions">
+    <button class="btn btn-sm btn-primary" (click)="editEvent()">Editar</button>
+    <button class="btn btn-sm btn-danger" (click)="deleteEvent()">Deletar</button>
+  </div>
+</article>

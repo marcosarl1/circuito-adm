@@ -1,0 +1,68 @@
+<div class="events-container">
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-error">
+    {{ errorMessage }}
+  </div>
+
+  <section class="events-toolbar">
+    <div>
+      <h2><span>Eventos</span></h2>
+    </div>
+    <div class="search-bar">
+      <input
+        type="text"
+        placeholder="Buscar por nome, descrição ou local"
+        [(ngModel)]="searchTerm"
+        (keyup)="onSearch()"
+        class="search-input"
+      />
+    </div>
+    <div class="toolbar-actions">
+      <button class="btn btn-primary" (click)="openCreateForm()" [disabled]="loading">
+        Novo evento
+      </button>
+      <button class="btn btn-secondary" (click)="syncBucket()" [disabled]="loading">
+        Sincronizar
+      </button>
+    </div>
+  </section>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Carregando...</p>
+  </div>
+
+  <app-event-form-modal
+    *ngIf="showForm"
+    [formData]="formData"
+    [loading]="loading"
+    [editingId]="editingId"
+    (save)="saveEvent()"
+    (cancel)="cancelEdit()"
+    (addKit)="addKit()"
+    (removeKit)="removeKit($event)"
+  ></app-event-form-modal>
+
+  <div *ngIf="!loading && filteredEvents.length > 0" class="events-list">
+    <div class="events-grid">
+      <app-event-card
+        *ngFor="let event of filteredEvents"
+        [event]="event"
+        (edit)="editEvent($event)"
+        (delete)="deleteEvent($event)"
+      ></app-event-card>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && filteredEvents.length === 0" class="empty-state card">
+    <div class="empty-content">
+      <div class="empty-icon" aria-hidden="true"></div>
+      <h3>Nenhum evento encontrado</h3>
+      <p class="empty-text">
+        {{ searchTerm ? 'Tente refinar sua busca' : 'Crie seu primeiro evento clicando no botão acima' }}
+      </p>
+    </div>
+  </div>
+</div>

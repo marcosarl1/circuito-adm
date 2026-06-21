@@ -1,0 +1,20 @@
+<div class="posts-page">
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+
+  <section class="posts-hero card">
+    <div>
+      <h2><span>Postagens</span></h2>
+    </div>
+  </section>
+
+  <app-post-form-card
+    [formData]="formData"
+    [loading]="loading"
+    [imagePreview]="imagePreview"
+    [selectedImageName]="selectedImageName"
+    (publish)="publishPost()"
+    (reset)="resetForm()"
+    (imageSelected)="onImageSelected($event)"
+  ></app-post-form-card>
+</div>

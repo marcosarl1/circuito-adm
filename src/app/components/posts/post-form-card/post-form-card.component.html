@@ -1,0 +1,67 @@
+<div class="card form-card">
+  <div class="card-header">
+    <div>
+      <h3>Nova postagem</h3>
+    </div>
+    <div class="form-actions-inline">
+      <button class="btn btn-secondary btn-sm" type="button" (click)="reset.emit()">Limpar</button>
+      <button class="btn btn-primary btn-sm" (click)="publish.emit()" [disabled]="loading">
+        Publicar
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <section class="form-section">
+      <h4 class="section-title">Dados principais</h4>
+      <div class="form-grid">
+        <div class="form-group field-full">
+          <label for="imagem">Imagem da capa *</label>
+          <input id="imagem" type="file" accept="image/*" (change)="imageSelected.emit($event)" />
+          <p class="field-hint">{{ selectedImageName || 'Selecione uma imagem JPG, PNG ou WebP' }}</p>
+        </div>
+        <div class="form-group">
+          <label for="slug">Slug *</label>
+          <input id="slug" type="text" [(ngModel)]="formData.slug" placeholder="meu-post" />
+        </div>
+        <div class="form-group">
+          <label for="data">Data *</label>
+          <input id="data" type="date" [(ngModel)]="formData.data" />
+        </div>
+        <div class="form-group field-full">
+          <label for="titulo">Título *</label>
+          <input id="titulo" type="text" [(ngModel)]="formData.titulo" placeholder="Título do post" />
+        </div>
+        <div class="form-group field-full">
+          <label for="descricao">Descrição *</label>
+          <textarea id="descricao" rows="3" [(ngModel)]="formData.descricao" placeholder="Descrição curta"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="autor">Autor *</label>
+          <input id="autor" type="text" [(ngModel)]="formData.autor" placeholder="Equipe Circuito" />
+        </div>
+        <div class="form-group">
+          <label for="imagens">Imagens</label>
+          <textarea id="imagens" rows="3" [(ngModel)]="formData.imagensText" placeholder="Uma imagem por linha"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h4 class="section-title">Conteúdo</h4>
+      <div class="form-grid">
+        <div class="form-group field-full">
+          <label for="conteudo">Parágrafos *</label>
+          <textarea id="conteudo" rows="8" [(ngModel)]="formData.conteudoText" placeholder="Um parágrafo por linha"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section" *ngIf="imagePreview">
+      <h4 class="section-title">Pré-visualização</h4>
+      <div class="preview-box">
+        <img [src]="imagePreview" alt="Pré-visualização da imagem" />
+      </div>
+    </section>
+  </div>
+</div>
