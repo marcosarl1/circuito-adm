@@ -25,7 +25,10 @@ if (fs.existsSync(envFile)) {
   console.log('.env not found, using system environment variables');
 }
 
-const get = (key, fallback = '') => process.env[key] || env[key] || fallback;
+const get = (key, fallback = '') => {
+  const val = process.env[key] || env[key] || fallback;
+  return val.replace(/\/$/, ''); // remove barra final
+};
 
 if (!fs.existsSync(outDir)) {
   fs.mkdirSync(outDir, { recursive: true });
@@ -36,7 +39,7 @@ export const environment = {
   production: false,
   apiUrl: '${get('API_URL')}',
   apiKey: '${get('API_KEY')}',
-  postsApiUrl: '${get('POSTS_API_URL', 'https://cp2eg4gie4xqq4u4cvdzmnaane0muskn.lambda-url.sa-east-1.on.aws/')}',
+  postsApiUrl: '${get('POSTS_API_URL')}',
   postsApiKey: '${get('POSTS_API_KEY')}',
   adminUser: '${get('ADMIN_USER')}',
   adminPass: '${get('ADMIN_PASS')}'
