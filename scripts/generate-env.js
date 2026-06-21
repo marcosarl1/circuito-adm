@@ -5,25 +5,27 @@ const envFile = path.resolve(__dirname, '..', '.env');
 const outDir = path.resolve(__dirname, '..', 'src', 'environments');
 const outFile = path.join(outDir, 'environment.ts');
 
-if (!fs.existsSync(envFile)) {
-  console.error('.env file not found at', envFile);
-  process.exit(1);
+const env = {};
+
+if (fs.existsSync(envFile)) {
+  const raw = fs.readFileSync(envFile, 'utf8');
+  const lines = raw.split(/\r?\n/);
+  for (const line of lines) {
+    if (!line || line.trim().startsWith('#')) continue;
+    const idx = line.indexOf('=');
+    if (idx === -1) continue;
+    const key = line.substring(0, idx).trim();
+    let val = line.substring(idx + 1).trim();
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.substring(1, val.length - 1);
+    }
+    env[key] = val;
+  }
+} else {
+  console.log('.env not found, using system environment variables');
 }
 
-const raw = fs.readFileSync(envFile, 'utf8');
-const lines = raw.split(/\r?\n/);
-const env = {};
-for (const line of lines) {
-  if (!line || line.trim().startsWith('#')) continue;
-  const idx = line.indexOf('=');
-  if (idx === -1) continue;
-  const key = line.substring(0, idx).trim();
-  let val = line.substring(idx + 1).trim();
-  if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-    val = val.substring(1, val.length - 1);
-  }
-  env[key] = val;
-}
+const get = (key, fallback = '') => process.env[key] || env[key] || fallback;
 
 if (!fs.existsSync(outDir)) {
   fs.mkdirSync(outDir, { recursive: true });
@@ -32,12 +34,12 @@ if (!fs.existsSync(outDir)) {
 const content = `
 export const environment = {
   production: false,
-  apiUrl: '${env.API_URL || ''}',
-  apiKey: '${env.API_KEY || ''}',
-  postsApiUrl: '${env.POSTS_API_URL || 'https://cp2eg4gie4xqq4u4cvdzmnaane0muskn.lambda-url.sa-east-1.on.aws/'}',
-  postsApiKey: '${env.POSTS_API_KEY || ''}',
-  adminUser: '${env.ADMIN_USER || ''}',
-  adminPass: '${env.ADMIN_PASS || ''}'
+  apiUrl: '${get('API_URL')}',
+  apiKey: '${get('API_KEY')}',
+  postsApiUrl: '${get('POSTS_API_URL', 'https://cp2eg4gie4xqq4u4cvdzmnaane0muskn.lambda-url.sa-east-1.on.aws/')}',
+  postsApiKey: '${get('POSTS_API_KEY')}',
+  adminUser: '${get('ADMIN_USER')}',
+  adminPass: '${get('ADMIN_PASS')}'
 };
 `;
 
