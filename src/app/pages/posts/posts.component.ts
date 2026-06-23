@@ -112,12 +112,13 @@ export class PostsComponent {
   }
 
   private createEmptyForm(): PostFormData {
+    const today = new Date().toLocaleDateString('sv-SE');
     return {
       imagem: null,
       slug: '',
       titulo: '',
       descricao: '',
-      data: '',
+      data: today,
       autor: '',
       imagensText: '',
       conteudoText: ''
