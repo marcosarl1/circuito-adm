@@ -17,4 +17,5 @@ export class PostFormCardComponent {
   @Output() publish = new EventEmitter<void>();
   @Output() reset = new EventEmitter<void>();
   @Output() imageSelected = new EventEmitter<Event>();
+  @Output() titleChange = new EventEmitter<string>();
 }

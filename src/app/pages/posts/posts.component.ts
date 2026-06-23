@@ -111,6 +111,20 @@ export class PostsComponent {
     return formData;
   }
 
+  onTitleChange(titulo: string) {
+    this.formData.slug = this.generateSlug(titulo);
+  }
+
+  private generateSlug(titulo: string): string {
+    return titulo
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+  }
+
   private createEmptyForm(): PostFormData {
     const today = new Date().toLocaleDateString('sv-SE');
     return {

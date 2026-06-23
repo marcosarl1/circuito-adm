@@ -20,6 +20,10 @@
           <input id="imagem" type="file" accept="image/*" (change)="imageSelected.emit($event)" />
           <p class="field-hint">{{ selectedImageName || 'Selecione uma imagem JPG, PNG ou WebP' }}</p>
         </div>
+        <div class="form-group field-full">
+          <label for="titulo">Título *</label>
+          <input id="titulo" type="text" [(ngModel)]="formData.titulo" (ngModelChange)="titleChange.emit($event)" placeholder="Título do post" />
+        </div>
         <div class="form-group">
           <label for="slug">Slug *</label>
           <input id="slug" type="text" [(ngModel)]="formData.slug" placeholder="meu-post" />
@@ -27,10 +31,6 @@
         <div class="form-group">
           <label for="data">Data *</label>
           <input id="data" type="date" [(ngModel)]="formData.data" />
-        </div>
-        <div class="form-group field-full">
-          <label for="titulo">Título *</label>
-          <input id="titulo" type="text" [(ngModel)]="formData.titulo" placeholder="Título do post" />
         </div>
         <div class="form-group field-full">
           <label for="descricao">Descrição *</label>
