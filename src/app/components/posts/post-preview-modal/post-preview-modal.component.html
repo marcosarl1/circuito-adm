@@ -1,0 +1,77 @@
+<div class="modal-backdrop" (click)="close.emit()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h3>Pré-visualização</h3>
+        <p>Como o post aparecerá no blog</p>
+      </div>
+      <button class="close-btn" (click)="close.emit()" title="Fechar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-scroll">
+      <main class="blog-main">
+        <nav class="blog-breadcrumb">
+          <span class="blog-bc-link">Início</span>
+          <span>/</span>
+          <span class="blog-bc-link">Blog</span>
+          <span>/</span>
+          <span class="blog-bc-current">{{ formData.titulo || 'Título do post' }}</span>
+        </nav>
+        <img
+          *ngIf="imagePreview"
+          [src]="imagePreview"
+          [alt]="formData.titulo"
+          class="blog-cover"
+        />
+        <div *ngIf="!imagePreview" class="blog-cover-placeholder">
+          Imagem da capa não selecionada
+        </div>
+        <h1 class="blog-title">{{ formData.titulo || 'Título do post' }}</h1>
+        <div class="blog-meta">
+          <span>{{ formData.data ? (formData.data | date:"dd 'de' MMMM 'de' yyyy":'') : 'Data' }}</span>
+          <span>·</span>
+          <span>{{ formData.autor || 'Autor' }}</span>
+        </div>
+        <p class="blog-description">{{ formData.descricao || 'Descrição do post aparece aqui.' }}</p>
+        <article class="blog-article">
+          <ng-container *ngIf="getParagraphs().length > 0; else emptyParagraphs">
+            <p *ngFor="let p of getParagraphs()">{{ p }}</p>
+          </ng-container>
+          <ng-template #emptyParagraphs>
+            <p class="blog-placeholder">Os parágrafos do conteúdo aparecem aqui...</p>
+          </ng-template>
+        </article>
+        <div class="blog-cta-wrap">
+          <section class="blog-cta">
+            <div class="blog-cta-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+              </svg>
+            </div>
+            <div class="blog-cta-body">
+              <h3>Siga o Circuito no Instagram</h3>
+              <p>Fique por dentro das corridas, dicas de treino e novidades do calendário esportivo da Paraíba.</p>
+            </div>
+            <a class="blog-cta-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+              </svg>
+              Seguir
+            </a>
+          </section>
+        </div>
+        <div class="blog-back-wrap">
+          <a class="blog-back">← Voltar para o Blog</a>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
