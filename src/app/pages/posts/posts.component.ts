@@ -119,7 +119,7 @@ export class PostsComponent {
       titulo: '',
       descricao: '',
       data: today,
-      autor: '',
+      autor: 'Equipe Circuito',
       imagensText: '',
       conteudoText: ''
     };
