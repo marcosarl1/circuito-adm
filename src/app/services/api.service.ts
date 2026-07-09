@@ -30,13 +30,13 @@ export class ApiService {
   }
 
   getEvents(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/eventos`)
+    return this.http.get(`${this.apiUrl}/api/v1/eventos`)
       .pipe(catchError(this.handleError));
   }
 
   createEvent(data: any): Observable<any> {
     return this.withHeaders('API Key para criar evento').pipe(switchMap((headers) =>
-    this.http.post(`${this.apiUrl}/eventos`, data, { headers }).pipe(catchError(this.handleError))))
+    this.http.post(`${this.apiUrl}/api/v1/eventos`, data, { headers }).pipe(catchError(this.handleError))))
   }
 
   updateEvent(evento_id: string, data: any): Observable<any> {
@@ -44,7 +44,7 @@ export class ApiService {
     return this.withHeaders('API Key para atualizar evento').pipe(
       switchMap((headers) =>
         this.http
-          .patch(`${this.apiUrl}/eventos/${evento_id}`, payload, { headers })
+          .patch(`${this.apiUrl}/api/v1/eventos/${evento_id}`, payload, { headers })
           .pipe(catchError(this.handleError))
       )
     );
@@ -53,7 +53,7 @@ export class ApiService {
   deleteEvent(id: string): Observable<any> {
     return this.withHeaders('API Key para deletar evento').pipe(
       switchMap((headers) =>
-        this.http.delete(`${this.apiUrl}/eventos/${id}`, { headers }).pipe(catchError(this.handleError))
+        this.http.delete(`${this.apiUrl}/api/v1/eventos/${id}`, { headers }).pipe(catchError(this.handleError))
       )
     );
   }
@@ -62,7 +62,7 @@ export class ApiService {
     return this.withHeaders('API Key para sincronizar bucket').pipe(
       switchMap((headers) =>
         this.http
-          .post(`${this.apiUrl}/sync-bucket`, data ?? null, { headers })
+          .post(`${this.apiUrl}/api/v1/sync-bucket`, data ?? null, { headers })
           .pipe(catchError(this.handleError))
       )
     );
