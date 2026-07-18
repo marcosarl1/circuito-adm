@@ -43,8 +43,7 @@ interface EventFormData {
   selector: 'app-events',
   standalone: true,
   imports: [CommonModule, FormsModule, EventCardComponent, EventFormModalComponent],
-  templateUrl: './events.component.html',
-  styleUrl: './events.component.css'
+  templateUrl: './events.component.html'
 })
 export class EventsComponent implements OnInit {
   events: any[] = [];

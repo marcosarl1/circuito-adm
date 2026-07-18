@@ -1,9 +1,9 @@
-<div class="card form-card">
-  <div class="card-header">
+<div class="card overflow-hidden">
+  <div class="card-header flex items-center gap-4 border-b border-[var(--color-border-light)] max-md:flex-col max-md:items-stretch">
     <div>
       <h3>Nova postagem</h3>
     </div>
-    <div class="form-actions-inline">
+    <div class="ml-auto flex flex-wrap justify-end gap-2 max-md:ml-0 max-md:justify-stretch">
       <button class="btn btn-secondary btn-sm" type="button" (click)="showPreview = true">Preview</button>
       <button class="btn btn-secondary btn-sm" type="button" (click)="reset.emit()">Limpar</button>
       <button class="btn btn-primary btn-sm" (click)="publish.emit()" [disabled]="loading">
@@ -11,47 +11,47 @@
       </button>
     </div>
   </div>
-  <div class="card-body">
-    <section class="form-section">
-      <h4 class="section-title">Dados principais</h4>
-      <div class="form-grid">
-        <div class="form-group field-full">
+  <div class="grid gap-6 p-4 md:p-6">
+    <section class="grid gap-4">
+      <h4 class="m-0 text-lg">Dados principais</h4>
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="md:col-span-2 flex flex-col gap-2">
           <label for="imagem">Imagem da capa *</label>
-          <input id="imagem" type="file" accept="image/*" (change)="imageSelected.emit($event)" />
-          <p class="field-hint">{{ selectedImageName || 'Selecione uma imagem JPG, PNG ou WebP' }}</p>
+          <input id="imagem" type="file" accept="image/*" (change)="imageSelected.emit($event)" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2" />
+          <p class="m-0 text-sm text-[var(--color-text-secondary)]">{{ selectedImageName || 'Selecione uma imagem JPG, PNG ou WebP' }}</p>
         </div>
-        <div class="form-group field-full">
+        <div class="md:col-span-2 flex flex-col gap-2">
           <label for="titulo">Título *</label>
-          <input id="titulo" type="text" [(ngModel)]="formData.titulo" (ngModelChange)="titleChange.emit($event)" placeholder="Título do post" />
+          <input id="titulo" type="text" [(ngModel)]="formData.titulo" (ngModelChange)="titleChange.emit($event)" placeholder="Título do post" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3" />
         </div>
-        <div class="form-group">
+        <div class="flex flex-col gap-2">
           <label for="slug">Slug *</label>
-          <input id="slug" type="text" [(ngModel)]="formData.slug" placeholder="meu-post" />
+          <input id="slug" type="text" [(ngModel)]="formData.slug" placeholder="meu-post" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3" />
         </div>
-        <div class="form-group">
+        <div class="flex flex-col gap-2">
           <label for="data">Data *</label>
-          <input id="data" type="date" [(ngModel)]="formData.data" />
+          <input id="data" type="date" [(ngModel)]="formData.data" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3" />
         </div>
-        <div class="form-group field-full">
+        <div class="md:col-span-2 flex flex-col gap-2">
           <label for="descricao">Descrição *</label>
-          <textarea id="descricao" rows="3" [(ngModel)]="formData.descricao" placeholder="Descrição curta"></textarea>
+          <textarea id="descricao" rows="3" [(ngModel)]="formData.descricao" placeholder="Descrição curta" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"></textarea>
         </div>
-        <div class="form-group">
+        <div class="flex flex-col gap-2">
           <label for="autor">Autor *</label>
-          <input id="autor" type="text" [(ngModel)]="formData.autor" placeholder="Equipe Circuito" />
+          <input id="autor" type="text" [(ngModel)]="formData.autor" placeholder="Equipe Circuito" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3" />
         </div>
-        <div class="form-group">
+        <div class="flex flex-col gap-2">
           <label for="imagens">Imagens adicionais</label>
-          <textarea id="imagens" rows="3" [(ngModel)]="formData.imagensText" placeholder="Uma URL por linha"></textarea>
+          <textarea id="imagens" rows="3" [(ngModel)]="formData.imagensText" placeholder="Uma URL por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"></textarea>
         </div>
       </div>
     </section>
-    <section class="form-section">
-      <h4 class="section-title">Conteúdo</h4>
-      <div class="form-grid">
-        <div class="form-group field-full">
+    <section class="grid gap-4">
+      <h4 class="m-0 text-lg">Conteúdo</h4>
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="md:col-span-2 flex flex-col gap-2">
           <label for="conteudo">Parágrafos *</label>
-          <textarea id="conteudo" rows="8" [(ngModel)]="formData.conteudoText" placeholder="Um parágrafo por linha"></textarea>
+          <textarea id="conteudo" rows="8" [(ngModel)]="formData.conteudoText" placeholder="Um parágrafo por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"></textarea>
         </div>
       </div>
     </section>

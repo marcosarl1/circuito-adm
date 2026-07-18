@@ -5,8 +5,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   selector: 'app-event-card',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './event-card.component.html',
-  styleUrl: './event-card.component.css'
+  templateUrl: './event-card.component.html'
 })
 export class EventCardComponent {
   @Input({ required: true }) event: any;
@@ -32,6 +31,16 @@ export class EventCardComponent {
     };
 
     return labels[status || 'active'] || 'Ativo';
+  }
+
+  getStatusClass(status?: string): string {
+    const classes: Record<string, string> = {
+      active: 'bg-[rgba(33,158,188,0.13)] text-[var(--brand-sky-200)]',
+      inactive: 'bg-[rgba(153,27,27,0.2)] text-[#fecaca]',
+      draft: 'bg-[rgba(255,183,3,0.2)] text-[var(--brand-amber-500)]'
+    };
+
+    return classes[status || 'active'] || classes['active'];
   }
 
   getEventId(event: any): string {

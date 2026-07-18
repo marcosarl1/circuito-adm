@@ -6,8 +6,7 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
   selector: 'app-main-layout',
   standalone: true,
   imports: [SidebarComponent, RouterOutlet],
-  templateUrl: './main-layout.component.html',
-  styleUrl: './main-layout.component.css'
+  templateUrl: './main-layout.component.html'
 })
 export class MainLayoutComponent {
 

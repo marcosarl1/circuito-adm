@@ -1,26 +1,31 @@
-<aside class="sidebar">
-  <div class="sidebar-header">
-    <img class="brand-mark" src="/icoBluOra.png" alt="" />
+<aside class="fixed left-0 top-0 flex h-screen w-[260px] flex-col overflow-y-auto border-r border-[rgba(142,202,230,0.18)] bg-[rgba(0,9,14,0.96)] py-4 text-[var(--foreground)] backdrop-blur-xl">
+  <div class="mb-4 flex items-center gap-3 border-b border-[rgba(142,202,230,0.18)] px-4 pb-4">
+    <img class="h-12 w-12 object-contain" src="/icoBluOra.png" alt="" />
     <div>
-      <h2>CIRCUITO</h2>
-      <p>Admin</p>
+      <h2 class="m-0 text-lg font-bold tracking-[0.06em] text-[var(--foreground)]">CIRCUITO</h2>
+      <p class="mt-[2px] text-sm text-[var(--muted-foreground)]">Admin</p>
     </div>
   </div>
 
-  <nav class="sidebar-nav">
-    <ul class="nav-list">
-      <li class="nav-section">Conteúdo</li>
+  <nav class="px-4">
+    <ul class="m-0 list-none p-0">
+      <li class="mb-2 px-4 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[var(--muted-foreground)]">Conteúdo</li>
       <li *ngFor="let item of menuItems">
-        <a [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }" class="nav-link">
-          <span class="icon" aria-hidden="true">{{ item.icon }}</span>
-          <span class="label">{{ item.label }}</span>
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="bg-[rgba(1,19,28,0.92)] border-[rgba(142,202,230,0.22)] font-semibold shadow-[inset_3px_0_0_var(--brand-orange-500)]"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="mb-2 flex min-h-[52px] items-center gap-3 rounded-lg border border-transparent px-4 py-3 text-[var(--foreground)] no-underline transition-colors duration-150 hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
+        >
+          <span class="grid h-8 w-8 place-items-center rounded-md bg-[rgba(2,48,71,0.88)] text-[0.72rem] font-bold text-[var(--primary)]" aria-hidden="true">{{ item.icon }}</span>
+          <span class="flex-1">{{ item.label }}</span>
         </a>
       </li>
     </ul>
   </nav>
 
-  <div class="sidebar-footer">
-    <button class="btn btn-ghost btn-sm logout-btn" (click)="logout()">
+  <div class="mt-auto border-t border-[rgba(142,202,230,0.14)] p-4">
+    <button class="inline-flex w-full items-center justify-start gap-2 rounded-md border border-[rgba(142,202,230,0.24)] bg-[rgba(2,48,71,0.35)] px-4 py-2 text-sm font-semibold text-[var(--color-text-secondary)] transition-colors duration-150 hover:border-[rgba(248,113,113,0.28)] hover:bg-[rgba(153,27,27,0.2)] hover:text-[#fecaca]" (click)="logout()">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
         <polyline points="16 17 21 12 16 7"/>

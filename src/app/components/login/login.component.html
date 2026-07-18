@@ -1,21 +1,21 @@
-<div class="login-page">
-  <div class="login-card card">
-    <div class="login-header">
-      <img class="login-logo" src="/icoBluOra.png" alt="Circuito Admin" />
-      <h1 class="login-title">Painel do Admin</h1>
+<div class="grid min-h-screen place-items-center bg-[var(--background)] p-4">
+  <div class="card w-full max-w-[420px] overflow-hidden">
+    <div class="grid justify-items-center border-b border-[rgba(142,202,230,0.14)] bg-[rgba(2,48,71,0.18)] px-6 pb-4 pt-6 text-center">
+      <img class="mb-3 h-36 w-36 object-contain" src="/icoBluOra.png" alt="Circuito Admin" />
+      <h1 class="m-0 text-2xl font-bold tracking-[-0.01em]">Painel do Admin</h1>
     </div>
 
-    <div class="login-body">
+    <div class="grid gap-4 p-6">
       <div *ngIf="errorMessage" class="alert alert-error">
         {{ errorMessage }}
       </div>
 
-      <div class="field">
-        <label class="field-label" for="username">Usuário</label>
+      <div class="grid gap-1">
+        <label class="text-sm font-semibold text-[var(--color-text-secondary)]" for="username">Usuário</label>
         <input
           id="username"
           type="text"
-          class="field-input"
+          class="min-h-11 w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3 text-base"
           placeholder="Digite seu usuário"
           [(ngModel)]="username"
           (keyup.enter)="submit()"
@@ -23,13 +23,13 @@
         />
       </div>
 
-      <div class="field">
-        <label class="field-label" for="password">Senha</label>
-        <div class="field-password">
+      <div class="grid gap-1">
+        <label class="text-sm font-semibold text-[var(--color-text-secondary)]" for="password">Senha</label>
+        <div class="relative flex">
           <input
             id="password"
             [type]="showPassword ? 'text' : 'password'"
-            class="field-input"
+            class="min-h-11 w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3 pr-12 text-base"
             placeholder="Digite sua senha"
             [(ngModel)]="password"
             (keyup.enter)="submit()"
@@ -37,7 +37,7 @@
           />
           <button
             type="button"
-            class="password-toggle"
+            class="absolute right-0 top-0 grid h-11 w-11 place-items-center border-none bg-transparent text-[var(--color-text-secondary)] transition-colors duration-150 hover:text-[var(--foreground)]"
             (click)="showPassword = !showPassword"
             [title]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
           >
@@ -56,12 +56,12 @@
       </div>
 
       <button
-        class="btn btn-primary login-btn"
+        class="btn btn-primary mt-1 w-full min-h-[46px] text-base"
         (click)="submit()"
         [disabled]="loading"
       >
         <span *ngIf="!loading">Entrar</span>
-        <span *ngIf="loading" class="login-spinner"></span>
+        <span *ngIf="loading" class="inline-block h-[18px] w-[18px] animate-spin rounded-full border-2 border-[rgba(255,255,255,0.3)] border-t-white"></span>
       </button>
     </div>
   </div>

@@ -6,7 +6,6 @@ import { Component, EventEmitter, Input, Output, ChangeDetectorRef, OnInit } fro
   standalone: true,
   imports: [CommonModule],
   templateUrl: './post-preview-modal.component.html',
-  styleUrl: './post-preview-modal.component.css',
 })
 export class PostPreviewModalComponent implements OnInit {
   @Input({ required: true }) formData: any;

@@ -8,7 +8,6 @@ import {PostPreviewModalComponent} from '../post-preview-modal/post-preview-moda
   standalone: true,
   imports: [CommonModule, FormsModule, PostPreviewModalComponent],
   templateUrl: './post-form-card.component.html',
-  styleUrl: './post-form-card.component.css',
 })
 export class PostFormCardComponent {
   @Input({ required: true }) formData: any;

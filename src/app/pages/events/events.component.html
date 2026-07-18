@@ -1,4 +1,4 @@
-<div class="events-container">
+<div class="mx-auto max-w-[1180px]">
   <div *ngIf="successMessage" class="alert alert-success">
     {{ successMessage }}
   </div>
@@ -6,20 +6,20 @@
     {{ errorMessage }}
   </div>
 
-  <section class="events-toolbar">
+  <section class="mb-6 grid items-end gap-4 rounded-xl border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.92)] p-6 shadow-[var(--shadow-sm)] lg:grid-cols-[minmax(280px,1fr)_minmax(260px,380px)_auto]">
     <div>
-      <h2><span>Eventos</span></h2>
+      <h2 class="m-0 text-2xl font-normal"><span class="font-bold text-[var(--primary)]">Eventos</span></h2>
     </div>
-    <div class="search-bar">
+    <div>
       <input
         type="text"
         placeholder="Buscar por nome, descrição ou local"
         [(ngModel)]="searchTerm"
         (keyup)="onSearch()"
-        class="search-input"
+        class="min-h-11 w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3"
       />
     </div>
-    <div class="toolbar-actions">
+    <div class="flex flex-row gap-3 max-md:flex-col">
       <button class="btn btn-primary" (click)="openCreateForm()" [disabled]="loading">
         Novo evento
       </button>
@@ -29,8 +29,8 @@
     </div>
   </section>
 
-  <div *ngIf="loading" class="loading">
-    <div class="spinner"></div>
+  <div *ngIf="loading" class="grid place-items-center px-4 py-16 text-[var(--color-text-secondary)]">
+    <div class="mb-4 h-[42px] w-[42px] animate-spin rounded-full border-[3px] border-[var(--brand-sky-200)] border-t-[var(--brand-orange-500)]"></div>
     <p>Carregando...</p>
   </div>
 
@@ -46,7 +46,7 @@
   ></app-event-form-modal>
 
   <div *ngIf="!loading && filteredEvents.length > 0" class="events-list">
-    <div class="events-grid">
+    <div class="grid grid-cols-1 items-start gap-4 md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
       <app-event-card
         *ngFor="let event of filteredEvents"
         [event]="event"
@@ -56,11 +56,11 @@
     </div>
   </div>
 
-  <div *ngIf="!loading && filteredEvents.length === 0" class="empty-state card">
-    <div class="empty-content">
-      <div class="empty-icon" aria-hidden="true"></div>
+  <div *ngIf="!loading && filteredEvents.length === 0" class="card">
+    <div class="mx-auto my-16 grid max-w-[420px] justify-items-center text-center">
+      <div class="mb-3 h-14 w-14 rounded-lg bg-gradient-to-br from-[var(--brand-navy-500)] to-[var(--brand-navy-200)]" aria-hidden="true"></div>
       <h3>Nenhum evento encontrado</h3>
-      <p class="empty-text">
+      <p class="mt-2 text-[var(--color-text-secondary)]">
         {{ searchTerm ? 'Tente refinar sua busca' : 'Crie seu primeiro evento clicando no botão acima' }}
       </p>
     </div>
