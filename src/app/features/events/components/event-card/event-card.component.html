@@ -1,37 +1,65 @@
-<article class="card flex h-full flex-col transition-all hover:border-[var(--primary)] hover:shadow-[var(--shadow-md)]">
-  <div class="flex min-h-20 gap-3 overflow-hidden border-b border-[var(--color-border-light)] p-4 md:h-[140px]">
+<article
+  class="card flex h-full flex-col transition-all hover:border-[var(--primary)] hover:shadow-[var(--shadow-md)]"
+>
+  <div
+    class="flex min-h-20 gap-3 overflow-hidden border-b border-[var(--color-border-light)] p-4 md:h-[140px]"
+  >
     <div class="min-w-0 flex-1 overflow-hidden">
-      <p class="mb-1 max-w-full truncate text-[0.72rem] font-bold uppercase text-[var(--muted-foreground)]">
-        {{ getEventDate(event) }}<span *ngIf="getEventTime(event)"> · {{ getEventTime(event) }}</span>
+      <p
+        class="mb-1 max-w-full truncate text-[0.72rem] font-bold uppercase text-[var(--muted-foreground)]"
+      >
+        {{ getEventDate()
+        }}<span *ngIf="getEventTime()"> · {{ getEventTime() }}</span>
       </p>
-      <h4 class="m-0 max-h-14 overflow-hidden text-lg">{{ getEventTitle(event) }}</h4>
+      <h4 class="m-0 max-h-14 overflow-hidden text-lg">
+        {{ getEventTitle() }}
+      </h4>
     </div>
-    <span class="self-start whitespace-nowrap rounded-full px-[0.65rem] py-1 text-sm font-bold" [ngClass]="getStatusClass(event.status)">
-      {{ getStatusLabel(event.status) }}
-    </span>
   </div>
-
   <div class="flex flex-1 flex-col gap-3 p-4">
-    <p class="m-0 h-[3.25rem] overflow-hidden leading-relaxed text-[var(--color-text-secondary)]">{{ getEventDescription(event) }}</p>
-
+    <p
+      class="m-0 h-[3.25rem] overflow-hidden leading-relaxed text-[var(--color-text-secondary)]"
+    >
+      {{ getEventDescription() }}
+    </p>
     <div class="grid flex-1 gap-2">
-      <div class="flex flex-col gap-1 border-t border-[var(--color-border-light)] pt-2 text-sm md:flex-row md:justify-between md:gap-3">
-        <span class="whitespace-nowrap font-semibold text-[var(--color-text-secondary)]">Local</span>
-        <span class="overflow-hidden text-right">{{ getEventLocation(event) }}</span>
+      <div
+        class="flex flex-col gap-1 border-t border-[var(--color-border-light)] pt-2 text-sm md:flex-row md:justify-between md:gap-3"
+      >
+        <span
+          class="whitespace-nowrap font-semibold text-[var(--color-text-secondary)]"
+          >Local</span
+        >
+        <span class="overflow-hidden text-right">{{ getEventLocation() }}</span>
       </div>
-      <div class="flex flex-col gap-1 border-t border-[var(--color-border-light)] pt-2 text-sm md:flex-row md:justify-between md:gap-3">
-        <span class="whitespace-nowrap font-semibold text-[var(--color-text-secondary)]">Organizador</span>
-        <span class="overflow-hidden text-right">{{ getEventOrganizer(event) }}</span>
+      <div
+        class="flex flex-col gap-1 border-t border-[var(--color-border-light)] pt-2 text-sm md:flex-row md:justify-between md:gap-3"
+      >
+        <span
+          class="whitespace-nowrap font-semibold text-[var(--color-text-secondary)]"
+          >Organizador</span
+        >
+        <span class="overflow-hidden text-right">{{
+          getEventOrganizer()
+        }}</span>
       </div>
-      <div class="flex flex-col gap-1 border-t border-[var(--color-border-light)] pt-2 text-sm md:flex-row md:justify-between md:gap-3">
-        <span class="whitespace-nowrap font-semibold text-[var(--color-text-secondary)]">Distâncias</span>
-        <span class="overflow-hidden text-right">{{ getEventDistances(event) }}</span>
+      <div
+        class="flex flex-col gap-1 border-t border-[var(--color-border-light)] pt-2 text-sm md:flex-row md:justify-between md:gap-3"
+      >
+        <span
+          class="whitespace-nowrap font-semibold text-[var(--color-text-secondary)]"
+          >Distâncias</span
+        >
+        <span class="overflow-hidden text-right">{{
+          getEventDistances()
+        }}</span>
       </div>
     </div>
   </div>
-
   <div class="card-footer flex justify-end gap-2">
     <button class="btn btn-sm btn-primary" (click)="editEvent()">Editar</button>
-    <button class="btn btn-sm btn-danger" (click)="deleteEvent()">Deletar</button>
+    <button class="btn btn-sm btn-danger" (click)="deleteEvent()">
+      Deletar
+    </button>
   </div>
 </article>
