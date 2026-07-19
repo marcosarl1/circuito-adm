@@ -1,65 +1,240 @@
 <div class="card overflow-hidden">
-  <div class="card-header flex items-center gap-4 border-b border-[var(--color-border-light)] max-md:flex-col max-md:items-stretch">
-    <div>
-      <h3>Nova postagem</h3>
-    </div>
-    <div class="ml-auto flex flex-wrap justify-end gap-2 max-md:ml-0 max-md:justify-stretch">
-      <button class="btn btn-secondary btn-sm" type="button" (click)="showPreview = true">Preview</button>
-      <button class="btn btn-secondary btn-sm" type="button" (click)="reset.emit()">Limpar</button>
-      <button class="btn btn-primary btn-sm" (click)="publish.emit()" [disabled]="loading">
-        Publicar
+  <div class="card-header border-b border-[var(--color-border-light)]">
+    <h3 class="m-0">Nova postagem</h3>
+    <p class="m-0 mt-1 text-sm text-[var(--color-text-secondary)]">
+      Preencha os dados abaixo para publicar no blog
+    </p>
+  </div>
+
+  <div class="grid gap-6 p-3 sm:p-4 md:p-6">
+    <section class="grid gap-4">
+      <div class="flex items-center gap-2">
+        <span
+          class="grid h-6 w-6 place-items-center rounded-md bg-[rgba(251,133,0,0.15)] text-xs font-bold text-[var(--primary)]"
+          >1</span
+        >
+        <h4 class="m-0 text-base font-semibold sm:text-lg">
+          Capa e identificação
+        </h4>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label
+          for="imagem"
+          class="text-sm font-medium text-[var(--color-text-secondary)]"
+          >Imagem da capa *</label
+        >
+        <label
+          for="imagem"
+          class="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-dashed border-[rgba(142,202,230,0.3)] bg-[rgba(1,19,28,0.85)] px-3 py-2 transition-colors hover:border-[var(--primary)]"
+        >
+          <span
+            class="shrink-0 rounded-md bg-[rgba(2,48,71,0.6)] px-3 py-1.5 text-sm font-semibold"
+            >Escolher arquivo</span
+          >
+          <span
+            class="min-w-0 flex-1 truncate text-sm text-[var(--color-text-secondary)]"
+          >
+            {{ selectedImageName || "Nenhuma imagem selecionada" }}
+          </span>
+        </label>
+        <input
+          id="imagem"
+          type="file"
+          accept="image/*"
+          class="hidden"
+          (change)="imageSelected.emit($event)"
+        />
+        <p class="m-0 text-xs text-[var(--color-text-secondary)]">
+          JPG, PNG ou WebP
+        </p>
+        <img
+          *ngIf="imagePreview"
+          [src]="imagePreview"
+          alt="Pré-visualização da imagem de capa"
+          class="mt-1 h-32 w-full max-w-xs rounded-md border border-[rgba(142,202,230,0.22)] object-cover"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label
+          for="titulo"
+          class="text-sm font-medium text-[var(--color-text-secondary)]"
+          >Título *</label
+        >
+        <input
+          id="titulo"
+          name="post-titulo"
+          type="text"
+          autocomplete="off"
+          [(ngModel)]="formData.titulo"
+          (ngModelChange)="titleChange.emit($event)"
+          placeholder="Título do post"
+          class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label
+          for="slug"
+          class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >
+          Slug *
+          <span class="font-normal text-[var(--muted-foreground)]"
+            >— gerado a partir do título, edite se quiser</span
+          >
+        </label>
+        <input
+          id="slug"
+          name="post-slug"
+          type="text"
+          autocomplete="off"
+          [(ngModel)]="formData.slug"
+          placeholder="meu-post"
+          class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3"
+        />
+      </div>
+    </section>
+
+    <div class="border-t border-[var(--color-border-light)]"></div>
+
+    <section class="grid gap-4">
+      <div class="flex items-center gap-2">
+        <span
+          class="grid h-6 w-6 place-items-center rounded-md bg-[rgba(251,133,0,0.15)] text-xs font-bold text-[var(--primary)]"
+          >2</span
+        >
+        <h4 class="m-0 text-base font-semibold sm:text-lg">Texto do post</h4>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label
+          for="descricao"
+          class="text-sm font-medium text-[var(--color-text-secondary)]"
+          >Descrição *</label
+        >
+        <textarea
+          id="descricao"
+          rows="3"
+          [(ngModel)]="formData.descricao"
+          placeholder="Descrição curta, usada como resumo do post"
+          class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"
+        ></textarea>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label
+          for="conteudo"
+          class="text-sm font-medium text-[var(--color-text-secondary)]"
+          >Parágrafos *</label
+        >
+        <textarea
+          id="conteudo"
+          rows="6"
+          [(ngModel)]="formData.conteudoText"
+          placeholder="Um parágrafo por linha"
+          class="min-h-[140px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"
+        ></textarea>
+        <p class="m-0 text-xs text-[var(--color-text-secondary)]">
+          Cada linha vira um parágrafo separado no post publicado
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label
+          for="imagens"
+          class="text-sm font-medium text-[var(--color-text-secondary)]"
+          >Imagens adicionais</label
+        >
+        <textarea
+          id="imagens"
+          rows="3"
+          [(ngModel)]="formData.imagensText"
+          placeholder="Uma URL por linha"
+          class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"
+        ></textarea>
+        <p class="m-0 text-xs text-[var(--color-text-secondary)]">
+          Opcional — imagens exibidas ao longo do texto
+        </p>
+      </div>
+    </section>
+
+    <div class="border-t border-[var(--color-border-light)]"></div>
+
+    <section class="grid gap-3">
+      <h4 class="m-0 text-sm font-semibold text-[var(--color-text-secondary)]">
+        Detalhes de publicação
+      </h4>
+      <p class="m-0 -mt-2 text-xs text-[var(--color-text-secondary)]">
+        Já preenchidos automaticamente — altere apenas se necessário
+      </p>
+      <div class="grid gap-3 sm:grid-cols-2 sm:max-w-md">
+        <div class="flex flex-col gap-1.5">
+          <label
+            for="autor"
+            class="text-xs font-medium text-[var(--muted-foreground)]"
+            >Autor</label
+          >
+          <input
+            id="autor"
+            name="post-autor"
+            type="text"
+            autocomplete="off"
+            [(ngModel)]="formData.autor"
+            placeholder="Equipe Circuito"
+            class="min-h-[38px] w-full rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.6)] px-3 text-sm"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label
+            for="data"
+            class="text-xs font-medium text-[var(--muted-foreground)]"
+            >Data</label
+          >
+          <input
+            id="data"
+            name="post-data"
+            type="date"
+            autocomplete="off"
+            [(ngModel)]="formData.data"
+            class="min-h-[38px] w-full rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.6)] px-3 text-sm"
+          />
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div
+    class="card-footer flex flex-col gap-2 border-t border-[var(--color-border-light)] sm:flex-row sm:justify-end"
+  >
+    <div class="flex gap-2 sm:contents">
+      <button
+        class="btn btn-secondary btn-sm min-h-10 flex-1 sm:min-h-8 sm:flex-none sm:order-2"
+        type="button"
+        (click)="reset.emit()"
+      >
+        Limpar
+      </button>
+      <button
+        class="btn btn-primary btn-sm min-h-10 flex-1 sm:min-h-8 sm:flex-none sm:order-3"
+        (click)="publish.emit()"
+        [disabled]="loading"
+      >
+        {{ loading ? "Publicando..." : "Publicar" }}
       </button>
     </div>
+    <button
+      class="btn btn-secondary btn-sm min-h-10 sm:min-h-8 sm:order-1"
+      type="button"
+      (click)="showPreview = true"
+    >
+      Preview
+    </button>
   </div>
-  <div class="grid gap-6 p-4 md:p-6">
-    <section class="grid gap-4">
-      <h4 class="m-0 text-lg">Dados principais</h4>
-      <div class="grid gap-4 md:grid-cols-2">
-        <div class="md:col-span-2 flex flex-col gap-2">
-          <label for="imagem">Imagem da capa *</label>
-          <input id="imagem" type="file" accept="image/*" (change)="imageSelected.emit($event)" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2" />
-          <p class="m-0 text-sm text-[var(--color-text-secondary)]">{{ selectedImageName || 'Selecione uma imagem JPG, PNG ou WebP' }}</p>
-        </div>
-        <div class="md:col-span-2 flex flex-col gap-2">
-          <label for="titulo">Título *</label>
-          <input id="titulo" type="text" [(ngModel)]="formData.titulo" (ngModelChange)="titleChange.emit($event)" placeholder="Título do post" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3" />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="slug">Slug *</label>
-          <input id="slug" type="text" [(ngModel)]="formData.slug" placeholder="meu-post" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3" />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="data">Data *</label>
-          <input id="data" type="date" [(ngModel)]="formData.data" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3" />
-        </div>
-        <div class="md:col-span-2 flex flex-col gap-2">
-          <label for="descricao">Descrição *</label>
-          <textarea id="descricao" rows="3" [(ngModel)]="formData.descricao" placeholder="Descrição curta" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"></textarea>
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="autor">Autor *</label>
-          <input id="autor" type="text" [(ngModel)]="formData.autor" placeholder="Equipe Circuito" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3" />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="imagens">Imagens adicionais</label>
-          <textarea id="imagens" rows="3" [(ngModel)]="formData.imagensText" placeholder="Uma URL por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"></textarea>
-        </div>
-      </div>
-    </section>
-    <section class="grid gap-4">
-      <h4 class="m-0 text-lg">Conteúdo</h4>
-      <div class="grid gap-4 md:grid-cols-2">
-        <div class="md:col-span-2 flex flex-col gap-2">
-          <label for="conteudo">Parágrafos *</label>
-          <textarea id="conteudo" rows="8" [(ngModel)]="formData.conteudoText" placeholder="Um parágrafo por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"></textarea>
-        </div>
-      </div>
-    </section>
-  </div>
+  <app-post-preview-modal
+    *ngIf="showPreview"
+    [formData]="formData"
+    [imagePreview]="imagePreview"
+    (close)="showPreview = false"
+  ></app-post-preview-modal>
 </div>
-<app-post-preview-modal
-  *ngIf="showPreview"
-  [formData]="formData"
-  [imagePreview]="imagePreview"
-  (close)="showPreview = false"
-></app-post-preview-modal>

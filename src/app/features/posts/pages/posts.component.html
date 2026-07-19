@@ -1,13 +1,17 @@
-<div class="mx-auto grid w-full max-w-[1240px] gap-6">
-  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+<div class="mx-auto grid w-full max-w-[1240px] gap-4 px-4 sm:gap-6 sm:px-6">
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
   <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
-
-  <section class="card flex items-end justify-between gap-4 p-6 max-md:flex-col max-md:items-stretch">
+  <section
+    class="card flex items-end justify-between gap-4 p-4 max-md:flex-col max-md:items-stretch sm:p-6"
+  >
     <div>
-      <h2 class="m-0 text-2xl font-normal"><span class="font-bold text-[var(--primary)]">Postagens</span></h2>
+      <h2 class="m-0 text-xl font-normal sm:text-2xl">
+        <span class="font-bold text-[var(--primary)]">Postagens</span>
+      </h2>
     </div>
   </section>
-
   <app-post-form-card
     [formData]="formData"
     [loading]="loading"
