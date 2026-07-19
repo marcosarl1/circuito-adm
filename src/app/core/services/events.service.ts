@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
-import { EMPTY, Observable, switchMap, throwError } from "rxjs";
+import {HttpClient, HttpContext, HttpErrorResponse} from "@angular/common/http";
+import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
-import { ApiKeyService } from "./api-key.service";
 import { EventCreatePayload } from "../../shared/models/event.model";
+import { API_KEY_LABEL } from '../http/api-key.context';
 
 @Injectable({
   providedIn: "root",
@@ -12,23 +12,10 @@ import { EventCreatePayload } from "../../shared/models/event.model";
 export class EventsService {
   private apiUrl = environment.apiUrl;
 
-  constructor(
-    private http: HttpClient,
-    private apiKeyService: ApiKeyService,
-  ) {}
+  constructor(private http: HttpClient) {}
 
-  private withHeaders(label: string): Observable<HttpHeaders> {
-    return this.apiKeyService.requestKey(label).pipe(
-      switchMap((key) => {
-        if (!key) return EMPTY;
-        return [
-          new HttpHeaders({
-            "Content-Type": "application/json",
-            "x-api-key": key,
-          }),
-        ];
-      }),
-    );
+  private context(label: string): HttpContext {
+    return new HttpContext().set(API_KEY_LABEL, label);
   }
 
   getEvents(): Observable<any> {
@@ -36,46 +23,36 @@ export class EventsService {
   }
 
   createEvent(data: EventCreatePayload): Observable<any> {
-    return this.withHeaders("API Key para criar evento").pipe(
-      switchMap((headers) =>
-        this.http
-          .post(`${this.apiUrl}/api/v1/eventos`, data, { headers })
-          .pipe(catchError(this.handleError)),
-      ),
-    );
+    return this.http
+      .post(`${this.apiUrl}/api/v1/eventos`, data, {
+        context: this.context("API Key para criar evento"),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   updateEvent(evento_id: string, data: EventCreatePayload): Observable<any> {
     const payload = { evento_id, ...data };
-    return this.withHeaders("API Key para atualizar evento").pipe(
-      switchMap((headers) =>
-        this.http
-          .patch(`${this.apiUrl}/api/v1/eventos/${evento_id}`, payload, {
-            headers,
-          })
-          .pipe(catchError(this.handleError)),
-      ),
-    );
+    return this.http
+      .patch(`${this.apiUrl}/api/v1/eventos/${evento_id}`, payload, {
+        context: this.context("API Key para atualizar evento"),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   deleteEvent(id: string): Observable<any> {
-    return this.withHeaders("API Key para deletar evento").pipe(
-      switchMap((headers) =>
-        this.http
-          .delete(`${this.apiUrl}/api/v1/eventos/${id}`, { headers })
-          .pipe(catchError(this.handleError)),
-      ),
-    );
+    return this.http
+      .delete(`${this.apiUrl}/api/v1/eventos/${id}`, {
+        context: this.context("API Key para deletar evento"),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   syncBucket(): Observable<any> {
-    return this.withHeaders("API Key para sincronizar bucket").pipe(
-      switchMap((headers) =>
-        this.http
-          .post(`${this.apiUrl}/api/v1/sync-bucket`, null, { headers })
-          .pipe(catchError(this.handleError)),
-      ),
-    );
+    return this.http
+      .post(`${this.apiUrl}/api/v1/sync-bucket`, null, {
+        context: this.context("API Key para sincronizar bucket"),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {

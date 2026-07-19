@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
-import { EMPTY, Observable, switchMap, throwError } from "rxjs";
+import {HttpClient, HttpContext, HttpErrorResponse} from "@angular/common/http";
+import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
-import { ApiKeyService } from "./api-key.service";
+import { API_KEY_LABEL} from '../http/api-key.context';
 
 @Injectable({
   providedIn: "root",
@@ -11,21 +11,19 @@ import { ApiKeyService } from "./api-key.service";
 export class PostsService {
   private apiUrl = environment.postsApiUrl;
 
-  constructor(
-    private http: HttpClient,
-    private apiKeyService: ApiKeyService,
-  ) {}
+  constructor(private http: HttpClient) {}
+
+  private context(label: string): HttpContext {
+    return new HttpContext().set(API_KEY_LABEL, label);
+  }
 
   publishPost(data: FormData): Observable<string> {
-    return this.apiKeyService.requestKey("API Key para publicar postagem").pipe(
-      switchMap((key) => {
-        if (!key) return EMPTY;
-        const headers = new HttpHeaders({ "x-api-key": key });
-        return this.http
-          .post(this.apiUrl, data, { headers, responseType: "text" })
-          .pipe(catchError(this.handleError));
-      }),
-    );
+    return this.http
+      .post(this.apiUrl, data, {
+        responseType: "text",
+        context: this.context('API Key para publicar postagem'),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {
