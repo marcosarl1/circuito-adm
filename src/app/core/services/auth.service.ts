@@ -1,18 +1,18 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { environment } from '../../environments/environment';
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
+import { environment } from "../../../environments/environment";
 
-const SESSION_KEY = 'circuito_auth';
+const SESSION_KEY = "circuito_auth";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AuthService {
   constructor(private router: Router) {}
 
   login(username: string, password: string): boolean {
     if (username === environment.adminUser && password === environment.adminPass) {
-      sessionStorage.setItem(SESSION_KEY, 'true');
+      sessionStorage.setItem(SESSION_KEY, "true");
       return true;
     }
     return false;
@@ -20,10 +20,10 @@ export class AuthService {
 
   logout() {
     sessionStorage.removeItem(SESSION_KEY);
-    this.router.navigate(['/login']);
+    this.router.navigate(["/login"]);
   }
 
   isAuthenticated(): boolean {
-    return sessionStorage.getItem(SESSION_KEY) === 'true';
+    return sessionStorage.getItem(SESSION_KEY) === "true";
   }
 }

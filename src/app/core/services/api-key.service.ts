@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { Observable, Subject } from "rxjs";
 
 export interface ApiKeyRequest {
   label: string;
@@ -7,7 +7,7 @@ export interface ApiKeyRequest {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ApiKeyService {
   private requestSubject = new Subject<ApiKeyRequest>();
@@ -21,7 +21,7 @@ export class ApiKeyService {
         resolve: (key) => {
           observer.next(key);
           observer.complete();
-        }
+        },
       });
     });
   }
