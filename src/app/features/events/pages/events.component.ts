@@ -340,8 +340,8 @@ export class EventsComponent implements OnInit {
         ? kits.map((kit: EventKit) => ({
             nome: kit.nome,
             itensText: this.toMultilineText(kit.itens),
-            local_retirada: kit.local_retirada,
-            data_retirada: kit.data_retirada,
+            local_retirada: kit.local_retirada ?? "",
+            data_retirada: kit.data_retirada ?? "",
           }))
         : [this.createEmptyKit()],
       camposProtegidosText: this.toMultilineText(event.campos_protegidos),
