@@ -1,27 +1,27 @@
 import { Routes } from "@angular/router";
-import { MainLayoutComponent } from "./layouts/main-layout/main-layout.component";
-import { EventsComponent } from "./features/events/pages/events.component";
-import { PostsComponent } from "./features/posts/pages/posts.component";
-import { LoginComponent } from "./features/auth/components/login/login.component";
 import { authGuard } from "./core/guards/auth.guard";
 
 export const routes: Routes = [
   {
     path: "login",
-    component: LoginComponent,
+    loadComponent: () =>
+      import("./features/auth/components/login/login.component").then((m) => m.LoginComponent),
   },
   {
     path: "",
-    component: MainLayoutComponent,
+    loadComponent: () =>
+      import("./layouts/main-layout/main-layout.component").then((m) => m.MainLayoutComponent),
     canActivate: [authGuard],
     children: [
       {
         path: "events",
-        component: EventsComponent,
+        loadComponent: () =>
+          import("./features/events/pages/events.component").then((m) => m.EventsComponent),
       },
       {
         path: "posts",
-        component: PostsComponent,
+        loadComponent: () =>
+          import("./features/posts/pages/posts.component").then((m) => m.PostsComponent),
       },
       {
         path: "",
