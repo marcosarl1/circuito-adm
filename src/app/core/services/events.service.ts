@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
-import {HttpClient, HttpContext, HttpErrorResponse} from "@angular/common/http";
+import { HttpClient, HttpContext, HttpErrorResponse } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { catchError, shareReplay } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
-import { EventCreatePayload } from "../../shared/models/event.model";
-import { API_KEY_LABEL } from '../http/api-key.context';
+import { Event, EventCreatePayload } from "../../shared/models/event.model";
+import { API_KEY_LABEL } from "../http/api-key.context";
 
 @Injectable({
   providedIn: "root",
@@ -12,14 +12,25 @@ import { API_KEY_LABEL } from '../http/api-key.context';
 export class EventsService {
   private apiUrl = environment.apiUrl;
 
+  private eventsCache$: Observable<Event[]> | null = null;
+
   constructor(private http: HttpClient) {}
 
   private context(label: string): HttpContext {
     return new HttpContext().set(API_KEY_LABEL, label);
   }
 
-  getEvents(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/api/v1/eventos`).pipe(catchError(this.handleError));
+  getEvents(forceRefresh = false): Observable<Event[]> {
+    if (!this.eventsCache$ || forceRefresh) {
+      this.eventsCache$ = this.http.get<Event[]>(`${this.apiUrl}/api/v1/eventos`).pipe(
+        catchError((err) => {
+          this.eventsCache$ = null;
+          return this.handleError(err);
+        }),
+        shareReplay({ bufferSize: 1, refCount: false }),
+      );
+    }
+    return this.eventsCache$;
   }
 
   createEvent(data: EventCreatePayload): Observable<any> {

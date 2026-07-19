@@ -67,18 +67,19 @@ export class EventsComponent implements OnInit {
 
   loadEvents() {
     this.loading = true;
-    this.apiService.getEvents().subscribe({
-      next: (data: Event[]) => {
-        this.events = data || [];
-        this.filterEvents();
-        this.loading = false;
-      },
-      error: (error) => {
-        this.errorMessage = "Erro ao carregar eventos: " + error.message;
-        this.loading = false;
-        setTimeout(() => (this.errorMessage = ""), 5000);
-      },
-    });
+    this.apiService
+      .getEvents()
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (data) => {
+          this.events = data || [];
+          this.filterEvents();
+        },
+        error: (error) => {
+          this.errorMessage = "Erro ao carregar eventos: " + error.message;
+          setTimeout(() => (this.errorMessage = ""), 5000);
+        },
+      });
   }
 
   filterEvents() {
