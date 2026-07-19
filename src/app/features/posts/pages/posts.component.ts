@@ -1,9 +1,9 @@
 import { CommonModule } from "@angular/common";
 import { Component, DestroyRef, inject } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { PostsService } from "../../core/services/posts.service";
-import { PostFormCardComponent } from "../../components/posts/post-form-card/post-form-card.component";
-import { PostFormState } from "../../shared/models/post.model";
+import { PostsService } from "../../../core/services/posts.service";
+import { PostFormCardComponent } from "../components/post-form-card/post-form-card.component";
+import { PostFormState } from "../../../shared/models/post.model";
 import { finalize } from "rxjs";
 
 @Component({

@@ -1,10 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { EventsService } from "../../core/services/events.service";
-import { EventCardComponent } from "../../components/events/event-card/event-card.component";
-import { EventFormModalComponent } from "../../components/events/event-form-modal/event-form-modal.component";
-import { Event, EventCreatePayload, EventKit } from "../../shared/models/event.model";
+import { EventsService } from "../../../core/services/events.service";
+import { EventCardComponent } from "../components/event-card/event-card.component";
+import { EventFormModalComponent } from "../components/event-form-modal/event-form-modal.component";
+import { Event, EventCreatePayload, EventKit } from "../../../shared/models/event.model";
 import { finalize } from "rxjs";
 
 interface KitForm {
