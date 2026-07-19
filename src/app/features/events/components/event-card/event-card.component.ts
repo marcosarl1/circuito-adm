@@ -39,7 +39,21 @@ export class EventCardComponent {
   }
 
   getEventTime(): string {
-    return this.event.horario || "";
+    const horario = this.event.horario?.trim();
+
+    if (!horario) return "";
+    if (this.isPlaceHolderTime(horario)) return "A definir";
+    return horario;
+  }
+
+  private isPlaceHolderTime(value: string): boolean {
+    const placeholders = [
+      "horário de largada não encontrado",
+      "em breve",
+      "a definir",
+      "não informado",
+    ];
+    return placeholders.includes(value.toLowerCase());
   }
 
   getEventLocation(): string {
@@ -54,5 +68,10 @@ export class EventCardComponent {
     return this.event.distancias?.length
       ? this.event.distancias.join(", ")
       : "Distâncias não informadas";
+  }
+
+  getEventSource(): string {
+    const source = this.event.site_coleta?.trim();
+    return source ? source.replace(/[_-]/g, "") : "";
   }
 }

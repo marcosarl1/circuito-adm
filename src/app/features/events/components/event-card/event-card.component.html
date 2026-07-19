@@ -1,62 +1,68 @@
 <article
-  class="card flex h-full flex-col transition-all hover:border-[var(--primary)] hover:shadow-[var(--shadow-md)]"
+  class="card flex h-full flex-col overflow-hidden transition-all hover:border-[var(--primary)] hover:shadow-[var(--shadow-md)]"
 >
-  <div
-    class="flex min-h-20 gap-3 overflow-hidden border-b border-[var(--color-border-light)] p-4 md:h-[140px]"
-  >
-    <div class="min-w-0 flex-1 overflow-hidden">
+  <div class="border-b border-[var(--color-border-light)] p-3 sm:p-4">
+    <div
+      class="mb-2 flex min-h-[1.375rem] flex-wrap items-center justify-between gap-2"
+    >
       <p
-        class="mb-1 max-w-full truncate text-[0.72rem] font-bold uppercase text-[var(--muted-foreground)]"
+        class="truncate text-[0.65rem] font-bold uppercase tracking-wide text-[var(--muted-foreground)] sm:text-[0.7rem]"
       >
         {{ getEventDate()
         }}<span *ngIf="getEventTime()"> · {{ getEventTime() }}</span>
       </p>
-      <h4 class="m-0 max-h-14 overflow-hidden text-lg">
-        {{ getEventTitle() }}
-      </h4>
+      <span
+        *ngIf="getEventSource()"
+        class="shrink-0 rounded-full bg-[rgba(142,202,230,0.1)] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[var(--brand-sky-200)] sm:text-[0.65rem]"
+      >
+        {{ getEventSource() }}
+      </span>
     </div>
-  </div>
-  <div class="flex flex-1 flex-col gap-3 p-4">
-    <p
-      class="m-0 h-[3.25rem] overflow-hidden leading-relaxed text-[var(--color-text-secondary)]"
+    <h4
+      class="m-0 line-clamp-2 min-h-[2.75rem] text-base font-semibold leading-snug sm:min-h-[3.125rem] sm:text-lg"
     >
-      {{ getEventDescription() }}
-    </p>
-    <div class="grid flex-1 gap-2">
-      <div
-        class="flex flex-col gap-1 border-t border-[var(--color-border-light)] pt-2 text-sm md:flex-row md:justify-between md:gap-3"
+      {{ getEventTitle() }}
+    </h4>
+  </div>
+
+  <div
+    class="flex flex-1 flex-col divide-y divide-[var(--color-border-light)] px-3 sm:px-4"
+  >
+    <div
+      class="grid grid-cols-[auto_1fr] items-baseline gap-2 py-2.5 text-xs sm:gap-3 sm:text-sm"
+    >
+      <span class="whitespace-nowrap text-[var(--muted-foreground)]"
+        >Local</span
       >
-        <span
-          class="whitespace-nowrap font-semibold text-[var(--color-text-secondary)]"
-          >Local</span
-        >
-        <span class="overflow-hidden text-right">{{ getEventLocation() }}</span>
-      </div>
-      <div
-        class="flex flex-col gap-1 border-t border-[var(--color-border-light)] pt-2 text-sm md:flex-row md:justify-between md:gap-3"
+      <span class="min-w-0 overflow-hidden truncate text-right font-medium">{{
+        getEventLocation()
+      }}</span>
+    </div>
+    <div
+      class="grid grid-cols-[auto_1fr] items-baseline gap-2 py-2.5 text-xs sm:gap-3 sm:text-sm"
+    >
+      <span class="whitespace-nowrap text-[var(--muted-foreground)]"
+        >Organizador</span
       >
-        <span
-          class="whitespace-nowrap font-semibold text-[var(--color-text-secondary)]"
-          >Organizador</span
-        >
-        <span class="overflow-hidden text-right">{{
-          getEventOrganizer()
-        }}</span>
-      </div>
-      <div
-        class="flex flex-col gap-1 border-t border-[var(--color-border-light)] pt-2 text-sm md:flex-row md:justify-between md:gap-3"
+      <span class="min-w-0 overflow-hidden truncate text-right font-medium">{{
+        getEventOrganizer()
+      }}</span>
+    </div>
+    <div
+      class="grid grid-cols-[auto_1fr] items-baseline gap-2 py-2.5 text-xs sm:gap-3 sm:text-sm"
+    >
+      <span class="whitespace-nowrap text-[var(--muted-foreground)]"
+        >Distâncias</span
       >
-        <span
-          class="whitespace-nowrap font-semibold text-[var(--color-text-secondary)]"
-          >Distâncias</span
-        >
-        <span class="overflow-hidden text-right">{{
-          getEventDistances()
-        }}</span>
-      </div>
+      <span
+        class="min-w-0 min-h-[2rem] overflow-hidden text-right font-semibold text-[var(--primary)] line-clamp-2 sm:min-h-[2.25rem]"
+      >
+        {{ getEventDistances() }}
+      </span>
     </div>
   </div>
-  <div class="card-footer flex justify-end gap-2">
+
+  <div class="card-footer grid grid-cols-2 gap-2 p-3 pt-2.5 sm:p-4 sm:pt-3">
     <button class="btn btn-sm btn-primary" (click)="editEvent()">Editar</button>
     <button class="btn btn-sm btn-danger" (click)="deleteEvent()">
       Deletar

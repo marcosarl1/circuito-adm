@@ -7,7 +7,7 @@
   </div>
 
   <section
-    class="mb-6 grid items-end gap-4 rounded-xl border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.92)] p-6 shadow-[var(--shadow-sm)] lg:grid-cols-[minmax(280px,1fr)_minmax(260px,380px)_auto]"
+    class="mb-6 grid gap-4 rounded-xl border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.92)] p-6 shadow-[var(--shadow-sm)] md:grid-cols-[minmax(200px,1fr)_minmax(240px,1fr)] md:items-center"
   >
     <div>
       <h2 class="m-0 text-2xl font-normal">
@@ -25,16 +25,18 @@
         class="min-h-11 w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3"
       />
     </div>
-    <div class="flex flex-row gap-3 max-md:flex-col">
+    <div
+      class="flex w-full flex-row justify-end gap-3 max-md:flex-col md:col-span-2"
+    >
       <button
-        class="btn btn-primary"
+        class="btn btn-primary whitespace-nowrap"
         (click)="openCreateForm()"
         [disabled]="loading"
       >
         Novo evento
       </button>
       <button
-        class="btn btn-secondary"
+        class="btn btn-secondary whitespace-nowrap"
         (click)="syncBucket()"
         [disabled]="loading"
       >
@@ -42,15 +44,14 @@
       </button>
     </div>
   </section>
-
   <div
     *ngIf="loading"
-    class="grid place-items-center px-4 py-16 text-[var(--color-text-secondary)]"
+    class="grid place-items-center px-4 py-10 text-[var(--color-text-secondary)] sm:py-16"
   >
     <div
-      class="mb-4 h-[42px] w-[42px] animate-spin rounded-full border-[3px] border-[var(--brand-sky-200)] border-t-[var(--brand-orange-500)]"
+      class="mb-4 h-9 w-9 animate-spin rounded-full border-[3px] border-[var(--brand-sky-200)] border-t-[var(--brand-orange-500)] sm:h-[42px] sm:w-[42px]"
     ></div>
-    <p>Carregando...</p>
+    <p class="text-sm sm:text-base">Carregando...</p>
   </div>
 
   <app-event-form-modal
@@ -65,9 +66,7 @@
   ></app-event-form-modal>
 
   <div *ngIf="!loading && filteredEvents.length > 0" class="events-list">
-    <div
-      class="grid grid-cols-1 items-start gap-4 md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]"
-    >
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
       <app-event-card
         *ngFor="let event of filteredEvents"
         [event]="event"
@@ -79,14 +78,14 @@
 
   <div *ngIf="!loading && filteredEvents.length === 0" class="card">
     <div
-      class="mx-auto my-16 grid max-w-[420px] justify-items-center text-center"
+      class="mx-auto my-10 grid max-w-[420px] justify-items-center px-4 text-center sm:my-16"
     >
       <div
-        class="mb-3 h-14 w-14 rounded-lg bg-gradient-to-br from-[var(--brand-navy-500)] to-[var(--brand-navy-200)]"
+        class="mb-3 h-12 w-12 rounded-lg bg-gradient-to-br from-[var(--brand-navy-500)] sm:h-14 sm:w-14"
         aria-hidden="true"
       ></div>
-      <h3>Nenhum evento encontrado</h3>
-      <p class="mt-2 text-[var(--color-text-secondary)]">
+      <h3 class="text-base sm:text-lg">Nenhum evento encontrado</h3>
+      <p class="mt-2 text-sm text-[var(--color-text-secondary)]">
         {{
           searchTerm
             ? "Tente refinar sua busca"
@@ -98,10 +97,10 @@
 
   <div
     *ngIf="!loading && filteredEvents.length > 0"
-    class="flex justify-center items-center gap-3 mt-4"
+    class="mt-4 flex items-center justify-center gap-3"
   >
     <button
-      class="btn btn-sm btn-secondary rounded-full px-4"
+      class="btn btn-sm btn-secondary min-h-10 rounded-full px-4 sm:min-h-8"
       (click)="previousPage()"
       [disabled]="currentPage <= 1"
     >
@@ -111,7 +110,7 @@
       currentPage
     }}</span>
     <button
-      class="btn btn-sm btn-secondary rounded-full px-4"
+      class="btn btn-sm btn-secondary min-h-10 rounded-full px-4 sm:min-h-8"
       (click)="nextPage()"
       [disabled]="!hasNextPage"
     >
