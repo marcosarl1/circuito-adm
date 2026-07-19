@@ -59,11 +59,11 @@ export class EventsService {
     );
   }
 
-  syncBucket(data: string): Observable<any> {
+  syncBucket(): Observable<any> {
     return this.withHeaders('API Key para sincronizar bucket').pipe(
       switchMap((headers) =>
         this.http
-          .post(`${this.apiUrl}/api/v1/sync-bucket`, data ?? null, { headers })
+          .post(`${this.apiUrl}/api/v1/sync-bucket`, null, { headers })
           .pipe(catchError(this.handleError))
       )
     );
