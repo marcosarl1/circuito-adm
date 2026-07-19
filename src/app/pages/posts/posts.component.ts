@@ -3,17 +3,7 @@ import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PostsService } from '../../services/posts.service';
 import { PostFormCardComponent } from '../../components/posts/post-form-card/post-form-card.component';
-
-interface PostFormData {
-  imagem: File | null;
-  slug: string;
-  titulo: string;
-  descricao: string;
-  data: string;
-  autor: string;
-  imagensText: string;
-  conteudoText: string;
-}
+import { PostFormState } from '../../shared/models/post.model';
 
 @Component({
   selector: 'app-posts',
@@ -30,7 +20,7 @@ export class PostsComponent {
   imagePreview = '';
   selectedImageName = '';
 
-  formData: PostFormData = this.createEmptyForm();
+  formData: PostFormState = this.createEmptyForm();
 
   constructor(private postsService: PostsService) {}
 
@@ -87,6 +77,10 @@ export class PostsComponent {
     this.selectedImageName = '';
   }
 
+  onTitleChange(titulo: string) {
+    this.formData.slug = this.generateSlug(titulo);
+  }
+
   private validateForm(): boolean {
     return !!(
       this.formData.slug &&
@@ -110,10 +104,6 @@ export class PostsComponent {
     return formData;
   }
 
-  onTitleChange(titulo: string) {
-    this.formData.slug = this.generateSlug(titulo);
-  }
-
   private generateSlug(titulo: string): string {
     return titulo
       .toLowerCase()
@@ -124,7 +114,7 @@ export class PostsComponent {
       .replace(/\s+/g, '-');
   }
 
-  private createEmptyForm(): PostFormData {
+  private createEmptyForm(): PostFormState {
     const today = new Date().toLocaleDateString('sv-SE');
     return {
       imagem: null,
