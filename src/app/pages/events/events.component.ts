@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { EventCardComponent } from '../../components/events/event-card/event-card.component';
 import { EventFormModalComponent } from '../../components/events/event-form-modal/event-form-modal.component';
+import { Event, EventCreatePayload, EventKit } from '../../shared/models/event.model';
 
 interface KitForm {
   nome: string;
@@ -12,7 +13,7 @@ interface KitForm {
   data_retirada: string;
 }
 
-interface EventFormData {
+interface EventFormState {
   nome_evento: string;
   data_realizacao: string;
   cidade: string;
@@ -46,8 +47,8 @@ interface EventFormData {
   templateUrl: './events.component.html'
 })
 export class EventsComponent implements OnInit {
-  events: any[] = [];
-  filteredEvents: any[] = [];
+  events: Event[] = [];
+  filteredEvents: Event[] = [];
   loading = false;
   showForm = false;
   editingId: string | null = null;
@@ -55,7 +56,7 @@ export class EventsComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
 
-  formData: EventFormData = this.createEmptyForm();
+  formData: EventFormState = this.createEmptyForm();
 
   constructor(private apiService: ApiService) {}
 
@@ -63,14 +64,11 @@ export class EventsComponent implements OnInit {
     this.loadEvents();
   }
 
-  /**
-   * Carregar eventos da API
-   */
   loadEvents() {
     this.loading = true;
     this.apiService.getEvents().subscribe({
-      next: (data) => {
-        this.events = data.events || data || [];
+      next: (data: Event[]) => {
+        this.events = data || [];
         this.filterEvents();
         this.loading = false;
       },
@@ -82,26 +80,23 @@ export class EventsComponent implements OnInit {
     });
   }
 
-  /**
-   * Filtrar eventos por termo de busca
-   */
   filterEvents() {
-    if (!this.searchTerm) {
+    const term = this.searchTerm.toLowerCase();
+    if (!term) {
       this.filteredEvents = this.events;
-    } else {
-      this.filteredEvents = this.events.filter(
-        (event) =>
-          this.getEventTitle(event).toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          this.getEventDescription(event).toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          this.getEventLocation(event).toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          this.getEventOrganizer(event).toLowerCase().includes(this.searchTerm.toLowerCase())
-      );
+      return;
     }
+
+    this.filteredEvents = this.events.filter(
+      (event) =>
+        event.nome_evento.toLowerCase().includes(term) ||
+        event.categorias_premiadas.toLowerCase().includes(term) ||
+        event.cidade.toLowerCase().includes(term) ||
+        event.estado.toLowerCase().includes(term) ||
+        event.organizador.toLowerCase().includes(term)
+    );
   }
 
-  /**
-   * Abrir formulário para novo evento
-   */
   openCreateForm() {
     this.resetForm();
     this.showForm = true;
@@ -125,18 +120,12 @@ export class EventsComponent implements OnInit {
     });
   }
 
-  /**
-   * Editar evento existente
-   */
-  editEvent(event: any) {
+  editEvent(event: Event) {
     this.formData = this.mapEventToForm(event);
-    this.editingId = this.getEventId(event);
+    this.editingId = event._id;
     this.showForm = true;
   }
 
-  /**
-   * Salvar evento (criar ou atualizar)
-   */
   saveEvent() {
     if (!this.validateForm()) {
       this.errorMessage = 'Por favor, preencha todos os campos obrigatórios';
@@ -168,9 +157,6 @@ export class EventsComponent implements OnInit {
     });
   }
 
-  /**
-   * Deletar evento
-   */
   deleteEvent(id: string) {
     if (!confirm('Tem certeza que deseja deletar este evento?')) {
       return;
@@ -191,34 +177,9 @@ export class EventsComponent implements OnInit {
     });
   }
 
-  /**
-   * Cancelar edição
-   */
   cancelEdit() {
     this.resetForm();
     this.showForm = false;
-  }
-
-  /**
-   * Validar formulário
-   */
-  private validateForm(): boolean {
-
-    return !!(
-      this.formData.nome_evento &&
-      this.formData.data_realizacao &&
-      this.formData.cidade &&
-      this.formData.estado &&
-      this.formData.organizador &&
-      this.formData.url_inscricao
-    );
-  }
-
-  /**
-   * Resetar formulário
-   */
-  private resetForm() {
-    this.formData = this.createEmptyForm();
   }
 
   onSearch() {
@@ -235,52 +196,41 @@ export class EventsComponent implements OnInit {
     return labels[status || 'active'] || 'Ativo';
   }
 
-  getEventId(event: any): string {
-    return event?.id || event?._id || '';
+  getEventId(event: Event): string {
+    return event._id;
   }
 
-  getEventTitle(event: any): string {
-    return event?.name || event?.nome_evento || 'Evento sem título';
+  getEventTitle(event: Event): string {
+    return event.nome_evento || 'Evento sem título';
   }
 
-  getEventDescription(event: any): string {
+  getEventDescription(event: Event): string {
     return (
-      event?.description ||
-      event?.categorias_premiadas ||
-      event?.percurso?.trajeto ||
-      event?.site_coleta ||
+      event.categorias_premiadas ||
+      event.percurso?.trajeto ||
+      event.site_coleta ||
       'Sem descrição disponível'
     );
   }
 
-  getEventDate(event: any): string {
-    return event?.date || event?.data_realizacao || 'Data a definir';
+  getEventDate(event: Event): string {
+    return event.data_realizacao || 'Data a definir';
   }
 
-  getEventTime(event: any): string {
-    return event?.time || event?.horario || '';
+  getEventTime(event: Event): string {
+    return event.horario || '';
   }
 
-  getEventLocation(event: any): string {
-    const city = event?.location || event?.cidade || '';
-    const state = event?.state || event?.estado || '';
-    return [city, state].filter(Boolean).join(', ') || 'Local a definir';
+  getEventLocation(event: Event): string {
+    return [event.cidade, event.estado].filter(Boolean).join(', ') || 'Local a definir';
   }
 
-  getEventOrganizer(event: any): string {
-    return event?.organizer || event?.organizador || 'Organizador não informado';
+  getEventOrganizer(event: Event): string {
+    return event.organizador || 'Organizador não informado';
   }
 
-  getEventDistances(event: any): string {
-    if (Array.isArray(event?.distancias) && event.distancias.length > 0) {
-      return event.distancias.join(' · ');
-    }
-
-    if (Array.isArray(event?.distanciasFormatadas) && event.distanciasFormatadas.length > 0) {
-      return event.distanciasFormatadas.join(' · ');
-    }
-
-    return 'Distâncias não informadas';
+  getEventDistances(event: Event): string {
+    return event.distancias?.length ? event.distancias.join(' · ') : 'Distâncias não informadas';
   }
 
   addKit() {
@@ -300,6 +250,21 @@ export class EventsComponent implements OnInit {
     return this.formData.data_coleta;
   }
 
+  private validateForm(): boolean {
+    return !!(
+      this.formData.nome_evento &&
+      this.formData.data_realizacao &&
+      this.formData.cidade &&
+      this.formData.estado &&
+      this.formData.organizador &&
+      this.formData.url_inscricao
+    );
+  }
+
+  private resetForm() {
+    this.formData = this.createEmptyForm();
+  }
+
   private createEmptyKit(): KitForm {
     return {
       nome: '',
@@ -309,7 +274,7 @@ export class EventsComponent implements OnInit {
     };
   }
 
-  private createEmptyForm(): EventFormData {
+  private createEmptyForm(): EventFormState {
     return {
       nome_evento: '',
       data_realizacao: '',
@@ -338,44 +303,46 @@ export class EventsComponent implements OnInit {
     };
   }
 
-  private mapEventToForm(event: any): EventFormData {
-    const kits = Array.isArray(event?.kits) && event.kits.length > 0 ? event.kits : [null];
+  private mapEventToForm(event: Event): EventFormState {
+    const kits = event.kits?.length ? event.kits : [];
 
     return {
-      nome_evento: event?.nome_evento || event?.name || '',
-      data_realizacao: event?.data_realizacao || event?.date || '',
-      cidade: event?.cidade || event?.location || '',
-      estado: event?.estado || '',
-      organizador: event?.organizador || event?.organizer || '',
-      site_coleta: event?.site_coleta || '',
-      data_coleta: event?.data_coleta || new Date().toISOString(),
-      distanciasText: this.toMultilineText(event?.distancias),
-      horario: event?.horario || event?.time || '',
-      url_inscricao: event?.url_inscricao || '',
-      url_imagem: event?.url_imagem || '',
-      categoriasText: this.toMultilineText(event?.categorias),
-      link_edital: event?.link_edital || '',
-      categorias_premiadas: event?.categorias_premiadas || event?.description || '',
-      preco: event?.preco || '',
-      precosEntriesText: this.toMultilineText(event?.precos_entries),
-      patrocinado: Boolean(event?.patrocinado),
+      nome_evento: event.nome_evento,
+      data_realizacao: event.data_realizacao,
+      cidade: event.cidade,
+      estado: event.estado,
+      organizador: event.organizador,
+      site_coleta: event.site_coleta,
+      data_coleta: event.data_coleta || new Date().toISOString(),
+      distanciasText: this.toMultilineText(event.distancias),
+      horario: event.horario,
+      url_inscricao: event.url_inscricao,
+      url_imagem: event.url_imagem,
+      categoriasText: this.toMultilineText(event.categorias),
+      link_edital: event.link_edital,
+      categorias_premiadas: event.categorias_premiadas,
+      preco: event.preco,
+      precosEntriesText: this.toMultilineText(event.precos_entries),
+      patrocinado: Boolean(event.patrocinado),
       percurso: {
-        local_largada: event?.percurso?.local_largada || '',
-        trajeto: event?.percurso?.trajeto || ''
+        local_largada: event.percurso?.local_largada || '',
+        trajeto: event.percurso?.trajeto || ''
       },
-      kits: kits.map((kit: any) => ({
-        nome: kit?.nome || '',
-        itensText: this.toMultilineText(kit?.itens),
-        local_retirada: kit?.local_retirada || '',
-        data_retirada: kit?.data_retirada || ''
-      })),
-      camposProtegidosText: this.toMultilineText(event?.campos_protegidos),
-      listaPrecosText: this.toMultilineText(event?.lista_precos)
+      kits: kits.length
+        ? kits.map((kit: EventKit) => ({
+          nome: kit.nome,
+          itensText: this.toMultilineText(kit.itens),
+          local_retirada: kit.local_retirada,
+          data_retirada: kit.data_retirada
+        }))
+        : [this.createEmptyKit()],
+      camposProtegidosText: this.toMultilineText(event.campos_protegidos),
+      listaPrecosText: this.toMultilineText(event.lista_precos)
     };
   }
 
-  private buildPayload() {
-    return {
+  private buildPayload(): EventCreatePayload {
+    const payload: EventCreatePayload = {
       nome_evento: this.formData.nome_evento,
       data_realizacao: this.formData.data_realizacao,
       cidade: this.formData.cidade,
@@ -384,7 +351,6 @@ export class EventsComponent implements OnInit {
       site_coleta: this.formData.site_coleta,
       data_coleta: this.formData.data_coleta,
       distancias: this.splitMultilineText(this.formData.distanciasText),
-      horario: this.formData.horario?.match(/^\d{2}:\d{2}$/) ? this.formData.horario : null,
       url_inscricao: this.formData.url_inscricao,
       url_imagem: this.formData.url_imagem,
       categorias: this.splitMultilineText(this.formData.categoriasText),
@@ -401,19 +367,28 @@ export class EventsComponent implements OnInit {
         nome: kit.nome,
         itens: this.splitMultilineText(kit.itensText),
         local_retirada: kit.local_retirada,
-        data_retirada: kit.data_retirada || new Date().toISOString()
+        data_retirada: this.isValidDate(kit.data_retirada)
+          ? kit.data_retirada
+          : new Date().toISOString()
       })),
       campos_protegidos: this.splitMultilineText(this.formData.camposProtegidosText),
-      lista_precos: this.splitMultilineText(this.formData.listaPrecosText),
+      lista_precos: this.splitMultilineText(this.formData.listaPrecosText)
     };
-  }
-
-  private toMultilineText(value: unknown): string {
-    if (!Array.isArray(value)) {
-      return typeof value === 'string' ? value : '';
+    if (this.formData.horario?.match(/^\d{2}:\d{2}$/)) {
+      payload.horario = this.formData.horario;
     }
 
-    return value.filter(Boolean).join('\n');
+    return payload;
+  }
+
+  private isValidDate(value: string): boolean {
+    if (!value) return false;
+    const date = new Date(value);
+    return !isNaN(date.getTime());
+  }
+
+  private toMultilineText(value: string[] | undefined): string {
+    return value?.filter(Boolean).join('\n') ?? '';
   }
 
   private splitMultilineText(value: string): string[] {
