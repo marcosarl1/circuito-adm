@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpContext, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpContext, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError, shareReplay } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
@@ -12,7 +12,7 @@ import { API_KEY_LABEL } from "../http/api-key.context";
 export class EventsService {
   private apiUrl = environment.apiUrl;
 
-  private eventsCache$: Observable<Event[]> | null = null;
+  private eventsCache = new Map<string, Observable<Event[]>>();
 
   constructor(private http: HttpClient) {}
 
@@ -20,17 +20,21 @@ export class EventsService {
     return new HttpContext().set(API_KEY_LABEL, label);
   }
 
-  getEvents(forceRefresh = false): Observable<Event[]> {
-    if (!this.eventsCache$ || forceRefresh) {
-      this.eventsCache$ = this.http.get<Event[]>(`${this.apiUrl}/api/v1/eventos`).pipe(
+  getEvents(page = 1, size = 20, forceRefresh = false): Observable<Event[]> {
+    const cacheKey = `${page}:${size}`;
+    if (!this.eventsCache.has(cacheKey) || forceRefresh) {
+      const params = new HttpParams().set("page", page).set("size", size);
+
+      const requests$ = this.http.get<Event[]>(`${this.apiUrl}/api/v1/eventos`, { params }).pipe(
         catchError((err) => {
-          this.eventsCache$ = null;
+          this.eventsCache.delete(cacheKey);
           return this.handleError(err);
         }),
         shareReplay({ bufferSize: 1, refCount: false }),
       );
+      this.eventsCache.set(cacheKey, requests$);
     }
-    return this.eventsCache$;
+    return this.eventsCache.get(cacheKey)!;
   }
 
   createEvent(data: EventCreatePayload): Observable<any> {

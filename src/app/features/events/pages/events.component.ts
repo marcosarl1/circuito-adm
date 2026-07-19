@@ -65,14 +65,19 @@ export class EventsComponent implements OnInit {
     this.loadEvents();
   }
 
+  currentPage = 1;
+  pageSize = 9;
+  hasNextPage = true;
+
   loadEvents() {
     this.loading = true;
     this.apiService
-      .getEvents()
+      .getEvents(this.currentPage, this.pageSize)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (data) => {
           this.events = data || [];
+          this.hasNextPage = this.events.length === this.pageSize;
           this.filterEvents();
         },
         error: (error) => {
@@ -80,6 +85,18 @@ export class EventsComponent implements OnInit {
           setTimeout(() => (this.errorMessage = ""), 5000);
         },
       });
+  }
+
+  nextPage() {
+    if (!this.hasNextPage) return;
+    this.currentPage++;
+    this.loadEvents();
+  }
+
+  previousPage() {
+    if (this.currentPage <= 1) return;
+    this.currentPage--;
+    this.loadEvents();
   }
 
   filterEvents() {
