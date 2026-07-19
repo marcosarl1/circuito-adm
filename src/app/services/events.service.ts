@@ -4,11 +4,12 @@ import {EMPTY, Observable, switchMap, throwError} from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {ApiKeyService} from './api-key.service';
+import {EventCreatePayload} from '../shared/models/event.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ApiService {
+export class EventsService {
   private apiUrl = environment.apiUrl;
 
   constructor(
@@ -34,12 +35,12 @@ export class ApiService {
       .pipe(catchError(this.handleError));
   }
 
-  createEvent(data: any): Observable<any> {
+  createEvent(data: EventCreatePayload): Observable<any> {
     return this.withHeaders('API Key para criar evento').pipe(switchMap((headers) =>
     this.http.post(`${this.apiUrl}/api/v1/eventos`, data, { headers }).pipe(catchError(this.handleError))))
   }
 
-  updateEvent(evento_id: string, data: any): Observable<any> {
+  updateEvent(evento_id: string, data: EventCreatePayload): Observable<any> {
     const payload = { evento_id, ...data };
     return this.withHeaders('API Key para atualizar evento').pipe(
       switchMap((headers) =>
@@ -58,7 +59,7 @@ export class ApiService {
     );
   }
 
-  syncBucket(data?: any): Observable<any> {
+  syncBucket(data: string): Observable<any> {
     return this.withHeaders('API Key para sincronizar bucket').pipe(
       switchMap((headers) =>
         this.http

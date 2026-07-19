@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import {EMPTY, Observable, switchMap, throwError} from 'rxjs';
+import { EMPTY, Observable, switchMap, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import {ApiKeyService} from './api-key.service';
+import { ApiKeyService } from './api-key.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,6 @@ export class PostsService {
       switchMap((key) => {
         if (!key) return EMPTY;
         const headers = new HttpHeaders({ 'x-api-key': key });
-
         return this.http
           .post(this.apiUrl, data, { headers, responseType: 'text' })
           .pipe(catchError(this.handleError));
