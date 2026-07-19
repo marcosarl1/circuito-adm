@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { EventsService } from '../../services/events.service';
-import { EventCardComponent } from '../../components/events/event-card/event-card.component';
-import { EventFormModalComponent } from '../../components/events/event-form-modal/event-form-modal.component';
-import { Event, EventCreatePayload, EventKit } from '../../shared/models/event.model';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { EventsService } from "../../services/events.service";
+import { EventCardComponent } from "../../components/events/event-card/event-card.component";
+import { EventFormModalComponent } from "../../components/events/event-form-modal/event-form-modal.component";
+import { Event, EventCreatePayload, EventKit } from "../../shared/models/event.model";
+import { finalize } from "rxjs";
 
 interface KitForm {
   nome: string;
@@ -41,10 +42,10 @@ interface EventFormState {
 }
 
 @Component({
-  selector: 'app-events',
+  selector: "app-events",
   standalone: true,
   imports: [CommonModule, FormsModule, EventCardComponent, EventFormModalComponent],
-  templateUrl: './events.component.html'
+  templateUrl: "./events.component.html",
 })
 export class EventsComponent implements OnInit {
   events: Event[] = [];
@@ -52,9 +53,9 @@ export class EventsComponent implements OnInit {
   loading = false;
   showForm = false;
   editingId: string | null = null;
-  searchTerm = '';
-  successMessage = '';
-  errorMessage = '';
+  searchTerm = "";
+  successMessage = "";
+  errorMessage = "";
 
   formData: EventFormState = this.createEmptyForm();
 
@@ -73,10 +74,10 @@ export class EventsComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        this.errorMessage = 'Erro ao carregar eventos: ' + error.message;
+        this.errorMessage = "Erro ao carregar eventos: " + error.message;
         this.loading = false;
-        setTimeout(() => (this.errorMessage = ''), 5000);
-      }
+        setTimeout(() => (this.errorMessage = ""), 5000);
+      },
     });
   }
 
@@ -93,7 +94,7 @@ export class EventsComponent implements OnInit {
         event.categorias_premiadas.toLowerCase().includes(term) ||
         event.cidade.toLowerCase().includes(term) ||
         event.estado.toLowerCase().includes(term) ||
-        event.organizador.toLowerCase().includes(term)
+        event.organizador.toLowerCase().includes(term),
     );
   }
 
@@ -105,19 +106,22 @@ export class EventsComponent implements OnInit {
 
   syncBucket() {
     this.loading = true;
-    this.apiService.syncBucket().subscribe({
-      next: () => {
-        this.successMessage = 'Sincronização realizada com sucesso!';
-        setTimeout(() => (this.successMessage = ''), 5000);
-        this.loading = false;
-        this.loadEvents();
-      },
-      error: (error) => {
-        this.errorMessage = `Erro ao sincronizar: ${error.message}`;
-        this.loading = false;
-        setTimeout(() => (this.errorMessage = ''), 5000);
-      }
-    });
+    this.apiService
+      .syncBucket()
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: () => {
+          this.successMessage = "Sincronização realizada com sucesso!";
+          setTimeout(() => (this.successMessage = ""), 5000);
+          this.loading = false;
+          this.loadEvents();
+        },
+        error: (error) => {
+          this.errorMessage = `Erro ao sincronizar: ${error.message}`;
+          this.loading = false;
+          setTimeout(() => (this.errorMessage = ""), 5000);
+        },
+      });
   }
 
   editEvent(event: Event) {
@@ -128,8 +132,8 @@ export class EventsComponent implements OnInit {
 
   saveEvent() {
     if (!this.validateForm()) {
-      this.errorMessage = 'Por favor, preencha todos os campos obrigatórios';
-      setTimeout(() => (this.errorMessage = ''), 5000);
+      this.errorMessage = "Por favor, preencha todos os campos obrigatórios";
+      setTimeout(() => (this.errorMessage = ""), 5000);
       return;
     }
 
@@ -140,11 +144,11 @@ export class EventsComponent implements OnInit {
       ? this.apiService.updateEvent(this.editingId, payload)
       : this.apiService.createEvent(payload);
 
-    action.subscribe({
+    action.pipe(finalize(() => (this.loading = false))).subscribe({
       next: () => {
-        const msg = this.editingId ? 'atualizado' : 'criado';
+        const msg = this.editingId ? "atualizado" : "criado";
         this.successMessage = `Evento ${msg} com sucesso!`;
-        setTimeout(() => (this.successMessage = ''), 5000);
+        setTimeout(() => (this.successMessage = ""), 5000);
         this.resetForm();
         this.showForm = false;
         this.loadEvents();
@@ -152,29 +156,32 @@ export class EventsComponent implements OnInit {
       error: (error) => {
         this.errorMessage = `Erro ao salvar evento: ${error.message}`;
         this.loading = false;
-        setTimeout(() => (this.errorMessage = ''), 5000);
-      }
+        setTimeout(() => (this.errorMessage = ""), 5000);
+      },
     });
   }
 
   deleteEvent(id: string) {
-    if (!confirm('Tem certeza que deseja deletar este evento?')) {
+    if (!confirm("Tem certeza que deseja deletar este evento?")) {
       return;
     }
 
     this.loading = true;
-    this.apiService.deleteEvent(id).subscribe({
-      next: () => {
-        this.successMessage = 'Evento deletado com sucesso!';
-        setTimeout(() => (this.successMessage = ''), 5000);
-        this.loadEvents();
-      },
-      error: (error) => {
-        this.errorMessage = `Erro ao deletar evento: ${error.message}`;
-        this.loading = false;
-        setTimeout(() => (this.errorMessage = ''), 5000);
-      }
-    });
+    this.apiService
+      .deleteEvent(id)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: () => {
+          this.successMessage = "Evento deletado com sucesso!";
+          setTimeout(() => (this.successMessage = ""), 5000);
+          this.loadEvents();
+        },
+        error: (error) => {
+          this.errorMessage = `Erro ao deletar evento: ${error.message}`;
+          this.loading = false;
+          setTimeout(() => (this.errorMessage = ""), 5000);
+        },
+      });
   }
 
   cancelEdit() {
@@ -188,12 +195,12 @@ export class EventsComponent implements OnInit {
 
   getStatusLabel(status?: string): string {
     const labels: Record<string, string> = {
-      active: 'Ativo',
-      inactive: 'Inativo',
-      draft: 'Rascunho'
+      active: "Ativo",
+      inactive: "Inativo",
+      draft: "Rascunho",
     };
 
-    return labels[status || 'active'] || 'Ativo';
+    return labels[status || "active"] || "Ativo";
   }
 
   getEventId(event: Event): string {
@@ -201,7 +208,7 @@ export class EventsComponent implements OnInit {
   }
 
   getEventTitle(event: Event): string {
-    return event.nome_evento || 'Evento sem título';
+    return event.nome_evento || "Evento sem título";
   }
 
   getEventDescription(event: Event): string {
@@ -209,28 +216,28 @@ export class EventsComponent implements OnInit {
       event.categorias_premiadas ||
       event.percurso?.trajeto ||
       event.site_coleta ||
-      'Sem descrição disponível'
+      "Sem descrição disponível"
     );
   }
 
   getEventDate(event: Event): string {
-    return event.data_realizacao || 'Data a definir';
+    return event.data_realizacao || "Data a definir";
   }
 
   getEventTime(event: Event): string {
-    return event.horario || '';
+    return event.horario || "";
   }
 
   getEventLocation(event: Event): string {
-    return [event.cidade, event.estado].filter(Boolean).join(', ') || 'Local a definir';
+    return [event.cidade, event.estado].filter(Boolean).join(", ") || "Local a definir";
   }
 
   getEventOrganizer(event: Event): string {
-    return event.organizador || 'Organizador não informado';
+    return event.organizador || "Organizador não informado";
   }
 
   getEventDistances(event: Event): string {
-    return event.distancias?.length ? event.distancias.join(' · ') : 'Distâncias não informadas';
+    return event.distancias?.length ? event.distancias.join(" · ") : "Distâncias não informadas";
   }
 
   addKit() {
@@ -267,39 +274,39 @@ export class EventsComponent implements OnInit {
 
   private createEmptyKit(): KitForm {
     return {
-      nome: '',
-      itensText: '',
-      local_retirada: '',
-      data_retirada: ''
+      nome: "",
+      itensText: "",
+      local_retirada: "",
+      data_retirada: "",
     };
   }
 
   private createEmptyForm(): EventFormState {
     return {
-      nome_evento: '',
-      data_realizacao: '',
-      cidade: '',
-      estado: '',
-      organizador: '',
-      site_coleta: '',
+      nome_evento: "",
+      data_realizacao: "",
+      cidade: "",
+      estado: "",
+      organizador: "",
+      site_coleta: "",
       data_coleta: new Date().toISOString(),
-      distanciasText: '',
-      horario: '',
-      url_inscricao: '',
-      url_imagem: '',
-      categoriasText: '',
-      link_edital: '',
-      categorias_premiadas: '',
-      preco: '',
-      precosEntriesText: '',
+      distanciasText: "",
+      horario: "",
+      url_inscricao: "",
+      url_imagem: "",
+      categoriasText: "",
+      link_edital: "",
+      categorias_premiadas: "",
+      preco: "",
+      precosEntriesText: "",
       patrocinado: false,
       percurso: {
-        local_largada: '',
-        trajeto: ''
+        local_largada: "",
+        trajeto: "",
       },
       kits: [this.createEmptyKit()],
-      camposProtegidosText: '',
-      listaPrecosText: ''
+      camposProtegidosText: "",
+      listaPrecosText: "",
     };
   }
 
@@ -325,19 +332,19 @@ export class EventsComponent implements OnInit {
       precosEntriesText: this.toMultilineText(event.precos_entries),
       patrocinado: Boolean(event.patrocinado),
       percurso: {
-        local_largada: event.percurso?.local_largada || '',
-        trajeto: event.percurso?.trajeto || ''
+        local_largada: event.percurso?.local_largada || "",
+        trajeto: event.percurso?.trajeto || "",
       },
       kits: kits.length
         ? kits.map((kit: EventKit) => ({
-          nome: kit.nome,
-          itensText: this.toMultilineText(kit.itens),
-          local_retirada: kit.local_retirada,
-          data_retirada: kit.data_retirada
-        }))
+            nome: kit.nome,
+            itensText: this.toMultilineText(kit.itens),
+            local_retirada: kit.local_retirada,
+            data_retirada: kit.data_retirada,
+          }))
         : [this.createEmptyKit()],
       camposProtegidosText: this.toMultilineText(event.campos_protegidos),
-      listaPrecosText: this.toMultilineText(event.lista_precos)
+      listaPrecosText: this.toMultilineText(event.lista_precos),
     };
   }
 
@@ -361,7 +368,7 @@ export class EventsComponent implements OnInit {
       patrocinado: this.formData.patrocinado,
       percurso: {
         local_largada: this.formData.percurso.local_largada,
-        trajeto: this.formData.percurso.trajeto
+        trajeto: this.formData.percurso.trajeto,
       },
       kits: this.formData.kits.map((kit) => ({
         nome: kit.nome,
@@ -369,10 +376,10 @@ export class EventsComponent implements OnInit {
         local_retirada: kit.local_retirada,
         data_retirada: this.isValidDate(kit.data_retirada)
           ? kit.data_retirada
-          : new Date().toISOString()
+          : new Date().toISOString(),
       })),
       campos_protegidos: this.splitMultilineText(this.formData.camposProtegidosText),
-      lista_precos: this.splitMultilineText(this.formData.listaPrecosText)
+      lista_precos: this.splitMultilineText(this.formData.listaPrecosText),
     };
     if (this.formData.horario?.match(/^\d{2}:\d{2}$/)) {
       payload.horario = this.formData.horario;
@@ -388,12 +395,12 @@ export class EventsComponent implements OnInit {
   }
 
   private toMultilineText(value: string[] | undefined): string {
-    return value?.filter(Boolean).join('\n') ?? '';
+    return value?.filter(Boolean).join("\n") ?? "";
   }
 
   private splitMultilineText(value: string): string[] {
     return value
-      .split('\n')
+      .split("\n")
       .map((entry) => entry.trim())
       .filter(Boolean);
   }
