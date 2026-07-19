@@ -17,8 +17,8 @@ export interface Event {
   preco: string;
   precos_entries: string[];
   patrocinado: boolean;
-  percurso: EventPercurso;
-  kits: EventKit[];
+  percurso: EventPercurso | null;
+  kits: EventKit[] | null;
   campos_protegidos: string[];
   lista_precos: string[];
 }
@@ -31,10 +31,10 @@ export interface EventPercurso {
 export interface EventKit {
   nome: string;
   itens: string[];
-  local_retirada: string;
-  data_retirada: string; // ISO date
+  local_retirada: string | null;
+  data_retirada: string | null; // ISO date
 }
 
-export type EventCreatePayload = Omit<Event, '_id' | 'horario'> & {
+export type EventCreatePayload = Omit<Event, "_id" | "horario"> & {
   horario?: string;
 };
