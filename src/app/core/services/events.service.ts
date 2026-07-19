@@ -5,6 +5,7 @@ import { catchError, shareReplay } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
 import { Event, EventCreatePayload } from "../../shared/models/event.model";
 import { API_KEY_LABEL } from "../http/api-key.context";
+import { ApiKeyCancelledError } from "../http/api-key-cancelled.error";
 
 @Injectable({
   providedIn: "root",
@@ -70,12 +71,21 @@ export class EventsService {
       .pipe(catchError(this.handleError));
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse | Error) {
+    if (error instanceof ApiKeyCancelledError) {
+      return throwError(() => error);
+    }
+
     let errorMessage = "Erro ao comunicar com o servidor";
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = `Erro: ${error.error.message}`;
+    if (error instanceof HttpErrorResponse) {
+      if (error.error instanceof ErrorEvent) {
+        errorMessage = `Erro: ${error.error.message}`;
+      } else {
+        errorMessage = `Erro ${error.status}: ${error.statusText}`;
+        console.error("Detalhes do erro:", error.error);
+      }
     } else {
-      errorMessage = `Erro ${error.status}: ${error.statusText}`;
+      errorMessage = error.message;
     }
     console.error(errorMessage);
     return throwError(() => new Error(errorMessage));

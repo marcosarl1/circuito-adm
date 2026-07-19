@@ -6,6 +6,7 @@ import { EventCardComponent } from "../components/event-card/event-card.componen
 import { EventFormModalComponent } from "../components/event-form-modal/event-form-modal.component";
 import { Event, EventCreatePayload, EventKit } from "../../../shared/models/event.model";
 import { finalize } from "rxjs";
+import { ApiKeyCancelledError } from "../../../core/http/api-key-cancelled.error";
 
 interface KitForm {
   nome: string;
@@ -135,8 +136,8 @@ export class EventsComponent implements OnInit {
           this.loadEvents();
         },
         error: (error) => {
+          if (error instanceof ApiKeyCancelledError) return;
           this.errorMessage = `Erro ao sincronizar: ${error.message}`;
-          this.loading = false;
           setTimeout(() => (this.errorMessage = ""), 5000);
         },
       });
@@ -172,6 +173,7 @@ export class EventsComponent implements OnInit {
         this.loadEvents();
       },
       error: (error) => {
+        if (error instanceof ApiKeyCancelledError) return;
         this.errorMessage = `Erro ao salvar evento: ${error.message}`;
         this.loading = false;
         setTimeout(() => (this.errorMessage = ""), 5000);
@@ -195,6 +197,7 @@ export class EventsComponent implements OnInit {
           this.loadEvents();
         },
         error: (error) => {
+          if (error instanceof ApiKeyCancelledError) return;
           this.errorMessage = `Erro ao deletar evento: ${error.message}`;
           this.loading = false;
           setTimeout(() => (this.errorMessage = ""), 5000);
