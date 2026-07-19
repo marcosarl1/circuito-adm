@@ -168,9 +168,18 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--color-text);
-  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial;
   line-height: 1.6;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -184,7 +193,10 @@ h3 {
 
 button {
   cursor: pointer;
-  transition: background-color var(--transition-fast), box-shadow var(--transition-fast), transform 120ms ease;
+  transition:
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform 120ms ease;
   will-change: transform;
 }
 
@@ -195,22 +207,6 @@ a {
 .container {
   width: min(100% - 48px, 1240px);
   margin: 0 auto;
-}
-
-.flex {
-  display: flex;
-}
-
-.items-center {
-  align-items: center;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.gap-2 {
-  gap: var(--space-sm);
 }
 
 .card {

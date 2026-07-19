@@ -15,7 +15,17 @@ export class SidebarComponent {
     { label: "Postagens", route: "/posts", icon: "PO" },
   ];
 
+  isOpen = false;
+
   constructor(private authService: AuthService) {}
+
+  toggle() {
+    this.isOpen = !this.isOpen;
+  }
+
+  close() {
+    this.isOpen = false;
+  }
 
   logout() {
     this.authService.logout();
