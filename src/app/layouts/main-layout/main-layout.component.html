@@ -10,3 +10,9 @@
     </main>
   </div>
 </div>
+
+<app-inactivity-warning-modal
+  *ngIf="showWarning"
+  [secondsRemaining]="secondsRemaining"
+  (continueSession)="continueSession()"
+></app-inactivity-warning-modal>
