@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, computed, input, output } from "@angular/core";
 
 @Component({
   selector: "app-inactivity-warning-modal",
@@ -8,12 +8,15 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
   templateUrl: "./inactivity-warning-modal.component.html",
 })
 export class InactivityWarningModalComponent {
-  @Input() secondsRemaining = 0;
-  @Output() continueSession = new EventEmitter<void>();
+  secondsRemaining = input.required<number>();
+  continueSession = output<void>();
 
-  get formattedTime(): string {
-    const minutes = Math.floor(this.secondsRemaining / 60);
-    const seconds = this.secondsRemaining % 60;
+  formattedTime = computed(() => {
+    const total = this.secondsRemaining();
+
+    const minutes = Math.floor(total / 60);
+    const seconds = total % 60;
+
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  }
+  });
 }

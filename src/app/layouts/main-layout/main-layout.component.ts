@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, OnDestroy, OnInit, signal } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { SidebarComponent } from "../../shared/components/sidebar/sidebar.component";
 import { CommonModule } from "@angular/common";
 import { InactivityWarningModalComponent } from "../../shared/components/inactivity-warning-modal/inactivity-warning-modal.component";
-import { Subscription } from "rxjs";
 import { InactivityService } from "../../core/services/inactivity.service";
 import { AuthService } from "../../core/services/auth.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-main-layout",
@@ -14,10 +14,10 @@ import { AuthService } from "../../core/services/auth.service";
   templateUrl: "./main-layout.component.html",
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
-  showWarning = false;
-  secondsRemaining = 0;
+  showWarning = signal(false);
+  secondsRemaining = signal(0);
 
-  private subs = new Subscription();
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     private inactivityService: InactivityService,
@@ -26,13 +26,20 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.inactivityService.start();
-    this.subs.add(
-      this.inactivityService.warning$.subscribe((visible) => (this.showWarning = visible)),
-    );
-    this.subs.add(
-      this.inactivityService.secondsRemaining$.subscribe((s) => (this.secondsRemaining = s)),
-    );
-    this.subs.add(this.inactivityService.logout$.subscribe(() => this.authService.logout()));
+
+    this.inactivityService.warning$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
+      this.showWarning.set(value);
+    });
+
+    this.inactivityService.secondsRemaining$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        this.secondsRemaining.set(value);
+      });
+
+    this.inactivityService.logout$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.authService.logout());
   }
 
   continueSession() {
@@ -41,6 +48,5 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.inactivityService.stop();
-    this.subs.unsubscribe();
   }
 }
