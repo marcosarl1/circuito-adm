@@ -1,4 +1,12 @@
-import { Component, DestroyRef, inject, OnDestroy, OnInit, signal, ChangeDetectionStrategy } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { SidebarComponent } from "../../shared/components/sidebar/sidebar.component";
 
@@ -8,10 +16,10 @@ import { AuthService } from "../../core/services/auth.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: "app-main-layout",
-    imports: [RouterOutlet, SidebarComponent, InactivityWarningModalComponent],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    templateUrl: "./main-layout.component.html"
+  selector: "app-main-layout",
+  imports: [RouterOutlet, SidebarComponent, InactivityWarningModalComponent],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  templateUrl: "./main-layout.component.html",
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   showWarning = signal(false);

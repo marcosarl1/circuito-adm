@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Service } from "@angular/core";
 import { HttpClient, HttpContext, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError, shareReplay } from "rxjs/operators";
@@ -7,15 +7,11 @@ import { Event, EventCreatePayload } from "../../../shared/models/event.model";
 import { API_KEY_LABEL } from "../../../core/http/api-key.context";
 import { ApiKeyCancelledError } from "../../../core/http/api-key-cancelled.error";
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class EventsService {
+  private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
-
   private eventsCache = new Map<string, Observable<Event[]>>();
-
-  constructor(private http: HttpClient) {}
 
   private context(label: string): HttpContext {
     return new HttpContext().set(API_KEY_LABEL, label);
