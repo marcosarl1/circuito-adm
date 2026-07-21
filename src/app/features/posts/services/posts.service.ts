@@ -1,29 +1,27 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpContext, HttpErrorResponse } from "@angular/common/http";
-import { Observable, throwError } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { inject, Service } from "@angular/core";
+import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
+import { EMPTY, Observable, throwError } from "rxjs";
+import { switchMap } from "rxjs/operators";
 import { environment } from "../../../../environments/environment";
-import { API_KEY_LABEL } from "../../../core/http/api-key.context";
+import { ApiKeyService } from "../../../core/services/api-key.service";
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class PostsService {
+  private http = inject(HttpClient);
+  private apiKeyService = inject(ApiKeyService);
   private apiUrl = environment.postsApiUrl;
 
-  constructor(private http: HttpClient) {}
-
-  private context(label: string): HttpContext {
-    return new HttpContext().set(API_KEY_LABEL, label);
-  }
-
   publishPost(data: FormData): Observable<string> {
-    return this.http
-      .post(this.apiUrl, data, {
-        responseType: "text",
-        context: this.context("API Key para publicar postagem"),
-      })
-      .pipe(catchError(this.handleError));
+    return this.apiKeyService.requestKey("API Key para publicar postagem").pipe(
+      switchMap((key) => {
+        if (!key) return EMPTY;
+        const headers = new HttpHeaders({ "x-api-key": key });
+        return this.http.post(this.apiUrl, data, {
+          headers,
+          responseType: "text",
+        });
+      }),
+    );
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -33,7 +31,7 @@ export class PostsService {
     } else if (typeof error.error === "string" && error.error.trim()) {
       errorMessage = error.error;
     } else {
-      errorMessage = `Erro ${error.status}: ${error.statusText}`;
+      errorMessage = `Erro ${error.status}: ${error.status}`;
     }
     console.error(errorMessage);
     return throwError(() => new Error(errorMessage));
