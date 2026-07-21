@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {PostPreviewModalComponent} from '../post-preview-modal/post-preview-modal.component';
 
 @Component({
     selector: 'app-post-form-card',
-    imports: [CommonModule, FormsModule, PostPreviewModalComponent],
+    imports: [FormsModule, PostPreviewModalComponent],
     templateUrl: './post-form-card.component.html'
 })
 export class PostFormCardComponent {

@@ -1,52 +1,51 @@
-<div
-  *ngIf="visible"
-  class="fixed inset-0 z-[1000] grid place-items-center bg-black/60 backdrop-blur-sm"
-  (click)="cancel()"
->
+@if (visible) {
   <div
-    class="w-[min(420px,90vw)] p-[var(--space-xl)] bg-[rgba(1,19,28,0.97)] border border-[rgba(142,202,230,0.22)] rounded-[var(--radius-xl)] shadow-[var(--shadow-lg)]"
-    (click)="$event.stopPropagation()"
-  >
-    <h3 class="m-0 mb-[var(--space-xs)] text-[length:var(--font-size-lg)]">
-      Autenticação necessária
-    </h3>
-    <p
-      class="m-0 mb-[var(--space-lg)] text-[var(--color-text-secondary)] text-[length:var(--font-size-sm)]"
+    class="fixed inset-0 z-[1000] grid place-items-center bg-black/60 backdrop-blur-sm"
+    (click)="cancel()"
     >
-      {{ currentRequest?.label }}
-    </p>
-
-    <div class="relative flex gap-[var(--space-sm)] mb-[var(--space-lg)]">
-      <input
-        #keyInput
-        [type]="showKey ? 'text' : 'password'"
-        class="flex-1 min-h-[44px] px-[var(--space-md)] border border-[rgba(142,202,230,0.22)] rounded-[var(--radius-md)] font-[inherit] bg-[rgba(2,48,71,0.4)] text-inherit focus:outline-none focus:border-[var(--brand-teal-500)] focus:shadow-[0_0_0_3px_rgba(33,158,188,0.16)]"
-        placeholder="Digite a API Key"
-        [(ngModel)]="keyValue"
-        (keyup.enter)="confirm()"
-        (keyup.escape)="cancel()"
-        autocomplete="off"
-        autofocus
-      />
-      <button
-        type="button"
-        class="min-h-[44px] min-w-[44px] border border-[rgba(142,202,230,0.22)] rounded-[var(--radius-md)] bg-[rgba(2,48,71,0.4)] cursor-pointer text-base"
-        (click)="showKey = !showKey"
-        [title]="showKey ? 'Ocultar' : 'Mostrar'"
+    <div
+      class="w-[min(420px,90vw)] p-[var(--space-xl)] bg-[rgba(1,19,28,0.97)] border border-[rgba(142,202,230,0.22)] rounded-[var(--radius-xl)] shadow-[var(--shadow-lg)]"
+      (click)="$event.stopPropagation()"
       >
-        {{ showKey ? "🙈" : "👁️" }}
-      </button>
-    </div>
-
-    <div class="flex justify-end gap-[var(--space-sm)]">
-      <button class="btn btn-secondary" (click)="cancel()">Cancelar</button>
-      <button
-        class="btn btn-primary"
-        (click)="confirm()"
-        [disabled]="!keyValue.trim()"
-      >
-        Confirmar
-      </button>
+      <h3 class="m-0 mb-[var(--space-xs)] text-[length:var(--font-size-lg)]">
+        Autenticação necessária
+      </h3>
+      <p
+        class="m-0 mb-[var(--space-lg)] text-[var(--color-text-secondary)] text-[length:var(--font-size-sm)]"
+        >
+        {{ currentRequest?.label }}
+      </p>
+      <div class="relative flex gap-[var(--space-sm)] mb-[var(--space-lg)]">
+        <input
+          #keyInput
+          [type]="showKey ? 'text' : 'password'"
+          class="flex-1 min-h-[44px] px-[var(--space-md)] border border-[rgba(142,202,230,0.22)] rounded-[var(--radius-md)] font-[inherit] bg-[rgba(2,48,71,0.4)] text-inherit focus:outline-none focus:border-[var(--brand-teal-500)] focus:shadow-[0_0_0_3px_rgba(33,158,188,0.16)]"
+          placeholder="Digite a API Key"
+          [(ngModel)]="keyValue"
+          (keyup.enter)="confirm()"
+          (keyup.escape)="cancel()"
+          autocomplete="off"
+          autofocus
+          />
+        <button
+          type="button"
+          class="min-h-[44px] min-w-[44px] border border-[rgba(142,202,230,0.22)] rounded-[var(--radius-md)] bg-[rgba(2,48,71,0.4)] cursor-pointer text-base"
+          (click)="showKey = !showKey"
+          [title]="showKey ? 'Ocultar' : 'Mostrar'"
+          >
+          {{ showKey ? "🙈" : "👁️" }}
+        </button>
+      </div>
+      <div class="flex justify-end gap-[var(--space-sm)]">
+        <button class="btn btn-secondary" (click)="cancel()">Cancelar</button>
+        <button
+          class="btn btn-primary"
+          (click)="confirm()"
+          [disabled]="!keyValue.trim()"
+          >
+          Confirmar
+        </button>
+      </div>
     </div>
   </div>
-</div>
+}

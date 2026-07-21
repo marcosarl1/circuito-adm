@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, OnDestroy, OnInit, signal } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { SidebarComponent } from "../../shared/components/sidebar/sidebar.component";
-import { CommonModule } from "@angular/common";
+
 import { InactivityWarningModalComponent } from "../../shared/components/inactivity-warning-modal/inactivity-warning-modal.component";
 import { InactivityService } from "../../core/services/inactivity.service";
 import { AuthService } from "../../core/services/auth.service";
@@ -9,7 +9,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
     selector: "app-main-layout",
-    imports: [RouterOutlet, CommonModule, SidebarComponent, InactivityWarningModalComponent],
+    imports: [RouterOutlet, SidebarComponent, InactivityWarningModalComponent],
     templateUrl: "./main-layout.component.html"
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {

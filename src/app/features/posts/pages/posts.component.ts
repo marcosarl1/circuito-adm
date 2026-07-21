@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+
 import { Component, DestroyRef, inject } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PostsService } from "../services/posts.service";
@@ -8,7 +8,7 @@ import { finalize } from "rxjs";
 
 @Component({
     selector: "app-posts",
-    imports: [CommonModule, PostFormCardComponent],
+    imports: [PostFormCardComponent],
     templateUrl: "./posts.component.html"
 })
 export class PostsComponent {

@@ -21,15 +21,18 @@
           <span>/</span>
           <span class="truncate text-gray-900">{{ formData.titulo || 'Título do post' }}</span>
         </nav>
-        <img
-          *ngIf="imagePreview"
-          [src]="imagePreview"
-          [alt]="formData.titulo"
-          class="mb-8 block max-h-[480px] w-full rounded-2xl object-cover"
-        />
-        <div *ngIf="!imagePreview" class="mb-8 grid h-60 w-full place-items-center rounded-2xl bg-gray-100 text-sm text-gray-400">
-          Imagem da capa não selecionada
-        </div>
+        @if (imagePreview) {
+          <img
+            [src]="imagePreview"
+            [alt]="formData.titulo"
+            class="mb-8 block max-h-[480px] w-full rounded-2xl object-cover"
+            />
+        }
+        @if (!imagePreview) {
+          <div class="mb-8 grid h-60 w-full place-items-center rounded-2xl bg-gray-100 text-sm text-gray-400">
+            Imagem da capa não selecionada
+          </div>
+        }
         <h1 class="mb-3 text-3xl font-bold leading-tight text-gray-900">{{ formData.titulo || 'Título do post' }}</h1>
         <div class="mb-6 flex items-center gap-2 text-sm text-gray-500">
           <span>{{ formData.data ? (formData.data | date:"dd 'de' MMMM 'de' yyyy":'') : 'Data' }}</span>
@@ -38,12 +41,13 @@
         </div>
         <p class="mb-8 border-l-4 border-l-[var(--brand-orange-500)] pl-4 text-base italic leading-7 text-gray-500">{{ formData.descricao || 'Descrição do post aparece aqui.' }}</p>
         <article class="grid gap-4 leading-8 text-gray-900">
-          <ng-container *ngIf="getParagraphs().length > 0; else emptyParagraphs">
-            <p *ngFor="let p of getParagraphs()" class="m-0 text-base">{{ p }}</p>
-          </ng-container>
-          <ng-template #emptyParagraphs>
+          @if (getParagraphs().length > 0) {
+            @for (p of getParagraphs(); track p) {
+              <p class="m-0 text-base">{{ p }}</p>
+            }
+          } @else {
             <p class="m-0 text-sm italic text-gray-400">Os parágrafos do conteúdo aparecem aqui...</p>
-          </ng-template>
+          }
         </article>
         <div class="mt-10">
           <section class="flex items-center gap-6 rounded-2xl border border-[rgba(251,133,0,0.2)] bg-gradient-to-r from-[rgba(251,133,0,0.08)] via-[rgba(251,133,0,0.03)] to-transparent p-6 max-sm:flex-col max-sm:text-center">

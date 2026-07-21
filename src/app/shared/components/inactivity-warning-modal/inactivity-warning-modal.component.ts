@@ -1,9 +1,9 @@
-import { CommonModule } from "@angular/common";
+
 import { Component, computed, input, output } from "@angular/core";
 
 @Component({
     selector: "app-inactivity-warning-modal",
-    imports: [CommonModule],
+    imports: [],
     templateUrl: "./inactivity-warning-modal.component.html"
 })
 export class InactivityWarningModalComponent {

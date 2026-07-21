@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { Subscription } from "rxjs";
 import { ApiKeyService, ApiKeyRequest } from "../../../core/services/api-key.service";
 
 @Component({
     selector: "app-api-key-modal",
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
     templateUrl: "./api-key-modal.component.html"
 })
 export class ApiKeyModalComponent implements OnInit, OnDestroy {

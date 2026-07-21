@@ -127,30 +127,32 @@
         </div>
 
         <div class="grid gap-3">
-          <div *ngFor="let kit of formData.kits; let i = index; trackBy: trackByIndex" class="rounded-lg border border-[rgba(142,202,230,0.16)] bg-[rgba(1,19,28,0.7)] p-4">
-            <div class="mb-3 flex items-center justify-between gap-3 max-md:flex-col max-md:items-stretch">
-              <strong>Kit {{ i + 1 }}</strong>
-              <button class="btn btn-ghost btn-sm" type="button" (click)="removeKit.emit(i)">Remover</button>
+          @for (kit of formData.kits; track trackByIndex(i, kit); let i = $index) {
+            <div class="rounded-lg border border-[rgba(142,202,230,0.16)] bg-[rgba(1,19,28,0.7)] p-4">
+              <div class="mb-3 flex items-center justify-between gap-3 max-md:flex-col max-md:items-stretch">
+                <strong>Kit {{ i + 1 }}</strong>
+                <button class="btn btn-ghost btn-sm" type="button" (click)="removeKit.emit(i)">Remover</button>
+              </div>
+              <div class="grid gap-4 md:grid-cols-2">
+                <div class="flex flex-col gap-2">
+                  <label [attr.for]="'kit_nome_' + i">Nome</label>
+                  <input [id]="'kit_nome_' + i" type="text" [(ngModel)]="kit.nome" placeholder="Kit padrão" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label [attr.for]="'kit_local_' + i">Local retirada</label>
+                  <input [id]="'kit_local_' + i" type="text" [(ngModel)]="kit.local_retirada" placeholder="Onde retirar" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label [attr.for]="'kit_data_' + i">Data retirada</label>
+                  <input [id]="'kit_data_' + i" type="text" [(ngModel)]="kit.data_retirada" placeholder="2026-09-08T10:00:00Z" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+                </div>
+                <div class="md:col-span-2 flex flex-col gap-2">
+                  <label [attr.for]="'kit_itens_' + i">Itens</label>
+                  <textarea [id]="'kit_itens_' + i" rows="3" [(ngModel)]="kit.itensText" placeholder="Um item por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"></textarea>
+                </div>
+              </div>
             </div>
-            <div class="grid gap-4 md:grid-cols-2">
-              <div class="flex flex-col gap-2">
-                <label [attr.for]="'kit_nome_' + i">Nome</label>
-                <input [id]="'kit_nome_' + i" type="text" [(ngModel)]="kit.nome" placeholder="Kit padrão" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
-              </div>
-              <div class="flex flex-col gap-2">
-                <label [attr.for]="'kit_local_' + i">Local retirada</label>
-                <input [id]="'kit_local_' + i" type="text" [(ngModel)]="kit.local_retirada" placeholder="Onde retirar" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
-              </div>
-              <div class="flex flex-col gap-2">
-                <label [attr.for]="'kit_data_' + i">Data retirada</label>
-                <input [id]="'kit_data_' + i" type="text" [(ngModel)]="kit.data_retirada" placeholder="2026-09-08T10:00:00Z" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
-              </div>
-              <div class="md:col-span-2 flex flex-col gap-2">
-                <label [attr.for]="'kit_itens_' + i">Itens</label>
-                <textarea [id]="'kit_itens_' + i" rows="3" [(ngModel)]="kit.itensText" placeholder="Um item por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"></textarea>
-              </div>
-            </div>
-          </div>
+          }
         </div>
       </section>
     </div>
