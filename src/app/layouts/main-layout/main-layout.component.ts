@@ -8,10 +8,9 @@ import { AuthService } from "../../core/services/auth.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: "app-main-layout",
-  standalone: true,
-  imports: [RouterOutlet, CommonModule, SidebarComponent, InactivityWarningModalComponent],
-  templateUrl: "./main-layout.component.html",
+    selector: "app-main-layout",
+    imports: [RouterOutlet, CommonModule, SidebarComponent, InactivityWarningModalComponent],
+    templateUrl: "./main-layout.component.html"
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   showWarning = signal(false);

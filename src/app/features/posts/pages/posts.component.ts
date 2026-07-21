@@ -7,10 +7,9 @@ import { PostFormState } from "../../../shared/models/post.model";
 import { finalize } from "rxjs";
 
 @Component({
-  selector: "app-posts",
-  standalone: true,
-  imports: [CommonModule, PostFormCardComponent],
-  templateUrl: "./posts.component.html",
+    selector: "app-posts",
+    imports: [CommonModule, PostFormCardComponent],
+    templateUrl: "./posts.component.html"
 })
 export class PostsComponent {
   private destroyRef = inject(DestroyRef);

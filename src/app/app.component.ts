@@ -3,10 +3,9 @@ import { RouterOutlet } from "@angular/router";
 import { ApiKeyModalComponent } from "./shared/components/api-key-modal/api-key-modal.component";
 
 @Component({
-  selector: "app-root",
-  standalone: true,
-  imports: [RouterOutlet, ApiKeyModalComponent],
-  templateUrl: "./app.component.html",
+    selector: "app-root",
+    imports: [RouterOutlet, ApiKeyModalComponent],
+    templateUrl: "./app.component.html"
 })
 export class AppComponent {
   title = "admin-panel";

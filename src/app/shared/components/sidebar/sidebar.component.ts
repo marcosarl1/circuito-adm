@@ -4,10 +4,9 @@ import { CommonModule } from "@angular/common";
 import { AuthService } from "../../../core/services/auth.service";
 
 @Component({
-  selector: "app-sidebar",
-  standalone: true,
-  imports: [RouterLink, RouterLinkActive, CommonModule],
-  templateUrl: "./sidebar.component.html",
+    selector: "app-sidebar",
+    imports: [RouterLink, RouterLinkActive, CommonModule],
+    templateUrl: "./sidebar.component.html"
 })
 export class SidebarComponent {
   menuItems = [

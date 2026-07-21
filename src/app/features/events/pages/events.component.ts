@@ -42,10 +42,9 @@ interface EventFormState {
 }
 
 @Component({
-  selector: "app-events",
-  standalone: true,
-  imports: [FormsModule, EventCardComponent, EventFormModalComponent],
-  templateUrl: "./events.component.html",
+    selector: "app-events",
+    imports: [FormsModule, EventCardComponent, EventFormModalComponent],
+    templateUrl: "./events.component.html"
 })
 export class EventsComponent implements OnInit {
   private eventsService = inject(EventsService);

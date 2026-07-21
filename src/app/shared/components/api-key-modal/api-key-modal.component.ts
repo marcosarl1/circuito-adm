@@ -5,10 +5,9 @@ import { Subscription } from "rxjs";
 import { ApiKeyService, ApiKeyRequest } from "../../../core/services/api-key.service";
 
 @Component({
-  selector: "app-api-key-modal",
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: "./api-key-modal.component.html",
+    selector: "app-api-key-modal",
+    imports: [CommonModule, FormsModule],
+    templateUrl: "./api-key-modal.component.html"
 })
 export class ApiKeyModalComponent implements OnInit, OnDestroy {
   visible = false;

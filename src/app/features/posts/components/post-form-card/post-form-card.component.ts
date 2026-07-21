@@ -4,10 +4,9 @@ import { FormsModule } from '@angular/forms';
 import {PostPreviewModalComponent} from '../post-preview-modal/post-preview-modal.component';
 
 @Component({
-  selector: 'app-post-form-card',
-  standalone: true,
-  imports: [CommonModule, FormsModule, PostPreviewModalComponent],
-  templateUrl: './post-form-card.component.html',
+    selector: 'app-post-form-card',
+    imports: [CommonModule, FormsModule, PostPreviewModalComponent],
+    templateUrl: './post-form-card.component.html'
 })
 export class PostFormCardComponent {
   @Input({ required: true }) formData: any;

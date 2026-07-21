@@ -3,10 +3,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-event-form-modal',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './event-form-modal.component.html'
+    selector: 'app-event-form-modal',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './event-form-modal.component.html'
 })
 export class EventFormModalComponent {
   @Input({ required: true }) formData: any;
