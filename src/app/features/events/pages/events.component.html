@@ -1,10 +1,14 @@
 <div class="mx-auto max-w-[1180px]">
-  <div *ngIf="successMessage" class="alert alert-success">
-    {{ successMessage }}
-  </div>
-  <div *ngIf="errorMessage" class="alert alert-error">
-    {{ errorMessage }}
-  </div>
+  @if (successMessage) {
+    <div class="alert alert-success">
+      {{ successMessage }}
+    </div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+  }
 
   <section
     class="mb-6 grid gap-4 rounded-xl border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.92)] p-6 shadow-[var(--shadow-sm)] md:grid-cols-[minmax(200px,1fr)_minmax(240px,1fr)] md:items-center"
@@ -44,77 +48,84 @@
       </button>
     </div>
   </section>
-  <div
-    *ngIf="loading"
-    class="grid place-items-center px-4 py-10 text-[var(--color-text-secondary)] sm:py-16"
-  >
+  @if (loading) {
     <div
-      class="mb-4 h-9 w-9 animate-spin rounded-full border-[3px] border-[var(--brand-sky-200)] border-t-[var(--brand-orange-500)] sm:h-[42px] sm:w-[42px]"
-    ></div>
-    <p class="text-sm sm:text-base">Carregando...</p>
-  </div>
-
-  <app-event-form-modal
-    *ngIf="showForm"
-    [formData]="formData"
-    [loading]="loading"
-    [editingId]="editingId"
-    (save)="saveEvent()"
-    (cancel)="cancelEdit()"
-    (addKit)="addKit()"
-    (removeKit)="removeKit($event)"
-  ></app-event-form-modal>
-
-  <div *ngIf="!loading && filteredEvents.length > 0" class="events-list">
-    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
-      <app-event-card
-        *ngFor="let event of filteredEvents"
-        [event]="event"
-        (edit)="editEvent($event)"
-        (delete)="deleteEvent($event)"
-      ></app-event-card>
-    </div>
-  </div>
-
-  <div *ngIf="!loading && filteredEvents.length === 0" class="card">
-    <div
-      class="mx-auto my-10 grid max-w-[420px] justify-items-center px-4 text-center sm:my-16"
+      class="grid place-items-center px-4 py-10 text-[var(--color-text-secondary)] sm:py-16"
     >
       <div
-        class="mb-3 h-12 w-12 rounded-lg bg-gradient-to-br from-[var(--brand-navy-500)] sm:h-14 sm:w-14"
-        aria-hidden="true"
+        class="mb-4 h-9 w-9 animate-spin rounded-full border-[3px] border-[var(--brand-sky-200)] border-t-[var(--brand-orange-500)] sm:h-[42px] sm:w-[42px]"
       ></div>
-      <h3 class="text-base sm:text-lg">Nenhum evento encontrado</h3>
-      <p class="mt-2 text-sm text-[var(--color-text-secondary)]">
-        {{
-          searchTerm
-            ? "Tente refinar sua busca"
-            : "Crie seu primeiro evento clicando no botão acima"
-        }}
-      </p>
+      <p class="text-sm sm:text-base">Carregando...</p>
     </div>
-  </div>
+  }
 
-  <div
-    *ngIf="!loading && filteredEvents.length > 0"
-    class="mt-4 flex items-center justify-center gap-3"
-  >
-    <button
-      class="btn btn-sm btn-secondary min-h-10 rounded-full px-4 sm:min-h-8"
-      (click)="previousPage()"
-      [disabled]="currentPage <= 1"
-    >
-      Anterior
-    </button>
-    <span class="text-sm font-semibold text-[var(--muted-foreground)]">{{
-      currentPage
-    }}</span>
-    <button
-      class="btn btn-sm btn-secondary min-h-10 rounded-full px-4 sm:min-h-8"
-      (click)="nextPage()"
-      [disabled]="!hasNextPage"
-    >
-      Próxima
-    </button>
-  </div>
+  @if (showForm) {
+    <app-event-form-modal
+      [formData]="formData"
+      [loading]="loading"
+      [editingId]="editingId"
+      (save)="saveEvent()"
+      (cancel)="cancelEdit()"
+      (addKit)="addKit()"
+      (removeKit)="removeKit($event)"
+    ></app-event-form-modal>
+  }
+
+  @if (!loading && filteredEvents.length > 0) {
+    <div class="events-list">
+      <div
+        class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4"
+      >
+        @for (event of filteredEvents; track event._id) {
+          <app-event-card
+            [event]="event"
+            (edit)="editEvent($event)"
+            (delete)="deleteEvent($event)"
+          ></app-event-card>
+        }
+      </div>
+    </div>
+  }
+  @if (!loading && filteredEvents.length === 0) {
+    <div class="card">
+      <div
+        class="mx-auto my-10 grid max-w-[420px] justify-items-center px-4 text-center sm:my-16"
+      >
+        <div
+          class="mb-3 h-12 w-12 rounded-lg bg-gradient-to-br from-[var(--brand-navy-500)] sm:h-14 sm:w-14"
+          aria-hidden="true"
+        ></div>
+        <h3 class="text-base sm:text-lg">Nenhum evento encontrado</h3>
+        <p class="mt-2 text-sm text-[var(--color-text-secondary)]">
+          {{
+            searchTerm
+              ? "Tente refinar sua busca"
+              : "Crie seu primeiro evento clicando no botão acima"
+          }}
+        </p>
+      </div>
+    </div>
+  }
+
+  @if (!loading && filteredEvents.length > 0) {
+    <div class="mt-4 flex items-center justify-center gap-3">
+      <button
+        class="btn btn-sm btn-secondary min-h-10 rounded-full px-4 sm:min-h-8"
+        (click)="previousPage()"
+        [disabled]="currentPage <= 1"
+      >
+        Anterior
+      </button>
+      <span class="text-sm font-semibold text-[var(--muted-foreground)]">{{
+        currentPage
+      }}</span>
+      <button
+        class="btn btn-sm btn-secondary min-h-10 rounded-full px-4 sm:min-h-8"
+        (click)="nextPage()"
+        [disabled]="!hasNextPage"
+      >
+        Próxima
+      </button>
+    </div>
+  }
 </div>

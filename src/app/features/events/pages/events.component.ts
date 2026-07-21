@@ -1,5 +1,4 @@
-import { Component, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
+import { Component, inject, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { EventsService } from "../services/events.service";
 import { EventCardComponent } from "../components/event-card/event-card.component";
@@ -45,10 +44,12 @@ interface EventFormState {
 @Component({
   selector: "app-events",
   standalone: true,
-  imports: [CommonModule, FormsModule, EventCardComponent, EventFormModalComponent],
+  imports: [FormsModule, EventCardComponent, EventFormModalComponent],
   templateUrl: "./events.component.html",
 })
 export class EventsComponent implements OnInit {
+  private eventsService = inject(EventsService);
+
   events: Event[] = [];
   filteredEvents: Event[] = [];
   loading = false;
@@ -60,8 +61,6 @@ export class EventsComponent implements OnInit {
 
   formData: EventFormState = this.createEmptyForm();
 
-  constructor(private apiService: EventsService) {}
-
   ngOnInit() {
     this.loadEvents();
   }
@@ -72,7 +71,7 @@ export class EventsComponent implements OnInit {
 
   loadEvents() {
     this.loading = true;
-    this.apiService
+    this.eventsService
       .getEvents(this.currentPage, this.pageSize)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -125,7 +124,7 @@ export class EventsComponent implements OnInit {
 
   syncBucket() {
     this.loading = true;
-    this.apiService
+    this.eventsService
       .syncBucket()
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -160,8 +159,8 @@ export class EventsComponent implements OnInit {
     const payload = this.buildPayload();
 
     const action = this.editingId
-      ? this.apiService.updateEvent(this.editingId, payload)
-      : this.apiService.createEvent(payload);
+      ? this.eventsService.updateEvent(this.editingId, payload)
+      : this.eventsService.createEvent(payload);
 
     action.pipe(finalize(() => (this.loading = false))).subscribe({
       next: () => {
@@ -187,7 +186,7 @@ export class EventsComponent implements OnInit {
     }
 
     this.loading = true;
-    this.apiService
+    this.eventsService
       .deleteEvent(id)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
