@@ -1,14 +1,14 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import {provideHttpClient, withInterceptors, withXhr} from '@angular/common/http';
+import { ApplicationConfig, provideZonelessChangeDetection } from "@angular/core";
+import { provideRouter } from "@angular/router";
+import { provideHttpClient, withInterceptors, withXhr } from "@angular/common/http";
 
-import { routes } from './app.routes';
-import {apiKeyInterceptor} from './core/interceptors/api-key.interceptor';
+import { routes } from "./app.routes";
+import { apiKeyInterceptor } from "./core/interceptors/api-key.interceptor";
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideHttpClient(withXhr(), withInterceptors([apiKeyInterceptor]))
-  ]
+    provideHttpClient(withXhr(), withInterceptors([apiKeyInterceptor])),
+  ],
 };
