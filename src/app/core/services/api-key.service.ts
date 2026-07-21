@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Service } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 
 export interface ApiKeyRequest {
@@ -6,9 +6,7 @@ export interface ApiKeyRequest {
   resolve: (key: string | null) => void;
 }
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class ApiKeyService {
   private requestSubject = new Subject<ApiKeyRequest>();
 
