@@ -1,9 +1,10 @@
 import { CommonModule} from '@angular/common';
-import { Component, EventEmitter, Input, Output, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectorRef, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     selector: 'app-post-preview-modal',
     imports: [CommonModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './post-preview-modal.component.html'
 })
 export class PostPreviewModalComponent implements OnInit {

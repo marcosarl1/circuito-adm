@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { EventsService } from "../services/events.service";
 import { EventCardComponent } from "../components/event-card/event-card.component";
@@ -44,6 +44,7 @@ interface EventFormState {
 @Component({
     selector: "app-events",
     imports: [FormsModule, EventCardComponent, EventFormModalComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: "./events.component.html"
 })
 export class EventsComponent implements OnInit {

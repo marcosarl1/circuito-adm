@@ -1,9 +1,10 @@
 
-import { Component, computed, input, output } from "@angular/core";
+import { Component, computed, input, output, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
     selector: "app-inactivity-warning-modal",
     imports: [],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: "./inactivity-warning-modal.component.html"
 })
 export class InactivityWarningModalComponent {

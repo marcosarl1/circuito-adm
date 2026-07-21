@@ -1,5 +1,5 @@
 
-import { Component, DestroyRef, inject } from "@angular/core";
+import { Component, DestroyRef, inject, ChangeDetectionStrategy } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PostsService } from "../services/posts.service";
 import { PostFormCardComponent } from "../components/post-form-card/post-form-card.component";
@@ -9,6 +9,7 @@ import { finalize } from "rxjs";
 @Component({
     selector: "app-posts",
     imports: [PostFormCardComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: "./posts.component.html"
 })
 export class PostsComponent {

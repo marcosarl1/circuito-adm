@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from "@angular/core";
 
 import { FormsModule } from "@angular/forms";
 import { Subscription } from "rxjs";
@@ -7,6 +7,7 @@ import { ApiKeyService, ApiKeyRequest } from "../../../core/services/api-key.ser
 @Component({
     selector: "app-api-key-modal",
     imports: [FormsModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: "./api-key-modal.component.html"
 })
 export class ApiKeyModalComponent implements OnInit, OnDestroy {
