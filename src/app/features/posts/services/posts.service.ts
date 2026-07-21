@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import {HttpClient, HttpContext, HttpErrorResponse} from "@angular/common/http";
+import { HttpClient, HttpContext, HttpErrorResponse } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
-import { environment } from "../../../environments/environment";
-import { API_KEY_LABEL} from '../http/api-key.context';
+import { environment } from "../../../../environments/environment";
+import { API_KEY_LABEL } from "../../../core/http/api-key.context";
 
 @Injectable({
   providedIn: "root",
@@ -21,7 +21,7 @@ export class PostsService {
     return this.http
       .post(this.apiUrl, data, {
         responseType: "text",
-        context: this.context('API Key para publicar postagem'),
+        context: this.context("API Key para publicar postagem"),
       })
       .pipe(catchError(this.handleError));
   }

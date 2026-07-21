@@ -2,10 +2,10 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpContext, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError, shareReplay } from "rxjs/operators";
-import { environment } from "../../../environments/environment";
-import { Event, EventCreatePayload } from "../../shared/models/event.model";
-import { API_KEY_LABEL } from "../http/api-key.context";
-import { ApiKeyCancelledError } from "../http/api-key-cancelled.error";
+import { environment } from "../../../../environments/environment";
+import { Event, EventCreatePayload } from "../../../shared/models/event.model";
+import { API_KEY_LABEL } from "../../../core/http/api-key.context";
+import { ApiKeyCancelledError } from "../../../core/http/api-key-cancelled.error";
 
 @Injectable({
   providedIn: "root",
