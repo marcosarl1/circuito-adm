@@ -20,9 +20,6 @@
             "outputPath": "dist/admin-panel",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -30,10 +27,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.css",
-              "src/globals.css"
-            ],
+            "styles": ["src/styles.css", "src/globals.css"],
             "scripts": []
           },
           "configurations": {
@@ -84,10 +78,7 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
               {
@@ -95,10 +86,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.css",
-              "src/globals.css"
-            ],
+            "styles": ["src/styles.css", "src/globals.css"],
             "scripts": []
           }
         }
