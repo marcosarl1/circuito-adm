@@ -280,7 +280,7 @@ export class EventsComponent implements OnInit {
       data_realizacao: event.data_realizacao,
       cidade: event.cidade,
       estado: event.estado,
-      organizador: event.organizador,
+      organizador: event.organizador || 'Não encontrado',
       site_coleta: event.site_coleta,
       data_coleta: event.data_coleta || new Date().toISOString(),
       distanciasText: this.toMultilineText(event.distancias),
