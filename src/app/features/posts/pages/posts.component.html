@@ -1,11 +1,11 @@
 <div class="mx-auto grid w-full max-w-[1240px] gap-4 px-4 sm:gap-6 sm:px-6">
-  @if (successMessage) {
+  @if (successMessage()) {
     <div class="alert alert-success">
-      {{ successMessage }}
+      {{ successMessage() }}
     </div>
   }
-  @if (errorMessage) {
-    <div class="alert alert-error">{{ errorMessage }}</div>
+  @if (errorMessage()) {
+    <div class="alert alert-error">{{ errorMessage() }}</div>
   }
   <section
     class="card flex items-end justify-between gap-4 p-4 max-md:flex-col max-md:items-stretch sm:p-6"
@@ -17,10 +17,10 @@
     </div>
   </section>
   <app-post-form-card
-    [formData]="formData"
-    [loading]="loading"
-    [imagePreview]="imagePreview"
-    [selectedImageName]="selectedImageName"
+    [(formData)]="formData"
+    [loading]="loading()"
+    [imagePreview]="imagePreview()"
+    [selectedImageName]="selectedImageName()"
     (publish)="publishPost()"
     (reset)="resetForm()"
     (imageSelected)="onImageSelected($event)"

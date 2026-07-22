@@ -1,11 +1,29 @@
-<div class="fixed inset-0 z-[200] grid place-items-center bg-[rgba(0,0,0,0.72)] p-4 max-md:p-0" (click)="cancel.emit()">
-  <div class="card flex max-h-[min(90vh,920px)] w-full max-w-[1040px] flex-col overflow-hidden max-md:max-h-screen max-md:rounded-none" (click)="$event.stopPropagation()">
-    <div class="card-header flex justify-between gap-4 border-b border-[var(--color-border-light)] max-md:flex-col">
+<div
+  class="fixed inset-0 z-[200] grid place-items-center bg-[rgba(0,0,0,0.72)] p-4 max-md:p-0"
+  (click)="cancel.emit()"
+>
+  <div
+    class="card flex max-h-[min(90vh,920px)] w-full max-w-[1040px] flex-col overflow-hidden max-md:max-h-screen max-md:rounded-none"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="card-header flex justify-between gap-4 border-b border-[var(--color-border-light)] max-md:flex-col"
+    >
       <div>
-        <h3 class="m-0">{{ editingId ? 'Editar corrida' : 'Adicionar corrida' }}</h3>
-        <p class="mb-0 mt-1 text-[var(--color-text-secondary)]">Campos em lista aceitam uma entrada por linha.</p>
+        <h3 class="m-0">
+          {{ editingId() ? "Editar corrida" : "Adicionar corrida" }}
+        </h3>
+        <p class="mb-0 mt-1 text-[var(--color-text-secondary)]">
+          Campos em lista aceitam uma entrada por linha.
+        </p>
       </div>
-      <button class="btn btn-ghost btn-sm" type="button" (click)="cancel.emit()">Fechar</button>
+      <button
+        class="btn btn-ghost btn-sm"
+        type="button"
+        (click)="cancel.emit()"
+      >
+        Fechar
+      </button>
     </div>
 
     <div class="grid gap-6 overflow-y-auto p-4 md:p-6">
@@ -14,38 +32,91 @@
         <div class="grid gap-4 md:grid-cols-2">
           <div class="md:col-span-2 flex flex-col gap-2">
             <label for="nome_evento">Nome do evento *</label>
-            <input id="nome_evento" type="text" [(ngModel)]="formData.nome_evento" placeholder="Ex: Corrida Circuito PB" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="nome_evento"
+              type="text"
+              [ngModel]="formData().nome_evento"
+              (ngModelChange)="patch({ nome_evento: $event })"
+              placeholder="Ex: Corrida Circuito PB"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="flex flex-col gap-2">
             <label for="data_realizacao">Data de realização *</label>
-            <input id="data_realizacao" type="text" [(ngModel)]="formData.data_realizacao" placeholder="2026-09-10 ou 10/09/2026" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="data_realizacao"
+              type="text"
+              [ngModel]="formData().data_realizacao"
+              (ngModelChange)="patch({ data_realizacao: $event })"
+              placeholder="2026-09-10 ou 10/09/2026"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="flex flex-col gap-2">
             <label for="horario">Horário *</label>
-            <input id="horario" type="text" [(ngModel)]="formData.horario" placeholder="07:00" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="horario"
+              type="text"
+              [ngModel]="formData().horario"
+              (ngModelChange)="patch({ horario: $event })"
+              placeholder="07:00"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="flex flex-col gap-2">
             <label for="cidade">Cidade *</label>
-            <input id="cidade" type="text" [(ngModel)]="formData.cidade" placeholder="João Pessoa" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="cidade"
+              type="text"
+              [ngModel]="formData().cidade"
+              (ngModelChange)="patch({ cidade: $event })"
+              placeholder="João Pessoa"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="flex flex-col gap-2">
             <label for="estado">Estado *</label>
-            <input id="estado" type="text" [(ngModel)]="formData.estado" placeholder="PB" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="estado"
+              type="text"
+              [ngModel]="formData().estado"
+              (ngModelChange)="patch({ estado: $event })"
+              placeholder="PB"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="flex flex-col gap-2">
             <label for="organizador">Organizador *</label>
-            <input id="organizador" type="text" [(ngModel)]="formData.organizador" placeholder="Nome do organizador" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="organizador"
+              type="text"
+              [ngModel]="formData().organizador"
+              (ngModelChange)="patch({ organizador: $event })"
+              placeholder="Nome do organizador"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="flex flex-col gap-2">
             <label for="patrocinado">Patrocinado</label>
-            <select id="patrocinado" [(ngModel)]="formData.patrocinado" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3">
+            <select
+              id="patrocinado"
+              [ngModel]="formData().patrocinado"
+              (ngModelChange)="patch({ patrocinado: $event })"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            >
               <option [ngValue]="true">Sim</option>
               <option [ngValue]="false">Não</option>
             </select>
           </div>
           <div class="flex flex-col gap-2">
             <label for="data_coleta">Data de coleta</label>
-            <input id="data_coleta" type="text" [(ngModel)]="formData.data_coleta" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="data_coleta"
+              type="text"
+              [ngModel]="formData().data_coleta"
+              (ngModelChange)="patch({ data_coleta: $event })"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
         </div>
       </section>
@@ -55,19 +126,47 @@
         <div class="grid gap-4 md:grid-cols-2">
           <div class="md:col-span-2 flex flex-col gap-2">
             <label for="url_imagem">Imagem principal</label>
-            <input id="url_imagem" type="text" [(ngModel)]="formData.url_imagem" placeholder="https://..." class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="url_imagem"
+              type="text"
+              [ngModel]="formData().url_imagem"
+              (ngModelChange)="patch({ url_imagem: $event })"
+              placeholder="https://..."
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="md:col-span-2 flex flex-col gap-2">
             <label for="url_inscricao">Link de inscrição *</label>
-            <input id="url_inscricao" type="text" [(ngModel)]="formData.url_inscricao" placeholder="https://..." class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="url_inscricao"
+              type="text"
+              [ngModel]="formData().url_inscricao"
+              (ngModelChange)="patch({ url_inscricao: $event })"
+              placeholder="https://..."
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="md:col-span-2 flex flex-col gap-2">
             <label for="site_coleta">Site/coleta</label>
-            <input id="site_coleta" type="text" [(ngModel)]="formData.site_coleta" placeholder="https://..." class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="site_coleta"
+              type="text"
+              [ngModel]="formData().site_coleta"
+              (ngModelChange)="patch({ site_coleta: $event })"
+              placeholder="https://..."
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="md:col-span-2 flex flex-col gap-2">
             <label for="link_edital">Link do edital</label>
-            <input id="link_edital" type="text" [(ngModel)]="formData.link_edital" placeholder="https://..." class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="link_edital"
+              type="text"
+              [ngModel]="formData().link_edital"
+              (ngModelChange)="patch({ link_edital: $event })"
+              placeholder="https://..."
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
         </div>
       </section>
@@ -77,19 +176,47 @@
         <div class="grid gap-4 md:grid-cols-2">
           <div class="md:col-span-2 flex flex-col gap-2">
             <label for="categorias_premiadas">Categorias premiadas</label>
-            <textarea id="categorias_premiadas" rows="3" [(ngModel)]="formData.categorias_premiadas" placeholder="Texto livre para categorias premiadas" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"></textarea>
+            <textarea
+              id="categorias_premiadas"
+              rows="3"
+              [ngModel]="formData().categorias_premiadas"
+              (ngModelChange)="patch({ categorias_premiadas: $event })"
+              placeholder="Texto livre para categorias premiadas"
+              class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+            ></textarea>
           </div>
           <div class="flex flex-col gap-2">
             <label for="preco">Preço</label>
-            <input id="preco" type="text" [(ngModel)]="formData.preco" placeholder="R$ 120,00" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="preco"
+              type="text"
+              [ngModel]="formData().preco"
+              (ngModelChange)="patch({ preco: $event })"
+              placeholder="R$ 120,00"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="flex flex-col gap-2">
             <label for="precosEntries">Entradas de preço</label>
-            <textarea id="precosEntries" rows="3" [(ngModel)]="formData.precosEntriesText" placeholder="Uma entrada por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"></textarea>
+            <textarea
+              id="precosEntries"
+              rows="3"
+              [ngModel]="formData().precosEntriesText"
+              (ngModelChange)="patch({ precosEntriesText: $event })"
+              placeholder="Uma entrada por linha"
+              class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+            ></textarea>
           </div>
           <div class="md:col-span-2 flex flex-col gap-2">
             <label for="categorias">Categorias</label>
-            <textarea id="categorias" rows="3" [(ngModel)]="formData.categoriasText" placeholder="Uma categoria por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"></textarea>
+            <textarea
+              id="categorias"
+              rows="3"
+              [ngModel]="formData().categoriasText"
+              (ngModelChange)="patch({ categoriasText: $event })"
+              placeholder="Uma categoria por linha"
+              class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+            ></textarea>
           </div>
         </div>
       </section>
@@ -99,56 +226,137 @@
         <div class="grid gap-4 md:grid-cols-2">
           <div class="flex flex-col gap-2">
             <label for="local_largada">Local de largada</label>
-            <input id="local_largada" type="text" [(ngModel)]="formData.percurso.local_largada" placeholder="Ex: Orla de Tambaú" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="local_largada"
+              type="text"
+              [ngModel]="formData().percurso.local_largada"
+              (ngModelChange)="updatePercurso('local_largada', $event)"
+              placeholder="Ex: Orla de Tambaú"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="flex flex-col gap-2">
             <label for="trajeto">Trajeto</label>
-            <input id="trajeto" type="text" [(ngModel)]="formData.percurso.trajeto" placeholder="Descrição do percurso" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+            <input
+              id="trajeto"
+              type="text"
+              [ngModel]="formData().percurso.trajeto"
+              (ngModelChange)="updatePercurso('trajeto', $event)"
+              placeholder="Descrição do percurso"
+              class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
           </div>
           <div class="md:col-span-2 flex flex-col gap-2">
             <label for="distancias">Distâncias</label>
-            <textarea id="distancias" rows="3" [(ngModel)]="formData.distanciasText" placeholder="Uma distância por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"></textarea>
+            <textarea
+              id="distancias"
+              rows="3"
+              [ngModel]="formData().distanciasText"
+              (ngModelChange)="patch({ distanciasText: $event })"
+              placeholder="Uma distância por linha"
+              class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+            ></textarea>
           </div>
           <div class="flex flex-col gap-2">
             <label for="campos_protegidos">Campos protegidos</label>
-            <textarea id="campos_protegidos" rows="3" [(ngModel)]="formData.camposProtegidosText" placeholder="Uma entrada por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"></textarea>
+            <textarea
+              id="campos_protegidos"
+              rows="3"
+              [ngModel]="formData().camposProtegidosText"
+              (ngModelChange)="patch({ camposProtegidosText: $event })"
+              placeholder="Uma entrada por linha"
+              class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+            ></textarea>
           </div>
           <div class="flex flex-col gap-2">
             <label for="lista_precos">Lista de preços</label>
-            <textarea id="lista_precos" rows="3" [(ngModel)]="formData.listaPrecosText" placeholder="Uma entrada por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"></textarea>
+            <textarea
+              id="lista_precos"
+              rows="3"
+              [ngModel]="formData().listaPrecosText"
+              (ngModelChange)="patch({ listaPrecosText: $event })"
+              placeholder="Uma entrada por linha"
+              class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+            ></textarea>
           </div>
         </div>
       </section>
 
       <section class="grid gap-4">
-        <div class="flex items-center justify-between gap-4 max-md:flex-col max-md:items-stretch">
+        <div
+          class="flex items-center justify-between gap-4 max-md:flex-col max-md:items-stretch"
+        >
           <h4 class="m-0 text-lg">Kits</h4>
-          <button class="btn btn-secondary btn-sm" type="button" (click)="addKit.emit()">Adicionar kit</button>
+          <button
+            class="btn btn-secondary btn-sm"
+            type="button"
+            (click)="addKit.emit()"
+          >
+            Adicionar kit
+          </button>
         </div>
 
         <div class="grid gap-3">
-          @for (kit of formData.kits; track trackByIndex(i, kit); let i = $index) {
-            <div class="rounded-lg border border-[rgba(142,202,230,0.16)] bg-[rgba(1,19,28,0.7)] p-4">
-              <div class="mb-3 flex items-center justify-between gap-3 max-md:flex-col max-md:items-stretch">
+          @for (kit of formData().kits; track $index; let i = $index) {
+            <div
+              class="rounded-lg border border-[rgba(142,202,230,0.16)] bg-[rgba(1,19,28,0.7)] p-4"
+            >
+              <div
+                class="mb-3 flex items-center justify-between gap-3 max-md:flex-col max-md:items-stretch"
+              >
                 <strong>Kit {{ i + 1 }}</strong>
-                <button class="btn btn-ghost btn-sm" type="button" (click)="removeKit.emit(i)">Remover</button>
+                <button
+                  class="btn btn-ghost btn-sm"
+                  type="button"
+                  (click)="removeKit.emit(i)"
+                >
+                  Remover
+                </button>
               </div>
               <div class="grid gap-4 md:grid-cols-2">
                 <div class="flex flex-col gap-2">
                   <label [attr.for]="'kit_nome_' + i">Nome</label>
-                  <input [id]="'kit_nome_' + i" type="text" [(ngModel)]="kit.nome" placeholder="Kit padrão" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+                  <input
+                    [id]="'kit_nome_' + i"
+                    type="text"
+                    [ngModel]="kit.nome"
+                    (ngModelChange)="updateKit(i, 'nome', $event)"
+                    placeholder="Kit padrão"
+                    class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+                  />
                 </div>
                 <div class="flex flex-col gap-2">
                   <label [attr.for]="'kit_local_' + i">Local retirada</label>
-                  <input [id]="'kit_local_' + i" type="text" [(ngModel)]="kit.local_retirada" placeholder="Onde retirar" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+                  <input
+                    [id]="'kit_local_' + i"
+                    type="text"
+                    [ngModel]="kit.local_retirada"
+                    (ngModelChange)="updateKit(i, 'local_retirada', $event)"
+                    placeholder="Onde retirar"
+                    class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+                  />
                 </div>
                 <div class="flex flex-col gap-2">
                   <label [attr.for]="'kit_data_' + i">Data retirada</label>
-                  <input [id]="'kit_data_' + i" type="text" [(ngModel)]="kit.data_retirada" placeholder="2026-09-08T10:00:00Z" class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3" />
+                  <input
+                    [id]="'kit_data_' + i"
+                    type="text"
+                    [ngModel]="kit.data_retirada"
+                    (ngModelChange)="updateKit(i, 'data_retirada', $event)"
+                    placeholder="2026-09-08T10:00:00Z"
+                    class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+                  />
                 </div>
                 <div class="md:col-span-2 flex flex-col gap-2">
                   <label [attr.for]="'kit_itens_' + i">Itens</label>
-                  <textarea [id]="'kit_itens_' + i" rows="3" [(ngModel)]="kit.itensText" placeholder="Um item por linha" class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"></textarea>
+                  <textarea
+                    [id]="'kit_itens_' + i"
+                    rows="3"
+                    [ngModel]="kit.itensText"
+                    (ngModelChange)="updateKit(i, 'itensText', $event)"
+                    placeholder="Um item por linha"
+                    class="min-h-[110px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+                  ></textarea>
                 </div>
               </div>
             </div>
@@ -157,9 +365,15 @@
       </section>
     </div>
 
-    <div class="card-footer flex justify-end gap-2 border-t border-[var(--color-border-light)] max-md:flex-col">
-      <button class="btn btn-primary" (click)="save.emit()" [disabled]="loading">
-        {{ editingId ? 'Atualizar' : 'Criar' }}
+    <div
+      class="card-footer flex justify-end gap-2 border-t border-[var(--color-border-light)] max-md:flex-col"
+    >
+      <button
+        class="btn btn-primary"
+        (click)="save.emit()"
+        [disabled]="loading()"
+      >
+        {{ editingId() ? "Atualizar" : "Criar" }}
       </button>
       <button class="btn btn-secondary" (click)="cancel.emit()">
         Cancelar

@@ -1,26 +1,21 @@
-import { CommonModule} from '@angular/common';
-import { Component, EventEmitter, Input, Output, ChangeDetectorRef, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, input, output } from '@angular/core';
+import { PostFormState } from '../../../../shared/models/post.model';
 
 @Component({
-    selector: 'app-post-preview-modal',
-    imports: [CommonModule],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    templateUrl: './post-preview-modal.component.html'
+  selector: 'app-post-preview-modal',
+  imports: [DatePipe],
+  templateUrl: './post-preview-modal.component.html',
 })
-export class PostPreviewModalComponent implements OnInit {
-  @Input({ required: true }) formData: any;
-  @Input() imagePreview = '';
-  @Output() close = new EventEmitter<void>();
-
-  constructor(private cdr: ChangeDetectorRef) {}
-
-  ngOnInit() {
-    this.cdr.detectChanges();
-  }
+export class PostPreviewModalComponent {
+  formData = input.required<PostFormState>();
+  imagePreview = input('');
+  close = output<void>();
 
   getParagraphs(): string[] {
-    if (!this.formData?.conteudoText) return [];
-    return this.formData.conteudoText
+    const conteudo = this.formData().conteudoText;
+    if (!conteudo) return [];
+    return conteudo
       .split('\n')
       .map((p: string) => p.trim())
       .filter(Boolean);

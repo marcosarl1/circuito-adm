@@ -1,10 +1,9 @@
-import { Component, input, output, ChangeDetectionStrategy } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { Event } from "../../../../shared/models/event.model";
 
 @Component({
   selector: "app-event-card",
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [],
   templateUrl: "./event-card.component.html",
 })
 export class EventCardComponent {

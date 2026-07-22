@@ -1,5 +1,4 @@
-
-import { Component, DestroyRef, inject, ChangeDetectionStrategy } from "@angular/core";
+import { Component, DestroyRef, inject, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PostsService } from "../services/posts.service";
 import { PostFormCardComponent } from "../components/post-form-card/post-form-card.component";
@@ -7,38 +6,35 @@ import { PostFormState } from "../../../shared/models/post.model";
 import { finalize } from "rxjs";
 
 @Component({
-    selector: "app-posts",
-    imports: [PostFormCardComponent],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    templateUrl: "./posts.component.html"
+  selector: "app-posts",
+  imports: [PostFormCardComponent],
+  templateUrl: "./posts.component.html",
 })
 export class PostsComponent {
   private destroyRef = inject(DestroyRef);
+  private postsService = inject(PostsService);
 
-  loading = false;
-  successMessage = "";
-  errorMessage = "";
-  imagePreview = "";
-  selectedImageName = "";
-
-  formData: PostFormState = this.createEmptyForm();
-
-  constructor(private postsService: PostsService) {}
+  loading = signal(false);
+  successMessage = signal("");
+  errorMessage = signal("");
+  imagePreview = signal("");
+  selectedImageName = signal("");
+  formData = signal<PostFormState>(this.createEmptyForm());
 
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
-    this.formData.imagem = file;
-    this.selectedImageName = file?.name ?? "";
+    this.formData.update((f) => ({ ...f, imagem: file }));
+    this.selectedImageName.set(file?.name ?? "");
 
     if (!file) {
-      this.imagePreview = "";
+      this.imagePreview.set("");
       return;
     }
 
     const reader = new FileReader();
     reader.onload = () => {
-      this.imagePreview = String(reader.result ?? "");
+      this.imagePreview.set(String(reader.result ?? ""));
     };
     reader.readAsDataURL(file);
   }
@@ -49,66 +45,64 @@ export class PostsComponent {
       return;
     }
 
-    if (!this.formData.imagem) {
+    if (!this.formData().imagem) {
       this.showError("Selecione a imagem principal da postagem.");
       return;
     }
 
     const payload = this.buildFormData();
-    this.loading = true;
+    this.loading.set(true);
 
     this.postsService
       .publishPost(payload)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        finalize(() => (this.loading = false)),
+        finalize(() => this.loading.set(false)),
       )
       .subscribe({
         next: () => {
           this.showSuccess("Postagem publicada com sucesso!");
-          this.loading = false;
           this.resetForm();
         },
         error: (error) => {
           this.showError(`Erro ao publicar postagem: ${error.message}`);
-          this.loading = false;
         },
       });
   }
 
   resetForm() {
-    this.formData = this.createEmptyForm();
-    this.imagePreview = "";
-    this.selectedImageName = "";
+    this.formData.set(this.createEmptyForm());
+    this.imagePreview.set("");
+    this.selectedImageName.set("");
   }
 
   onTitleChange(titulo: string) {
-    this.formData.slug = this.generateSlug(titulo);
+    this.formData.update((f) => ({
+      ...f,
+      slug: this.generateSlug(titulo),
+    }));
   }
 
   private validateForm(): boolean {
-    return !!(
-      this.formData.slug &&
-      this.formData.titulo &&
-      this.formData.descricao &&
-      this.formData.data &&
-      this.formData.autor
-    );
+    const f = this.formData();
+    return !!(f.slug && f.titulo && f.descricao && f.data && f.autor);
   }
 
   private buildFormData(): FormData {
+    const f = this.formData();
     const formData = new FormData();
-    formData.append("imagem", this.formData.imagem!, this.formData.imagem!.name);
-    formData.append("slug", this.formData.slug);
-    formData.append("titulo", this.formData.titulo);
-    formData.append("descricao", this.formData.descricao);
-    formData.append("data", this.formData.data);
-    formData.append("autor", this.formData.autor);
-    formData.append("imagens", JSON.stringify(this.splitMultilineText(this.formData.imagensText)));
-    formData.append(
-      "conteudo",
-      JSON.stringify(this.splitMultilineText(this.formData.conteudoText)),
-    );
+    const image = f.imagem;
+    if (!image) {
+      throw new Error("Imagem obrigatória");
+    }
+    formData.append("imagem", image, image.name);
+    formData.append("slug", f.slug);
+    formData.append("titulo", f.titulo);
+    formData.append("descricao", f.descricao);
+    formData.append("data", f.data);
+    formData.append("autor", f.autor);
+    formData.append("imagens", JSON.stringify(this.splitMultilineText(f.imagensText)));
+    formData.append("conteudo", JSON.stringify(this.splitMultilineText(f.conteudoText)));
     return formData;
   }
 
@@ -144,12 +138,12 @@ export class PostsComponent {
   }
 
   private showSuccess(message: string, duration = 5000) {
-    this.successMessage = message;
-    setTimeout(() => (this.successMessage = ""), duration);
+    this.successMessage.set(message);
+    setTimeout(() => this.successMessage.set(""), duration);
   }
 
   private showError(message: string, duration = 5000) {
-    this.errorMessage = message;
-    setTimeout(() => (this.errorMessage = ""), duration);
+    this.errorMessage.set(message);
+    setTimeout(() => this.errorMessage.set(""), duration);
   }
 }

@@ -1,12 +1,12 @@
 <div class="mx-auto max-w-[1180px]">
-  @if (successMessage) {
+  @if (successMessage()) {
     <div class="alert alert-success">
-      {{ successMessage }}
+      {{ successMessage() }}
     </div>
   }
-  @if (errorMessage) {
+  @if (errorMessage()) {
     <div class="alert alert-error">
-      {{ errorMessage }}
+      {{ errorMessage() }}
     </div>
   }
 
@@ -24,7 +24,7 @@
         name="event-search"
         placeholder="Buscar por nome, descrição ou local"
         [(ngModel)]="searchTerm"
-        (keyup)="onSearch()"
+        (ngModelChange)="searchTerm.set($event)"
         autocomplete="one-time-code"
         class="min-h-11 w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3"
       />
@@ -35,20 +35,20 @@
       <button
         class="btn btn-primary whitespace-nowrap"
         (click)="openCreateForm()"
-        [disabled]="loading"
+        [disabled]="loading()"
       >
         Novo evento
       </button>
       <button
         class="btn btn-secondary whitespace-nowrap"
         (click)="syncBucket()"
-        [disabled]="loading"
+        [disabled]="loading()"
       >
         Sincronizar
       </button>
     </div>
   </section>
-  @if (loading) {
+  @if (loading()) {
     <div
       class="grid place-items-center px-4 py-10 text-[var(--color-text-secondary)] sm:py-16"
     >
@@ -59,11 +59,11 @@
     </div>
   }
 
-  @if (showForm) {
+  @if (showForm()) {
     <app-event-form-modal
-      [formData]="formData"
-      [loading]="loading"
-      [editingId]="editingId"
+      [(formData)]="formData"
+      [loading]="loading()"
+      [editingId]="editingId()"
       (save)="saveEvent()"
       (cancel)="cancelEdit()"
       (addKit)="addKit()"
@@ -71,12 +71,12 @@
     ></app-event-form-modal>
   }
 
-  @if (!loading && filteredEvents.length > 0) {
+  @if (!loading() && filteredEvents().length > 0) {
     <div class="events-list">
       <div
         class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4"
       >
-        @for (event of filteredEvents; track event._id) {
+        @for (event of filteredEvents(); track event._id) {
           <app-event-card
             [event]="event"
             (edit)="editEvent($event)"
@@ -86,7 +86,7 @@
       </div>
     </div>
   }
-  @if (!loading && filteredEvents.length === 0) {
+  @if (!loading() && filteredEvents().length === 0) {
     <div class="card">
       <div
         class="mx-auto my-10 grid max-w-[420px] justify-items-center px-4 text-center sm:my-16"
@@ -98,7 +98,7 @@
         <h3 class="text-base sm:text-lg">Nenhum evento encontrado</h3>
         <p class="mt-2 text-sm text-[var(--color-text-secondary)]">
           {{
-            searchTerm
+            searchTerm()
               ? "Tente refinar sua busca"
               : "Crie seu primeiro evento clicando no botão acima"
           }}
@@ -107,22 +107,22 @@
     </div>
   }
 
-  @if (!loading && filteredEvents.length > 0) {
+  @if (!loading() && filteredEvents().length > 0) {
     <div class="mt-4 flex items-center justify-center gap-3">
       <button
         class="btn btn-sm btn-secondary min-h-10 rounded-full px-4 sm:min-h-8"
         (click)="previousPage()"
-        [disabled]="currentPage <= 1"
+        [disabled]="currentPage() <= 1"
       >
         Anterior
       </button>
       <span class="text-sm font-semibold text-[var(--muted-foreground)]">{{
-        currentPage
+        currentPage()
       }}</span>
       <button
         class="btn btn-sm btn-secondary min-h-10 rounded-full px-4 sm:min-h-8"
         (click)="nextPage()"
-        [disabled]="!hasNextPage"
+        [disabled]="!hasNextPage()"
       >
         Próxima
       </button>
