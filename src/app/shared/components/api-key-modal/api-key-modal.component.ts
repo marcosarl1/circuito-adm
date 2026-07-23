@@ -1,36 +1,38 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from "@angular/core";
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 
-import { FormsModule } from "@angular/forms";
-import { Subscription } from "rxjs";
-import { ApiKeyService, ApiKeyRequest } from "../../../core/services/api-key.service";
+import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import {
+  ApiKeyService,
+  ApiKeyRequest,
+} from '../../../core/services/api-key.service';
 
 @Component({
-    selector: "app-api-key-modal",
-    imports: [FormsModule],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    templateUrl: "./api-key-modal.component.html"
+  selector: 'app-api-key-modal',
+  imports: [FormsModule],
+  templateUrl: './api-key-modal.component.html',
 })
 export class ApiKeyModalComponent implements OnInit, OnDestroy {
-  visible = false;
-  keyValue = "";
-  showKey = false;
+  private apiKeyService = inject(ApiKeyService);
+
+  visible = signal(false);
+  keyValue = signal('');
+  showKey = signal(false);
   currentRequest: ApiKeyRequest | null = null;
   private sub!: Subscription;
-
-  constructor(private apiKeyService: ApiKeyService) {}
 
   ngOnInit() {
     this.sub = this.apiKeyService.request$.subscribe((req) => {
       this.currentRequest = req;
-      this.keyValue = "";
-      this.showKey = false;
-      this.visible = true;
+      this.keyValue.set('');
+      this.showKey.set(false);
+      this.visible.set(true);
     });
   }
 
   confirm() {
-    if (!this.keyValue.trim()) return;
-    this.closeWith(this.keyValue.trim());
+    if (!this.keyValue().trim()) return;
+    this.closeWith(this.keyValue().trim());
   }
 
   cancel() {
@@ -45,7 +47,7 @@ export class ApiKeyModalComponent implements OnInit, OnDestroy {
   }
 
   private closeWith(key: string | null) {
-    this.visible = false;
+    this.visible.set(false);
     this.currentRequest?.resolve(key);
     this.currentRequest = null;
   }

@@ -1,13 +1,12 @@
-import { Component, ChangeDetectionStrategy } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
-import { ApiKeyModalComponent } from "./shared/components/api-key-modal/api-key-modal.component";
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { ApiKeyModalComponent } from './shared/components/api-key-modal/api-key-modal.component';
 
 @Component({
-    selector: "app-root",
-    imports: [RouterOutlet, ApiKeyModalComponent],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    templateUrl: "./app.component.html"
+  selector: 'app-root',
+  imports: [RouterOutlet, ApiKeyModalComponent],
+  templateUrl: './app.component.html',
 })
 export class AppComponent {
-  title = "admin-panel";
+  title = 'admin-panel';
 }
