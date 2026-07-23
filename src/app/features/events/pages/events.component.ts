@@ -76,7 +76,6 @@ export class EventsComponent implements OnInit {
   }
 
   syncBucket() {
-    this.loading.set(true);
     this.eventsService
       .syncBucket()
       .pipe(finalize(() => this.loading.set(false)))
