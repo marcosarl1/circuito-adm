@@ -1,16 +1,30 @@
 <div
-  class="fixed inset-0 z-[300] grid place-items-center bg-black/60 backdrop-blur-sm"
+  class="fixed inset-0 z-[300] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
 >
   <div
-    class="w-[min(420px,90vw) rounded-xl border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.97)] p-6 shadow-[var(--shadow-lg)]]"
+    class="w-full max-w-[420px] rounded-xl border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.97)] p-6 shadow-[var(--shadow-lg)]"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="inactivity-modal-title"
+    aria-describedby="inactivity-modal-desc"
   >
-    <h3 class="m-0 mb-2 text-lg font-bold">Sessão prestes a expirar</h3>
-    <p class="m-0 mb-4 text-sm text-[var(--color-text-secondary)]">
+    <h3 id="inactivity-modal-title" class="m-0 mb-2 text-lg font-bold">
+      Sessão prestes a expirar
+    </h3>
+    <p
+      id="inactivity-modal-desc"
+      class="m-0 mb-4 text-sm text-[var(--color-text-secondary)]"
+      aria-live="assertive"
+    >
       Você será desconectado por inatividade em
       <span class="font-bold text-[var(--primary)]">{{ formattedTime() }}</span>
     </p>
     <div class="flex justify-end">
-      <button class="btn btn-primary" (click)="continueSession.emit()">
+      <button
+        class="btn btn-primary"
+        (click)="continueSession.emit()"
+        autofocus
+      >
         Continuar conectado
       </button>
     </div>
