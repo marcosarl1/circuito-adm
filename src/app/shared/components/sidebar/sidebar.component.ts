@@ -1,30 +1,29 @@
-import { Component, ChangeDetectionStrategy } from "@angular/core";
-import { RouterLink, RouterLinkActive } from "@angular/router";
+import { Component, inject, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
-import { AuthService } from "../../../core/services/auth.service";
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
-    selector: "app-sidebar",
-    imports: [RouterLink, RouterLinkActive],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    templateUrl: "./sidebar.component.html"
+  selector: 'app-sidebar',
+  imports: [RouterLink, RouterLinkActive],
+  templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent {
+  private authService = inject(AuthService);
+
   menuItems = [
-    { label: "Eventos", route: "/events", icon: "EV" },
-    { label: "Postagens", route: "/posts", icon: "PO" },
+    { label: 'Eventos', route: '/events', icon: 'EV' },
+    { label: 'Postagens', route: '/posts', icon: 'PO' },
   ];
 
-  isOpen = false;
-
-  constructor(private authService: AuthService) {}
+  isOpen = signal(false);
 
   toggle() {
-    this.isOpen = !this.isOpen;
+    this.isOpen.update((value) => !value);
   }
 
   close() {
-    this.isOpen = false;
+    this.isOpen.set(false);
   }
 
   logout() {
