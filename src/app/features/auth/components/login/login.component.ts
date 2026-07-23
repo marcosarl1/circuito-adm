@@ -1,44 +1,55 @@
-import { Component, ChangeDetectionStrategy } from "@angular/core";
-
-import { FormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
-import { AuthService } from "../../../../core/services/auth.service";
+import { Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
-    selector: "app-login",
-    imports: [FormsModule],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    templateUrl: "./login.component.html"
+  selector: 'app-login',
+  imports: [FormsModule],
+  templateUrl: './login.component.html',
 })
 export class LoginComponent {
-  username = "";
-  password = "";
-  showPassword = false;
-  loading = false;
-  errorMessage = "";
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-  ) {}
+  username = signal('');
+  password = signal('');
+  showPassword = signal(false);
+  loading = signal(false);
+  errorMessage = signal('');
+  submitted = signal(false);
+
+  usernameError = computed(() =>
+    this.submitted() && !this.username().trim() ? 'Usuário é obrigatório' : '',
+  );
+  passwordError = computed(() =>
+    this.submitted() && !this.password().trim() ? 'Senha é obrigatória' : '',
+  );
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update((value) => !value);
+  }
 
   submit() {
-    if (!this.username || !this.password) {
-      this.errorMessage = "Preencha usuário e senha.";
-      return;
+    this.submitted.set(true);
+
+    const user = this.username().trim();
+    const password = this.password().trim();
+
+    if (!user || !password) {
+      return; // os erros por campo já aparecem via usernameError()/passwordError()
     }
 
-    this.loading = true;
-    this.errorMessage = "";
+    this.loading.set(true);
+    this.errorMessage.set('');
 
     setTimeout(() => {
-      const ok = this.authService.login(this.username, this.password);
-
+      const ok = this.authService.login(user, password);
       if (ok) {
-        this.router.navigate(["/events"]);
+        this.router.navigate(['/events']);
       } else {
-        this.errorMessage = "Usuário ou senha incorretos.";
-        this.loading = false;
+        this.errorMessage.set('Usuário ou senha incorretos.');
+        this.loading.set(false);
       }
     }, 400);
   }
