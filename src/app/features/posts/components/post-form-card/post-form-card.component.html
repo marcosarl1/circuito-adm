@@ -68,7 +68,7 @@
           name="post-titulo"
           type="text"
           autocomplete="off"
-          [(ngModel)]="formData().titulo"
+          [ngModel]="formData().titulo"
           (ngModelChange)="onTitleChange($event)"
           placeholder="Título do post"
           class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3"
@@ -233,16 +233,16 @@
     <button
       class="btn btn-secondary btn-sm min-h-10 sm:min-h-8 sm:order-1"
       type="button"
-      (click)="showPreview = true"
+      (click)="showPreview.set(true)"
     >
       Preview
     </button>
   </div>
-  @if (showPreview) {
+  @if (showPreview()) {
     <app-post-preview-modal
       [formData]="formData()"
       [imagePreview]="imagePreview()"
-      (close)="showPreview = false"
+      (close)="showPreview.set(false)"
     ></app-post-preview-modal>
   }
 </div>
