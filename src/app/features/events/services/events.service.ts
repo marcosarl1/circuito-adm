@@ -100,7 +100,7 @@ export class EventsService {
       if (error.error instanceof ErrorEvent) {
         errorMessage = `Erro: ${error.error.message}`;
       } else {
-        errorMessage = `Erro ${error.status}: ${error.statusText}`;
+        errorMessage = `Erro ${error.status}: ${error.status}`;
         console.error('Detalhes do erro:', error.error);
       }
     } else {
