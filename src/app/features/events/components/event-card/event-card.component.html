@@ -13,13 +13,12 @@
           <span> · {{ getEventTime() }}</span>
         }
       </p>
-      @if (getEventSource()) {
-        <span
-          class="shrink-0 rounded-full bg-[rgba(142,202,230,0.1)] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[var(--brand-sky-200)] sm:text-[0.65rem]"
-        >
-          {{ getEventSource() }}
-        </span>
-      }
+
+      <span
+        class="shrink-0 rounded-full bg-[rgba(142,202,230,0.1)] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[var(--brand-sky-200)] sm:text-[0.65rem]"
+      >
+        {{ event().site_coleta }}
+      </span>
     </div>
     <h4
       class="m-0 line-clamp-2 min-h-[2.75rem] text-base font-semibold leading-snug sm:min-h-[3.125rem] sm:text-lg"
