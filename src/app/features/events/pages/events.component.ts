@@ -8,20 +8,27 @@ import {
   EventCreatePayload,
   EventKit,
 } from '../../../shared/models/event.model';
-import { finalize } from 'rxjs';
 import { ApiKeyCancelledError } from '../../../core/http/api-key-cancelled.error';
 import { EventFormState, KitForm } from '../models/event-form-state.model';
+import { LoadingService } from '../../../core/services/loading.service';
+import { EventCardSkeletonComponent } from '../components/event-card-skeleton/event-card-skeleton.component';
 
 @Component({
   selector: 'app-events',
-  imports: [FormsModule, EventCardComponent, EventFormModalComponent],
+  imports: [
+    FormsModule,
+    EventCardComponent,
+    EventFormModalComponent,
+    EventCardSkeletonComponent,
+  ],
   templateUrl: './events.component.html',
 })
 export class EventsComponent implements OnInit {
   private eventsService = inject(EventsService);
+  private loadingService = inject(LoadingService);
 
   events = signal<Event[]>([]);
-  loading = signal(false);
+  loading = this.loadingService.loading;
   showForm = signal(false);
   editingId = signal<string | null>(null);
   searchTerm = signal('');
@@ -52,21 +59,17 @@ export class EventsComponent implements OnInit {
   }
 
   loadEvents() {
-    this.loading.set(true);
-    this.eventsService
-      .getEvents(this.currentPage(), this.pageSize)
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: (data) => {
-          const list = data || [];
-          this.events.set(list);
-          this.hasNextPage.set(list.length === this.pageSize);
-        },
-        error: (error) => {
-          this.errorMessage.set('Erro ao carregar eventos: ' + error.message);
-          setTimeout(() => this.errorMessage.set(''), 5000);
-        },
-      });
+    this.eventsService.getEvents(this.currentPage(), this.pageSize).subscribe({
+      next: (data) => {
+        const list = data || [];
+        this.events.set(list);
+        this.hasNextPage.set(list.length === this.pageSize);
+      },
+      error: (error) => {
+        this.errorMessage.set('Erro ao carregar eventos: ' + error.message);
+        setTimeout(() => this.errorMessage.set(''), 5000);
+      },
+    });
   }
 
   openCreateForm() {
@@ -76,22 +79,18 @@ export class EventsComponent implements OnInit {
   }
 
   syncBucket() {
-    this.eventsService
-      .syncBucket()
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: () => {
-          this.successMessage.set('Sincronização realizada com sucesso!');
-          setTimeout(() => this.successMessage.set(''), 5000);
-          this.loading.set(false);
-          this.loadEvents();
-        },
-        error: (error) => {
-          if (error instanceof ApiKeyCancelledError) return;
-          this.errorMessage.set(`Erro ao sincronizar: ${error.message}`);
-          setTimeout(() => this.errorMessage.set(''), 5000);
-        },
-      });
+    this.eventsService.syncBucket().subscribe({
+      next: () => {
+        this.successMessage.set('Sincronização realizada com sucesso!');
+        setTimeout(() => this.successMessage.set(''), 5000);
+        this.loadEvents();
+      },
+      error: (error) => {
+        if (error instanceof ApiKeyCancelledError) return;
+        this.errorMessage.set(`Erro ao sincronizar: ${error.message}`);
+        setTimeout(() => this.errorMessage.set(''), 5000);
+      },
+    });
   }
 
   editEvent(event: Event) {
@@ -107,7 +106,6 @@ export class EventsComponent implements OnInit {
       return;
     }
 
-    this.loading.set(true);
     const payload = this.buildPayload();
     const editingId = this.editingId();
 
@@ -115,7 +113,7 @@ export class EventsComponent implements OnInit {
       ? this.eventsService.updateEvent(editingId, payload)
       : this.eventsService.createEvent(payload);
 
-    action.pipe(finalize(() => this.loading.set(false))).subscribe({
+    action.subscribe({
       next: () => {
         const msg = editingId ? 'atualizado' : 'criado';
         this.successMessage.set(`Evento ${msg} com sucesso!`);
@@ -127,7 +125,6 @@ export class EventsComponent implements OnInit {
       error: (error) => {
         if (error instanceof ApiKeyCancelledError) return;
         this.errorMessage.set(`Erro ao salvar evento: ${error.message}`);
-        this.loading.set(false);
         setTimeout(() => this.errorMessage.set(''), 5000);
       },
     });
@@ -138,23 +135,18 @@ export class EventsComponent implements OnInit {
       return;
     }
 
-    this.loading.set(true);
-    this.eventsService
-      .deleteEvent(id)
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: () => {
-          this.successMessage.set('Evento deletado com sucesso!');
-          setTimeout(() => this.successMessage.set(''), 5000);
-          this.loadEvents();
-        },
-        error: (error) => {
-          if (error instanceof ApiKeyCancelledError) return;
-          this.errorMessage.set(`Erro ao deletar evento: ${error.message}`);
-          this.loading.set(false);
-          setTimeout(() => this.errorMessage.set(''), 5000);
-        },
-      });
+    this.eventsService.deleteEvent(id).subscribe({
+      next: () => {
+        this.successMessage.set('Evento deletado com sucesso!');
+        setTimeout(() => this.successMessage.set(''), 5000);
+        this.loadEvents();
+      },
+      error: (error) => {
+        if (error instanceof ApiKeyCancelledError) return;
+        this.errorMessage.set(`Erro ao deletar evento: ${error.message}`);
+        setTimeout(() => this.errorMessage.set(''), 5000);
+      },
+    });
   }
 
   cancelEdit() {

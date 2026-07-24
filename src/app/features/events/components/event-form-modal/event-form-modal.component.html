@@ -533,10 +533,9 @@
       <button
         class="btn btn-primary min-h-11 sm:min-h-9"
         (click)="save.emit()"
-        [disabled]="loading()"
         [attr.aria-busy]="loading()"
       >
-        {{ loading() ? "Salvando..." : editingId() ? "Atualizar" : "Criar" }}
+        {{ editingId() ? "Atualizar" : "Criar" }}
       </button>
     </div>
   </div>
