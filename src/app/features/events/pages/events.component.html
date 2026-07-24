@@ -23,7 +23,7 @@
         type="text"
         name="event-search"
         placeholder="Buscar por nome, descrição ou local"
-        [(ngModel)]="searchTerm"
+        [ngModel]="searchTerm()"
         (ngModelChange)="searchTerm.set($event)"
         autocomplete="one-time-code"
         class="min-h-11 w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3"
