@@ -1,32 +1,40 @@
-import { Routes } from "@angular/router";
-import { authGuard } from "./core/guards/auth.guard";
+import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
-    path: "login",
+    path: 'login',
     loadComponent: () =>
-      import("./features/auth/components/login/login.component").then((m) => m.LoginComponent),
+      import('./features/auth/components/login/login.component').then(
+        (m) => m.LoginComponent,
+      ),
   },
   {
-    path: "",
+    path: '',
     loadComponent: () =>
-      import("./layouts/main-layout/main-layout.component").then((m) => m.MainLayoutComponent),
-    canActivate: [authGuard],
+      import('./layouts/main-layout/main-layout.component').then(
+        (m) => m.MainLayoutComponent,
+      ),
+    canMatch: [authGuard],
     children: [
       {
-        path: "events",
+        path: 'events',
         loadComponent: () =>
-          import("./features/events/pages/events.component").then((m) => m.EventsComponent),
+          import('./features/events/pages/events.component').then(
+            (m) => m.EventsComponent,
+          ),
       },
       {
-        path: "posts",
+        path: 'posts',
         loadComponent: () =>
-          import("./features/posts/pages/posts.component").then((m) => m.PostsComponent),
+          import('./features/posts/pages/posts.component').then(
+            (m) => m.PostsComponent,
+          ),
       },
       {
-        path: "",
-        redirectTo: "events",
-        pathMatch: "full",
+        path: '',
+        redirectTo: 'events',
+        pathMatch: 'full',
       },
     ],
   },
