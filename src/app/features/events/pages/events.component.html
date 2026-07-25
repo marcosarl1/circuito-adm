@@ -52,7 +52,6 @@
   @if (showForm()) {
     <app-event-form-modal
       [(formData)]="formData"
-      [loading]="loading()"
       [editingId]="editingId()"
       (save)="saveEvent()"
       (cancel)="cancelEdit()"

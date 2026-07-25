@@ -1,5 +1,6 @@
 import {
   Component,
+  inject,
   model,
   input,
   output,
@@ -8,6 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EventFormState, KitForm } from '../../models/event-form-state.model';
+import { LoadingService } from '../../../../core/services/loading.service';
 
 @Component({
   selector: 'app-event-form-modal',
@@ -18,8 +20,10 @@ import { EventFormState, KitForm } from '../../models/event-form-state.model';
   },
 })
 export class EventFormModalComponent {
+  private loadingService = inject(LoadingService);
+
   formData = model.required<EventFormState>();
-  loading = input(false);
+  loading = this.loadingService.loading;
   editingId = input<string | null>(null);
 
   save = output<void>();

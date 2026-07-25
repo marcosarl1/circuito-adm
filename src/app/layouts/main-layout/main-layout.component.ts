@@ -13,17 +13,11 @@ import { InactivityWarningModalComponent } from '../../shared/components/inactiv
 import { InactivityService } from '../../core/services/inactivity.service';
 import { AuthService } from '../../core/services/auth.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { LoadingOverlayComponent } from '../../core/components/loading-overlay.component';
 import { LoadingService } from '../../core/services/loading.service';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [
-    RouterOutlet,
-    SidebarComponent,
-    InactivityWarningModalComponent,
-    LoadingOverlayComponent,
-  ],
+  imports: [RouterOutlet, SidebarComponent, InactivityWarningModalComponent],
   templateUrl: './main-layout.component.html',
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
@@ -32,6 +26,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef);
   private loadingService = inject(LoadingService);
 
+  loading = this.loadingService.loading;
   showWarning = signal(false);
   secondsRemaining = signal(0);
 

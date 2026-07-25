@@ -1,67 +1,64 @@
-import { Component, DestroyRef, inject, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { PostsService } from "../services/posts.service";
-import { PostFormCardComponent } from "../components/post-form-card/post-form-card.component";
-import { PostFormState } from "../../../shared/models/post.model";
-import { finalize } from "rxjs";
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { PostsService } from '../services/posts.service';
+import { PostFormCardComponent } from '../components/post-form-card/post-form-card.component';
+import { PostFormState } from '../../../shared/models/post.model';
+import { LoadingService } from '../../../core/services/loading.service';
 
 @Component({
-  selector: "app-posts",
+  selector: 'app-posts',
   imports: [PostFormCardComponent],
-  templateUrl: "./posts.component.html",
+  templateUrl: './posts.component.html',
 })
 export class PostsComponent {
   private destroyRef = inject(DestroyRef);
   private postsService = inject(PostsService);
+  private loadingService = inject(LoadingService);
 
-  loading = signal(false);
-  successMessage = signal("");
-  errorMessage = signal("");
-  imagePreview = signal("");
-  selectedImageName = signal("");
+  loading = this.loadingService.loading;
+  successMessage = signal('');
+  errorMessage = signal('');
+  imagePreview = signal('');
+  selectedImageName = signal('');
   formData = signal<PostFormState>(this.createEmptyForm());
 
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
     this.formData.update((f) => ({ ...f, imagem: file }));
-    this.selectedImageName.set(file?.name ?? "");
+    this.selectedImageName.set(file?.name ?? '');
 
     if (!file) {
-      this.imagePreview.set("");
+      this.imagePreview.set('');
       return;
     }
 
     const reader = new FileReader();
     reader.onload = () => {
-      this.imagePreview.set(String(reader.result ?? ""));
+      this.imagePreview.set(String(reader.result ?? ''));
     };
     reader.readAsDataURL(file);
   }
 
   publishPost() {
     if (!this.validateForm()) {
-      this.showError("Preencha os campos obrigatórios antes de publicar.");
+      this.showError('Preencha os campos obrigatórios antes de publicar.');
       return;
     }
 
     if (!this.formData().imagem) {
-      this.showError("Selecione a imagem principal da postagem.");
+      this.showError('Selecione a imagem principal da postagem.');
       return;
     }
 
     const payload = this.buildFormData();
-    this.loading.set(true);
 
     this.postsService
       .publishPost(payload)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.loading.set(false)),
-      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.showSuccess("Postagem publicada com sucesso!");
+          this.showSuccess('Postagem publicada com sucesso!');
           this.resetForm();
         },
         error: (error) => {
@@ -72,8 +69,8 @@ export class PostsComponent {
 
   resetForm() {
     this.formData.set(this.createEmptyForm());
-    this.imagePreview.set("");
-    this.selectedImageName.set("");
+    this.imagePreview.set('');
+    this.selectedImageName.set('');
   }
 
   onTitleChange(titulo: string) {
@@ -93,57 +90,63 @@ export class PostsComponent {
     const formData = new FormData();
     const image = f.imagem;
     if (!image) {
-      throw new Error("Imagem obrigatória");
+      throw new Error('Imagem obrigatória');
     }
-    formData.append("imagem", image, image.name);
-    formData.append("slug", f.slug);
-    formData.append("titulo", f.titulo);
-    formData.append("descricao", f.descricao);
-    formData.append("data", f.data);
-    formData.append("autor", f.autor);
-    formData.append("imagens", JSON.stringify(this.splitMultilineText(f.imagensText)));
-    formData.append("conteudo", JSON.stringify(this.splitMultilineText(f.conteudoText)));
+    formData.append('imagem', image, image.name);
+    formData.append('slug', f.slug);
+    formData.append('titulo', f.titulo);
+    formData.append('descricao', f.descricao);
+    formData.append('data', f.data);
+    formData.append('autor', f.autor);
+    formData.append(
+      'imagens',
+      JSON.stringify(this.splitMultilineText(f.imagensText)),
+    );
+    formData.append(
+      'conteudo',
+      JSON.stringify(this.splitMultilineText(f.conteudoText)),
+    );
     return formData;
   }
 
   private generateSlug(titulo: string): string {
     return titulo
       .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s-]/g, "")
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
       .trim()
-      .replace(/\s+/g, "-");
+      .replace(/\s+/g, '-');
   }
 
   private createEmptyForm(): PostFormState {
-    const today = new Date().toLocaleDateString("sv-SE");
+    const today = new Date().toLocaleDateString('sv-SE');
     return {
       imagem: null,
-      slug: "",
-      titulo: "",
-      descricao: "",
+      slug: '',
+      titulo: '',
+      descricao: '',
       data: today,
-      autor: "Equipe Circuito",
-      imagensText: "",
-      conteudoText: "",
+      autor: 'Equipe Circuito',
+      imagensText: '',
+      conteudoText: '',
     };
   }
 
   private splitMultilineText(value: string): string[] {
     return value
-      .split("\n")
+      .split('\n')
       .map((entry) => entry.trim())
       .filter(Boolean);
   }
 
   private showSuccess(message: string, duration = 5000) {
     this.successMessage.set(message);
-    setTimeout(() => this.successMessage.set(""), duration);
+    setTimeout(() => this.successMessage.set(''), duration);
   }
 
   private showError(message: string, duration = 5000) {
     this.errorMessage.set(message);
-    setTimeout(() => this.errorMessage.set(""), duration);
+    setTimeout(() => this.errorMessage.set(''), duration);
   }
 }

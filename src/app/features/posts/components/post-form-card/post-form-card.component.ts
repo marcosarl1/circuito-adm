@@ -1,7 +1,8 @@
-import { Component, model, output, input, signal } from '@angular/core';
+import { Component, inject, model, output, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PostPreviewModalComponent } from '../post-preview-modal/post-preview-modal.component';
 import { PostFormState } from '../../../../shared/models/post.model';
+import { LoadingService } from '../../../../core/services/loading.service';
 
 @Component({
   selector: 'app-post-form-card',
@@ -9,8 +10,10 @@ import { PostFormState } from '../../../../shared/models/post.model';
   templateUrl: './post-form-card.component.html',
 })
 export class PostFormCardComponent {
+  private loadingService = inject(LoadingService);
+
   formData = model.required<PostFormState>();
-  loading = input(false);
+  loading = this.loadingService.loading;
   imagePreview = input('');
   selectedImageName = input('');
 
