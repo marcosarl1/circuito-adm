@@ -12,6 +12,8 @@ import { ApiKeyCancelledError } from '../../../core/http/api-key-cancelled.error
 import { EventFormState, KitForm } from '../models/event-form-state.model';
 import { LoadingService } from '../../../core/services/loading.service';
 import { EventCardSkeletonComponent } from '../components/event-card-skeleton/event-card-skeleton.component';
+import { ConfirmModalService } from '../../../shared/services/confirm-modal.service';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-events',
@@ -20,12 +22,14 @@ import { EventCardSkeletonComponent } from '../components/event-card-skeleton/ev
     EventCardComponent,
     EventFormModalComponent,
     EventCardSkeletonComponent,
+    ConfirmModalComponent,
   ],
   templateUrl: './events.component.html',
 })
 export class EventsComponent implements OnInit {
   private eventsService = inject(EventsService);
   private loadingService = inject(LoadingService);
+  private confirmModal = inject(ConfirmModalService);
 
   events = signal<Event[]>([]);
   loading = this.loadingService.loading;
@@ -130,10 +134,11 @@ export class EventsComponent implements OnInit {
     });
   }
 
-  deleteEvent(id: string) {
-    if (!confirm('Tem certeza que deseja deletar este evento?')) {
-      return;
-    }
+  async deleteEvent(id: string) {
+    const confirmed = await this.confirmModal.confirm(
+      'Tem certeza que deseja deletar este evento?',
+    );
+    if (!confirmed) return;
 
     this.eventsService.deleteEvent(id).subscribe({
       next: () => {
