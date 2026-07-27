@@ -14,6 +14,7 @@ import { LoadingService } from '../../../core/services/loading.service';
 import { EventCardSkeletonComponent } from '../components/event-card-skeleton/event-card-skeleton.component';
 import { ConfirmModalService } from '../../../shared/services/confirm-modal.service';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-events',
@@ -30,14 +31,13 @@ export class EventsComponent implements OnInit {
   private eventsService = inject(EventsService);
   private loadingService = inject(LoadingService);
   private confirmModal = inject(ConfirmModalService);
+  private toastService = inject(ToastService);
 
   events = signal<Event[]>([]);
   loading = this.loadingService.loading;
   showForm = signal(false);
   editingId = signal<string | null>(null);
   searchTerm = signal('');
-  successMessage = signal('');
-  errorMessage = signal('');
   currentPage = signal(1);
   pageSize = 9;
   hasNextPage = signal(true);
@@ -70,8 +70,7 @@ export class EventsComponent implements OnInit {
         this.hasNextPage.set(list.length === this.pageSize);
       },
       error: (error) => {
-        this.errorMessage.set('Erro ao carregar eventos: ' + error.message);
-        setTimeout(() => this.errorMessage.set(''), 5000);
+        this.toastService.error('Erro ao carregar eventos: ' + error.message);
       },
     });
   }
@@ -85,14 +84,13 @@ export class EventsComponent implements OnInit {
   syncBucket() {
     this.eventsService.syncBucket().subscribe({
       next: () => {
-        this.successMessage.set('Sincronização realizada com sucesso!');
-        setTimeout(() => this.successMessage.set(''), 5000);
+        this.toastService.sucess('Sincronização realizada com sucesso!');
+
         this.loadEvents();
       },
       error: (error) => {
         if (error instanceof ApiKeyCancelledError) return;
-        this.errorMessage.set(`Erro ao sincronizar: ${error.message}`);
-        setTimeout(() => this.errorMessage.set(''), 5000);
+        this.toastService.error(`Erro ao sincronizar: ${error.message}`);
       },
     });
   }
@@ -105,8 +103,9 @@ export class EventsComponent implements OnInit {
 
   saveEvent() {
     if (!this.validateForm()) {
-      this.errorMessage.set('Por favor, preencha todos os campos obrigatórios');
-      setTimeout(() => this.errorMessage.set(''), 5000);
+      this.toastService.error(
+        'Por favor, preencha todos os campos obrigatórios',
+      );
       return;
     }
 
@@ -120,16 +119,14 @@ export class EventsComponent implements OnInit {
     action.subscribe({
       next: () => {
         const msg = editingId ? 'atualizado' : 'criado';
-        this.successMessage.set(`Evento ${msg} com sucesso!`);
-        setTimeout(() => this.successMessage.set(''), 5000);
+        this.toastService.sucess(`Evento ${msg} com sucesso!`);
         this.resetForm();
         this.showForm.set(false);
         this.loadEvents();
       },
       error: (error) => {
         if (error instanceof ApiKeyCancelledError) return;
-        this.errorMessage.set(`Erro ao salvar evento: ${error.message}`);
-        setTimeout(() => this.errorMessage.set(''), 5000);
+        this.toastService.error(`Erro ao salvar evento: ${error.message}`);
       },
     });
   }
@@ -142,14 +139,12 @@ export class EventsComponent implements OnInit {
 
     this.eventsService.deleteEvent(id).subscribe({
       next: () => {
-        this.successMessage.set('Evento deletado com sucesso!');
-        setTimeout(() => this.successMessage.set(''), 5000);
+        this.toastService.sucess('Evento deletado com sucesso!');
         this.loadEvents();
       },
       error: (error) => {
         if (error instanceof ApiKeyCancelledError) return;
-        this.errorMessage.set(`Erro ao deletar evento: ${error.message}`);
-        setTimeout(() => this.errorMessage.set(''), 5000);
+        this.toastService.error(`Erro ao deletar evento: ${error.message}`);
       },
     });
   }

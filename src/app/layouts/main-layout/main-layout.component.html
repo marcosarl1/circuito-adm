@@ -1,12 +1,4 @@
 <div class="flex min-h-screen flex-col md:flex-row">
-  @if (loading()) {
-    <div
-      class="pointer-events-none fixed left-0 top-0 z-50 h-1 w-full bg-white/10"
-    >
-      <div class="h-full w-full animate-pulse bg-[var(--primary)]"></div>
-    </div>
-  }
-
   <app-sidebar></app-sidebar>
   <div
     class="flex min-w-0 flex-1 flex-col bg-[var(--background)] md:ml-[260px]"
@@ -14,6 +6,7 @@
     <main class="flex-1 overflow-y-auto pb-8 pt-20 md:pt-6">
       <div class="container">
         <router-outlet></router-outlet>
+        <app-toast></app-toast>
       </div>
     </main>
   </div>

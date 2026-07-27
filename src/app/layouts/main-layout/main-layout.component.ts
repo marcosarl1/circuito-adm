@@ -14,10 +14,16 @@ import { InactivityService } from '../../core/services/inactivity.service';
 import { AuthService } from '../../core/services/auth.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoadingService } from '../../core/services/loading.service';
+import { ToastComponent } from '../../shared/components/toast/toast.component';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, SidebarComponent, InactivityWarningModalComponent],
+  imports: [
+    RouterOutlet,
+    SidebarComponent,
+    InactivityWarningModalComponent,
+    ToastComponent,
+  ],
   templateUrl: './main-layout.component.html',
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {

@@ -4,6 +4,7 @@ import { PostsService } from '../services/posts.service';
 import { PostFormCardComponent } from '../components/post-form-card/post-form-card.component';
 import { PostFormState } from '../../../shared/models/post.model';
 import { LoadingService } from '../../../core/services/loading.service';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-posts',
@@ -14,10 +15,9 @@ export class PostsComponent {
   private destroyRef = inject(DestroyRef);
   private postsService = inject(PostsService);
   private loadingService = inject(LoadingService);
+  private toastService = inject(ToastService);
 
   loading = this.loadingService.loading;
-  successMessage = signal('');
-  errorMessage = signal('');
   imagePreview = signal('');
   selectedImageName = signal('');
   formData = signal<PostFormState>(this.createEmptyForm());
@@ -42,12 +42,14 @@ export class PostsComponent {
 
   publishPost() {
     if (!this.validateForm()) {
-      this.showError('Preencha os campos obrigatórios antes de publicar.');
+      this.toastService.error(
+        'Preencha os campos obrigatórios antes de publicar.',
+      );
       return;
     }
 
     if (!this.formData().imagem) {
-      this.showError('Selecione a imagem principal da postagem.');
+      this.toastService.error('Selecione a imagem principal da postagem.');
       return;
     }
 
@@ -58,11 +60,13 @@ export class PostsComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.showSuccess('Postagem publicada com sucesso!');
+          this.toastService.sucess('Postagem publicada com sucesso!');
           this.resetForm();
         },
         error: (error) => {
-          this.showError(`Erro ao publicar postagem: ${error.message}`);
+          this.toastService.error(
+            `Erro ao publicar postagem: ${error.message}`,
+          );
         },
       });
   }
@@ -138,15 +142,5 @@ export class PostsComponent {
       .split('\n')
       .map((entry) => entry.trim())
       .filter(Boolean);
-  }
-
-  private showSuccess(message: string, duration = 5000) {
-    this.successMessage.set(message);
-    setTimeout(() => this.successMessage.set(''), duration);
-  }
-
-  private showError(message: string, duration = 5000) {
-    this.errorMessage.set(message);
-    setTimeout(() => this.errorMessage.set(''), duration);
   }
 }

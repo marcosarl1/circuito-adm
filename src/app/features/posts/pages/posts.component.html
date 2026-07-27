@@ -1,28 +1,18 @@
-<div class="mx-auto grid w-full max-w-[1240px] gap-4 px-4 sm:gap-6 sm:px-6">
-  @if (successMessage()) {
-    <div class="alert alert-success">
-      {{ successMessage() }}
-    </div>
-  }
-  @if (errorMessage()) {
-    <div class="alert alert-error">{{ errorMessage() }}</div>
-  }
-  <section
-    class="card flex items-end justify-between gap-4 p-4 max-md:flex-col max-md:items-stretch sm:p-6"
-  >
-    <div>
-      <h2 class="m-0 text-xl font-normal sm:text-2xl">
-        <span class="font-bold text-[var(--primary)]">Postagens</span>
-      </h2>
-    </div>
-  </section>
-  <app-post-form-card
-    [(formData)]="formData"
-    [imagePreview]="imagePreview()"
-    [selectedImageName]="selectedImageName()"
-    (publish)="publishPost()"
-    (reset)="resetForm()"
-    (imageSelected)="onImageSelected($event)"
-    (titleChange)="onTitleChange($event)"
-  ></app-post-form-card>
-</div>
+<section
+  class="card flex items-end justify-between gap-4 p-4 max-md:flex-col max-md:items-stretch sm:p-6"
+>
+  <div>
+    <h2 class="m-0 text-xl font-normal sm:text-2xl">
+      <span class="font-bold text-[var(--primary)]">Postagens</span>
+    </h2>
+  </div>
+</section>
+<app-post-form-card
+  [(formData)]="formData"
+  [imagePreview]="imagePreview()"
+  [selectedImageName]="selectedImageName()"
+  (publish)="publishPost()"
+  (reset)="resetForm()"
+  (imageSelected)="onImageSelected($event)"
+  (titleChange)="onTitleChange($event)"
+></app-post-form-card>
