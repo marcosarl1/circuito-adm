@@ -55,7 +55,7 @@
             >
             <input
               id="data_realizacao"
-              type="text"
+              type="date"
               [ngModel]="formData().data_realizacao"
               (ngModelChange)="patch({ data_realizacao: $event })"
               placeholder="2026-09-10 ou 10/09/2026"
@@ -71,7 +71,7 @@
             >
             <input
               id="horario"
-              type="text"
+              type="time"
               [ngModel]="formData().horario"
               (ngModelChange)="patch({ horario: $event })"
               placeholder="07:00"
