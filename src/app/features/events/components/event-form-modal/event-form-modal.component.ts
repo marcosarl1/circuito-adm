@@ -6,10 +6,12 @@ import {
   output,
   viewChild,
   ElementRef,
+  OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EventFormState, KitForm } from '../../models/event-form-state.model';
 import { LoadingService } from '../../../../core/services/loading.service';
+import { ESTADOS_BRASILEIROS } from '../../../../shared/constants/ufs.constants';
 
 @Component({
   selector: 'app-event-form-modal',
@@ -19,7 +21,7 @@ import { LoadingService } from '../../../../core/services/loading.service';
     '(keydown.escape)': 'cancel.emit()',
   },
 })
-export class EventFormModalComponent {
+export class EventFormModalComponent implements OnInit {
   private loadingService = inject(LoadingService);
 
   formData = model.required<EventFormState>();
@@ -32,6 +34,14 @@ export class EventFormModalComponent {
   removeKit = output<number>();
 
   private firstField = viewChild<ElementRef<HTMLInputElement>>('firstField');
+
+  ufs = ESTADOS_BRASILEIROS;
+
+  ngOnInit(): void {
+    if (!this.formData().estado) {
+      this.patch({ estado: 'PB' });
+    }
+  }
 
   ngAfterViewInit() {
     this.firstField()?.nativeElement.focus();

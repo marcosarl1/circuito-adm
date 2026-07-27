@@ -101,7 +101,7 @@
               class="text-sm font-medium text-[var(--color-text-secondary)]"
               >Estado *</label
             >
-            <input
+            <select
               id="estado"
               type="text"
               [ngModel]="formData().estado"
@@ -109,7 +109,11 @@
               placeholder="PB"
               aria-required="true"
               class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
-            />
+            >
+              @for (uf of ufs; track uf) {
+                <option [value]="uf">{{ uf }}</option>
+              }
+            </select>
           </div>
           <div class="flex flex-col gap-2">
             <label
