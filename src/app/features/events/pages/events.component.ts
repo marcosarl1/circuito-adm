@@ -84,7 +84,7 @@ export class EventsComponent implements OnInit {
   syncBucket() {
     this.eventsService.syncBucket().subscribe({
       next: () => {
-        this.toastService.sucess('Sincronização realizada com sucesso!');
+        this.toastService.success('Sincronização realizada com sucesso!');
 
         this.loadEvents();
       },
@@ -119,7 +119,7 @@ export class EventsComponent implements OnInit {
     action.subscribe({
       next: () => {
         const msg = editingId ? 'atualizado' : 'criado';
-        this.toastService.sucess(`Evento ${msg} com sucesso!`);
+        this.toastService.success(`Evento ${msg} com sucesso!`);
         this.resetForm();
         this.showForm.set(false);
         this.loadEvents();
@@ -139,7 +139,7 @@ export class EventsComponent implements OnInit {
 
     this.eventsService.deleteEvent(id).subscribe({
       next: () => {
-        this.toastService.sucess('Evento deletado com sucesso!');
+        this.toastService.success('Evento deletado com sucesso!');
         this.loadEvents();
       },
       error: (error) => {

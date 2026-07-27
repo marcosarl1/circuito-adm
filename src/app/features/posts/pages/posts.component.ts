@@ -60,7 +60,7 @@ export class PostsComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.toastService.sucess('Postagem publicada com sucesso!');
+          this.toastService.success('Postagem publicada com sucesso!');
           this.resetForm();
         },
         error: (error) => {

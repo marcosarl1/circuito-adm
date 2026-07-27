@@ -6,12 +6,12 @@
   @for (item of toast.toasts(); track item.id) {
     <div
       class="card flex items-start gap-3 border-l-4 p-4 pr-3 shadow-[var(--shadow-lg)]"
-      [class.border-green-500]="item.type === 'sucess'"
+      [class.border-green-500]="item.type === 'success'"
       [class.border-red-500]="item.type === 'error'"
       role="alert"
     >
       <div class="mt-0.5 shrink-0" aria-hidden="true">
-        @if (item.type === "sucess") {
+        @if (item.type === "success") {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"

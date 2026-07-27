@@ -6,8 +6,8 @@ export class ToastService {
   private _toasts = signal<Toast[]>([]);
   readonly toasts = this._toasts.asReadonly();
 
-  sucess(message: string): void {
-    this.add('sucess', message);
+  success(message: string): void {
+    this.add('success', message);
   }
 
   error(message: string): void {
