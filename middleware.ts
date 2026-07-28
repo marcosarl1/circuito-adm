@@ -1,4 +1,4 @@
-const ADMIN_USER = process.env.ADMIN_USER || 'admincircuito';
+const ADMIN_USER = (process.env['ADMIN_USER'] as string) || 'admincircuito';
 
 export default function middleware(request: Request): Response | undefined {
   const { pathname } = new URL(request.url);
