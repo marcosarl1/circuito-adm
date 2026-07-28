@@ -75,8 +75,8 @@
             (click)="select(item.value)"
             class="flex w-full cursor-pointer items-center px-4 py-2 text-sm hover:bg-[rgba(142,202,230,0.1)] aria-selected:bg-[rgba(142,202,230,0.25)] aria-selected:text-[var(--primary)] data-[active=true]:bg-[rgba(142,202,230,0.1)] data-[active=true]:text-[var(--primary)]"
           >
-            @if (item.label) {
-              <span class="mr-2 w7 shrink-0 font-bold text-[var(--primary)]">
+            @if (item.prefix) {
+              <span class="mr-2 w-7 shrink-0 font-bold text-[var(--primary)]">
                 {{ item.prefix }}</span
               >
             }
