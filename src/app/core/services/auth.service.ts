@@ -1,51 +1,75 @@
-import { computed, inject, Service, signal } from '@angular/core';
+import { computed, inject, isDevMode, Service, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-
-const SESSION_KEY = 'circuito_auth';
 
 @Service()
 export class AuthService {
+  private http = inject(HttpClient);
   private router = inject(Router);
 
-  private isAuthenticatedSignal = signal<boolean>(this.checkSessionStorage());
+  private isAuthenticatedSignal = signal<boolean>(false);
 
   isAuthenticated = computed(() => this.isAuthenticatedSignal());
 
-  private checkSessionStorage(): boolean {
-    try {
-      return sessionStorage.getItem(SESSION_KEY) === 'true';
-    } catch {
-      return false;
+  checkSession(): Observable<boolean> {
+    if (isDevMode()) {
+      const ok = this.checkLocalCreds();
+      this.isAuthenticatedSignal.set(ok);
+      return of(ok);
     }
+
+    return this.http.get<{ authenticated: boolean }>('/api/me').pipe(
+      map((res) => {
+        this.isAuthenticatedSignal.set(res.authenticated);
+        return res.authenticated;
+      }),
+      catchError(() => {
+        this.isAuthenticatedSignal.set(false);
+        return of(false);
+      }),
+    );
   }
 
-  login(username: string, password: string): boolean {
-    if (!username || !password) {
-      return false;
+  login(username: string, password: string): Observable<boolean> {
+    if (isDevMode()) {
+      const ok = username === environment.adminUser && password === environment.adminPass;
+      if (ok) sessionStorage.setItem('circuito_auth', 'true');
+      this.isAuthenticatedSignal.set(ok);
+      return of(ok);
     }
 
-    const isValid =
-      username === environment.adminUser && password === environment.adminPass;
-    if (isValid) {
-      try {
-        sessionStorage.setItem(SESSION_KEY, 'true');
-        this.isAuthenticatedSignal.set(true);
-      } catch (error) {
-        return false;
-      }
-    }
-    return isValid;
+    return this.http
+      .post<{ success: boolean }>('/api/login', { username, password })
+      .pipe(
+        map((res) => {
+          this.isAuthenticatedSignal.set(res.success);
+          return res.success;
+        }),
+        catchError(() => of(false)),
+      );
   }
 
   logout(): void {
+    this.isAuthenticatedSignal.set(false);
+    this.router.navigate(['/login']);
+
+    if (isDevMode()) {
+      sessionStorage.removeItem('circuito_auth');
+      return;
+    }
+
+    this.http.post('/api/logout', {}).subscribe({
+      error: () => {},
+    });
+  }
+
+  private checkLocalCreds(): boolean {
     try {
-      sessionStorage.removeItem(SESSION_KEY);
-      this.isAuthenticatedSignal.set(false);
-    } catch (error) {
-      console.error('Falha ao limpar autenticação');
-    } finally {
-      this.router.navigate(['/login']);
+      return sessionStorage.getItem('circuito_auth') === 'true';
+    } catch {
+      return false;
     }
   }
 }
