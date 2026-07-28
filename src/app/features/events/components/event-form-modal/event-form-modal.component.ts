@@ -1,21 +1,26 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   Component,
+  type OnInit,
+  ElementRef,
   inject,
-  model,
   input,
+  model,
   output,
   viewChild,
-  ElementRef,
-  OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { EventFormState, KitForm } from '../../models/event-form-state.model';
 import { LoadingService } from '../../../../core/services/loading.service';
 import { ESTADOS_BRASILEIROS } from '../../../../shared/constants/ufs.constants';
+import {
+  ComboboxComponent,
+  ComboboxOption,
+} from '../../../../shared/components/combobox/combobox.component';
+import { EventFormState, KitForm } from '../../models/event-form-state.model';
 
 @Component({
   selector: 'app-event-form-modal',
-  imports: [FormsModule],
+  imports: [FormsModule, ScrollingModule, ComboboxComponent],
   templateUrl: './event-form-modal.component.html',
   host: {
     '(keydown.escape)': 'cancel.emit()',
@@ -35,12 +40,20 @@ export class EventFormModalComponent implements OnInit {
 
   private firstField = viewChild<ElementRef<HTMLInputElement>>('firstField');
 
-  ufs = ESTADOS_BRASILEIROS;
+  readonly stateOptions: ComboboxOption[] = ESTADOS_BRASILEIROS.map((uf) => ({
+    value: uf.sigla,
+    label: uf.nome,
+    prefix: uf.sigla,
+  }));
+
+  readonly sponsoredOptions: ComboboxOption[] = [
+    { value: 'true', label: 'Sim' },
+    { value: 'false', label: 'Não' },
+  ];
 
   ngOnInit(): void {
-    if (!this.formData().estado) {
-      this.patch({ estado: 'PB' });
-    }
+    const defaultState = this.formData().estado || 'PB';
+    this.patch({ estado: defaultState });
   }
 
   ngAfterViewInit() {

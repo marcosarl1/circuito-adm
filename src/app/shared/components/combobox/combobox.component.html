@@ -1,0 +1,95 @@
+<div class="relative">
+  <input
+    [id]="id()"
+    type="text"
+    ngCombobox
+    #combobox="ngCombobox"
+    [(expanded)]="popupExpanded"
+    [value]="searchTerm()"
+    (valueChange)="onSearch($event)"
+    [placeholder]="placeholder()"
+    autocomplete="off"
+    [attr.aria-labelledby]="ariaLabelledby()"
+    [attr.aria-required]="ariaRequired() ? 'true' : null"
+    (focus)="openPopup()"
+    (click)="openPopup()"
+    class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] pl-3 pr-10 py-2 leading-normal outline-none focus:border-[var(--primary)]"
+  />
+
+  <button
+    type="button"
+    tabindex="-1"
+    aria-label="Alternar lista"
+    (mousedown)="$event.preventDefault()"
+    (click)="togglePopup()"
+    class="absolute right-0 top-0 flex h-full w-10 items-center justify-center text-[var(--color-text-secondary)] transition-colors hover:text-[var(--foreground)]"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      [style.transform]="popupExpanded() ? 'rotate(180deg)' : 'rotate(0deg)'"
+      style="transition: transform 150ms ease"
+      aria-hidden="true"
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  </button>
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOpen]="popupExpanded()"
+  [cdkConnectedOverlayOrigin]="combobox.element"
+  [cdkConnectedOverlayWidth]="combobox.element.offsetWidth"
+  [cdkConnectedOverlayScrollStrategy]="scrollStrategy"
+  (detach)="popupExpanded.set(false)"
+>
+  <ng-template ngComboboxPopup [combobox]="combobox">
+    <div
+      class="max-h-[220px] w-full overflow-y-auto rounded-md border border-[rgba(142,202,230,0.22)] bg-[#011520] shadow-[0_8px_32px_rgba(0,0,0,0.7)]"
+    >
+      <div
+        #listbox="ngListbox"
+        ngListbox
+        ngComboboxWidget
+        [tabindex]="-1"
+        focusMode="activedescendant"
+        selectionMode="explicit"
+        [(value)]="selectedValues"
+        [activeDescendant]="listbox.activeDescendant()"
+        (keydown.enter)="commitSelection()"
+        (keydown.space)="commitSelection()"
+      >
+        @for (item of filteredItems(); track item.value) {
+          <div
+            ngOption
+            [value]="item.value"
+            [label]="item.label"
+            (click)="select(item.value)"
+            class="flex w-full cursor-pointer items-center px-4 py-2 text-sm hover:bg-[rgba(142,202,230,0.1)] aria-selected:bg-[rgba(142,202,230,0.25)] aria-selected:text-[var(--primary)] data-[active=true]:bg-[rgba(142,202,230,0.1)] data-[active=true]:text-[var(--primary)]"
+          >
+            @if (item.label) {
+              <span class="mr-2 w7 shrink-0 font-bold text-[var(--primary)]">
+                {{ item.prefix }}</span
+              >
+            }
+            <span> {{ item.label }}</span>
+          </div>
+        }
+
+        @if (filteredItems().length === 0) {
+          <div class="px-4 py-2 text-sm text-[var(--muted-foreground)]">
+            {{ emptyMessage() }}
+          </div>
+        }
+      </div>
+    </div>
+  </ng-template>
+</ng-template>
