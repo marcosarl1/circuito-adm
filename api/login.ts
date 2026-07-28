@@ -1,25 +1,27 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+export const config = { runtime: 'edge' };
 
 const ADMIN_USER = (process.env['ADMIN_USER'] as string) || 'admincircuito';
 const ADMIN_PASS = process.env['ADMIN_PASS'] as string | undefined;
 
-export default function (req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).end();
+export default async function handler(request: Request): Promise<Response> {
+  if (request.method !== 'POST') {
+    return new Response(null, { status: 405 });
   }
-
-  const { username, password } = req.body as Record<string, string>;
 
   if (!ADMIN_PASS) {
-    return res.status(500).json({ error: 'ADMIN_PASS não configurado' });
+    return Response.json({ error: 'ADMIN_PASS não configurado' }, { status: 500 });
   }
 
+  const { username, password } = await request.json() as Record<string, string>;
+
   if (username !== ADMIN_USER || password !== ADMIN_PASS) {
-    return res.status(401).json({ error: 'Credenciais inválidas' });
+    return Response.json({ error: 'Credenciais inválidas' }, { status: 401 });
   }
 
   const cookie = `circuito_session=${ADMIN_USER}:${Date.now()}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=1800`;
 
-  res.setHeader('Set-Cookie', cookie);
-  return res.status(200).json({ success: true });
+  return Response.json({ success: true }, {
+    status: 200,
+    headers: { 'Set-Cookie': cookie },
+  });
 }

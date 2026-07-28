@@ -1,7 +1,10 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+export const config = { runtime: 'edge' };
 
-export default function (req: VercelRequest, res: VercelResponse) {
+export default async function handler(): Promise<Response> {
   const cookie = 'circuito_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0';
-  res.setHeader('Set-Cookie', cookie);
-  return res.status(200).json({ success: true });
+
+  return Response.json({ success: true }, {
+    status: 200,
+    headers: { 'Set-Cookie': cookie },
+  });
 }
