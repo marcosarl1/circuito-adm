@@ -1,3 +1,5 @@
+declare const process: { env: Record<string, string | undefined> };
+
 const ADMIN_USER = (process.env['ADMIN_USER'] as string) || 'admincircuito';
 const ADMIN_PASS = process.env['ADMIN_PASS'] as string | undefined;
 
