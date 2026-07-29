@@ -43,7 +43,7 @@ export class EventsComponent implements OnInit {
   formData = signal<EventFormState>(this.createEmptyForm());
 
   filteredEvents = computed(() => {
-    const term = this.searchTerm().toLowerCase();
+    const term = this.searchTerm().toLowerCase().trim();
     const events = this.allEvents();
     if (!term) return events;
 
