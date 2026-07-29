@@ -216,16 +216,6 @@ export class EventsComponent implements OnInit {
     });
   }
 
-  getStatusLabel(status?: string): string {
-    const labels: Record<string, string> = {
-      active: 'Ativo',
-      inactive: 'Inativo',
-      draft: 'Rascunho',
-    };
-
-    return labels[status || 'active'] || 'Ativo';
-  }
-
   getEventId(event: Event): string {
     return event._id;
   }
