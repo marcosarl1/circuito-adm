@@ -68,9 +68,9 @@
       }
     </div>
   </div>
-  <div class="mt-4 flex items-center justify-between gap-3 flex-wrap">
+  <div class="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
     @if (searchTerm()) {
-      <p class="text-xs text-[var(--muted-foreground)]">
+      <p class="text-xs text-[var(--muted-foreground)] text-center sm:text-left">
         {{ filteredEvents().length }} resultado(s) para
         <strong class="text-[var--foreground)]">{{ searchTerm() }}</strong>
         nesta página.
@@ -88,7 +88,7 @@
     }
 
     @if (!searchTerm()) {
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-1 flex-wrap justify-center">
         <button
           class="grid h-8 w-8 place-items-center rounded-md border border-[rgba(142,202,230,0.22)] bg-transparent transition-colors hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-40"
           (click)="previousPage()"
