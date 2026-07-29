@@ -5,8 +5,8 @@ import {
   HttpErrorResponse,
   HttpParams,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, shareReplay, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { catchError, concatMap, map, shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { Event, EventCreatePayload } from '../../../shared/models/event.model';
 import { API_KEY_LABEL } from '../../../core/http/api-key.context';
@@ -39,6 +39,26 @@ export class EventsService {
       this.eventsCache.set(cacheKey, requests$);
     }
     return this.eventsCache.get(cacheKey)!;
+  }
+
+  getAllEvents(): Observable<Event[]> {
+    const pageSize = 100;
+    const all: Event[] = [];
+
+    const load = (page: number): Observable<Event[]> =>
+      this.fetchPage(page, pageSize).pipe(
+        concatMap((events) => {
+          all.push(...events);
+          return events.length >= pageSize ? load(page + 1) : of(all);
+        }),
+      );
+
+    return load(1);
+  }
+
+  private fetchPage(page: number, size: number): Observable<Event[]> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<Event[]>(`${this.apiUrl}/api/v1/eventos`, { params });
   }
 
   createEvent(data: EventCreatePayload): Observable<any> {

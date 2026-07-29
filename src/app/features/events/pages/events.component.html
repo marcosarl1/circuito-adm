@@ -10,10 +10,10 @@
     <input
       type="text"
       name="event-search"
-      placeholder="Buscar por nome, descrição ou local"
+      placeholder="Buscar por nome"
       [ngModel]="searchTerm()"
-      (ngModelChange)="searchTerm.set($event)"
-      autocomplete="one-time-code"
+      (ngModelChange)="onSearchChange($event)"
+      autocomplete="off"
       class="min-h-11 w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3"
     />
   </div>
@@ -56,10 +56,10 @@
   </div>
 }
 
-@if (!loading() && filteredEvents().length > 0) {
+@if (!loading() && pageEvents().length > 0) {
   <div class="events-list">
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
-      @for (event of filteredEvents(); track event._id) {
+      @for (event of pageEvents(); track event._id) {
         <app-event-card
           [event]="event"
           (edit)="editEvent($event)"
@@ -67,6 +67,99 @@
         ></app-event-card>
       }
     </div>
+  </div>
+  <div class="mt-4 flex items-center justify-between gap-3 flex-wrap">
+    @if (searchTerm()) {
+      <p class="text-xs text-[var(--muted-foreground)]">
+        {{ filteredEvents().length }} resultado(s) para
+        <strong class="text-[var--foreground)]">{{ searchTerm() }}</strong>
+        nesta página.
+        <button
+          class="underline bg-transparent border-none cursor-pointer text-xs text-[var(--muted-foreground)] p-0"
+          (click)="onSearchChange('')"
+        >
+          limpar
+        </button>
+      </p>
+    } @else {
+      <span class="text-xs text-[var(--muted-foreground)]">
+        {{ filteredEvents().length }} eventos
+      </span>
+    }
+
+    @if (!searchTerm()) {
+      <div class="flex items-center gap-1">
+        <button
+          class="grid h-8 w-8 place-items-center rounded-md border border-[rgba(142,202,230,0.22)] bg-transparent transition-colors hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-40"
+          (click)="previousPage()"
+          [disabled]="currentPage() <= 1"
+          aria-label="Página anterior"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        @for (page of visiblePages(); track $index) {
+          @if (page === null) {
+            <span
+              class="grid h-8 w-8 place-items-center text-xs text-[var(--muted-foreground)]"
+              >...</span
+            >
+          } @else {
+            <button
+              class="grid h-8 w-8 place-items-center rounded-md border text-xs font-medium transition-colors"
+              [class.border-[rgba(142,202,230,0.22)]]="currentPage() !== page"
+              [class.bg-transparent]="currentPage() !== page"
+              [class.text-[var(--color-text-secondary)]]="
+                currentPage() !== page
+              "
+              [class.hover:bg-[var(--accent)]]="currentPage() !== page"
+              [class.border-[var(--primary)]]="currentPage() === page"
+              [class.bg-[rgba(251,133,0,0.12)]]="currentPage() === page"
+              [class.text-[var(--primary)]]="currentPage() === page"
+              [class.font-semibold]="currentPage() === page"
+              (click)="goToPage(page)"
+              [attr.aria-current]="currentPage() === page ? 'page' : null"
+              [attr.aria-label]="'Página ' + page"
+            >
+              {{ page }}
+            </button>
+          }
+        }
+        <button
+          class="grid h-8 w-8 place-items-center rounded-md border border-[rgba(142,202,230,0.22)] bg-transparent transition-colors hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-40"
+          (click)="nextPage()"
+          [disabled]="currentPage() >= totalPages()"
+          aria-label="Próxima página"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+    }
   </div>
 }
 @if (!loading() && filteredEvents().length === 0) {
@@ -87,28 +180,6 @@
         }}
       </p>
     </div>
-  </div>
-}
-
-@if (!loading() && filteredEvents().length > 0) {
-  <div class="mt-4 flex items-center justify-center gap-3">
-    <button
-      class="btn btn-sm btn-secondary min-h-10 rounded-full px-4 sm:min-h-8"
-      (click)="previousPage()"
-      [disabled]="currentPage() <= 1"
-    >
-      Anterior
-    </button>
-    <span class="text-sm font-semibold text-[var(--muted-foreground)]">{{
-      currentPage()
-    }}</span>
-    <button
-      class="btn btn-sm btn-secondary min-h-10 rounded-full px-4 sm:min-h-8"
-      (click)="nextPage()"
-      [disabled]="!hasNextPage()"
-    >
-      Próxima
-    </button>
   </div>
 }
 <app-confirm-modal></app-confirm-modal>

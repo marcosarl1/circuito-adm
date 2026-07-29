@@ -33,46 +33,78 @@ export class EventsComponent implements OnInit {
   private confirmModal = inject(ConfirmModalService);
   private toastService = inject(ToastService);
 
-  events = signal<Event[]>([]);
+  allEvents = signal<Event[]>([]);
   loading = this.loadingService.loading;
   showForm = signal(false);
   editingId = signal<string | null>(null);
   searchTerm = signal('');
   currentPage = signal(1);
   pageSize = 9;
-  hasNextPage = signal(true);
   formData = signal<EventFormState>(this.createEmptyForm());
 
   filteredEvents = computed(() => {
     const term = this.searchTerm().toLowerCase();
-    const events = this.events();
+    const events = this.allEvents();
     if (!term) return events;
 
     return events.filter(
       (event) =>
-        event.nome_evento.toLowerCase().includes(term) ||
-        event.categorias_premiadas.toLowerCase().includes(term) ||
-        event.cidade.toLowerCase().includes(term) ||
-        event.estado.toLowerCase().includes(term) ||
-        event.organizador.toLowerCase().includes(term),
+        event.nome_evento?.toLowerCase().includes(term) ||
+        event.categorias_premiadas?.toLowerCase().includes(term) ||
+        event.cidade?.toLowerCase().includes(term) ||
+        event.estado?.toLowerCase().includes(term) ||
+        event.organizador?.toLowerCase().includes(term),
     );
   });
+
+  pageEvents = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize;
+    return this.filteredEvents().slice(start, start + this.pageSize);
+  });
+
+  visiblePages = computed<(number | null)[]>(() => {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    const pages: (number | null)[] = [1];
+    if (current > 3) pages.push(null);
+    for (
+      let p = Math.max(2, current - 1);
+      p <= Math.min(total - 1, current + 1);
+      p++
+    ) {
+      pages.push(p);
+    }
+    if (current < total - 2) pages.push(null);
+    pages.push(total);
+    return pages;
+  });
+
+  totalPages = computed(() =>
+    Math.max(1, Math.ceil(this.filteredEvents().length / this.pageSize)),
+  );
 
   ngOnInit() {
     this.loadEvents();
   }
 
   loadEvents() {
-    this.eventsService.getEvents(this.currentPage(), this.pageSize).subscribe({
+    this.eventsService.getAllEvents().subscribe({
       next: (data) => {
-        const list = data || [];
-        this.events.set(list);
-        this.hasNextPage.set(list.length === this.pageSize);
+        this.allEvents.set(data || []);
+        this.currentPage.set(1);
       },
       error: (error) => {
         this.toastService.error('Erro ao carregar eventos: ' + error.message);
       },
     });
+  }
+
+  onSearchChange(term: string) {
+    this.searchTerm.set(term);
+    this.currentPage.set(1);
   }
 
   openCreateForm() {
@@ -155,15 +187,17 @@ export class EventsComponent implements OnInit {
   }
 
   nextPage() {
-    if (!this.hasNextPage()) return;
+    if (this.currentPage() >= this.totalPages()) return;
     this.currentPage.update((p) => p + 1);
-    this.loadEvents();
   }
 
   previousPage() {
     if (this.currentPage() <= 1) return;
     this.currentPage.update((p) => p - 1);
-    this.loadEvents();
+  }
+
+  goToPage(page: number) {
+    this.currentPage.set(page);
   }
 
   addKit() {
