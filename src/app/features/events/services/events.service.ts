@@ -1,12 +1,12 @@
-import { inject, Service } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import {
   HttpClient,
   HttpContext,
   HttpErrorResponse,
   HttpParams,
 } from '@angular/common/http';
-import { forkJoin, Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap, map, shareReplay, tap } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, concatMap, tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { Event, EventCreatePayload } from '../../../shared/models/event.model';
 import { API_KEY_LABEL } from '../../../core/http/api-key.context';
@@ -16,32 +16,17 @@ import { ApiKeyCancelledError } from '../../../core/http/api-key-cancelled.error
 export class EventsService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
-  private eventsCache = new Map<string, Observable<Event[]>>();
+  private allEventsCache = signal<Event[] | null>(null);
 
   private context(label: string): HttpContext {
     return new HttpContext().set(API_KEY_LABEL, label);
   }
 
-  getEvents(page = 1, size = 20, forceRefresh = false): Observable<Event[]> {
-    const cacheKey = `${page}:${size}`;
-    if (!this.eventsCache.has(cacheKey) || forceRefresh) {
-      const params = new HttpParams().set('page', page).set('size', size);
-
-      const requests$ = this.http
-        .get<Event[]>(`${this.apiUrl}/api/v1/eventos`, { params })
-        .pipe(
-          catchError((err) => {
-            this.eventsCache.delete(cacheKey);
-            return this.handleError(err);
-          }),
-          shareReplay({ bufferSize: 1, refCount: false }),
-        );
-      this.eventsCache.set(cacheKey, requests$);
+  getAllEvents(forceRefresh = false): Observable<Event[]> {
+    if (!forceRefresh) {
+      const cached = this.allEventsCache();
+      if (cached) return of(cached);
     }
-    return this.eventsCache.get(cacheKey)!;
-  }
-
-  getAllEvents(): Observable<Event[]> {
     const pageSize = 100;
     const all: Event[] = [];
 
@@ -53,7 +38,7 @@ export class EventsService {
         }),
       );
 
-    return load(1);
+    return load(1).pipe(tap((events) => this.allEventsCache.set(events)));
   }
 
   private fetchPage(page: number, size: number): Observable<Event[]> {
@@ -107,7 +92,7 @@ export class EventsService {
   }
 
   private clearEventsCache() {
-    this.eventsCache.clear();
+    this.allEventsCache.set(null);
   }
 
   private handleError(error: HttpErrorResponse | Error) {
