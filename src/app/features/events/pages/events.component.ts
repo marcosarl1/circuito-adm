@@ -65,19 +65,19 @@ export class EventsComponent implements OnInit {
   visiblePages = computed<(number | null)[]>(() => {
     const total = this.totalPages();
     const current = this.currentPage();
-    if (total <= 7) {
+    if (total <= 9) {
       return Array.from({ length: total }, (_, i) => i + 1);
     }
     const pages: (number | null)[] = [1];
-    if (current > 3) pages.push(null);
+    if (current > 4) pages.push(null);
     for (
-      let p = Math.max(2, current - 1);
-      p <= Math.min(total - 1, current + 1);
+      let p = Math.max(2, current - 2);
+      p <= Math.min(total - 1, current + 2);
       p++
     ) {
       pages.push(p);
     }
-    if (current < total - 2) pages.push(null);
+    if (current < total - 3) pages.push(null);
     pages.push(total);
     return pages;
   });
