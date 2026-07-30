@@ -65,19 +65,40 @@ export class EventsComponent implements OnInit {
   visiblePages = computed<(number | null)[]>(() => {
     const total = this.totalPages();
     const current = this.currentPage();
-    if (total <= 9) {
+    const size = 7;
+
+    if (total <= size) {
       return Array.from({ length: total }, (_, i) => i + 1);
     }
+
+    const showLeftEllipsis = current > 3;
+    const showRightEllipsis = current < total - 2;
+
+    let middleCount = size - 2;
+    if (showLeftEllipsis) middleCount--;
+    if (showRightEllipsis) middleCount--;
+
     const pages: (number | null)[] = [1];
-    if (current > 4) pages.push(null);
-    for (
-      let p = Math.max(2, current - 2);
-      p <= Math.min(total - 1, current + 2);
-      p++
-    ) {
-      pages.push(p);
+
+    if (showLeftEllipsis) {
+      pages.push(null);
     }
-    if (current < total - 3) pages.push(null);
+
+    let start = Math.max(2, current - Math.floor(middleCount / 2));
+    let end = Math.min(total - 1, start + middleCount - 1);
+
+    if (end - start + 1 < middleCount) {
+      start = Math.max(2, end - middleCount + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (showRightEllipsis) {
+      pages.push(null);
+    }
+
     pages.push(total);
     return pages;
   });
