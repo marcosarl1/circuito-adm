@@ -20,6 +20,10 @@ export class AuthService {
       return of(ok);
     }
 
+    if (this.isAuthenticatedSignal()) {
+      return of(true);
+    }
+
     return this.http.get<{ authenticated: boolean }>('/api/me').pipe(
       map((res) => {
         this.isAuthenticatedSignal.set(res.authenticated);
@@ -34,7 +38,9 @@ export class AuthService {
 
   login(username: string, password: string): Observable<boolean> {
     if (isDevMode()) {
-      const ok = username === environment.adminUser && password === environment.adminPass;
+      const ok =
+        username === environment.adminUser &&
+        password === environment.adminPass;
       if (ok) sessionStorage.setItem('circuito_auth', 'true');
       this.isAuthenticatedSignal.set(ok);
       return of(ok);
