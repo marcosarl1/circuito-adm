@@ -8,7 +8,6 @@ import {
   EventCreatePayload,
   EventKit,
 } from '../../../shared/models/event.model';
-import { ApiKeyCancelledError } from '../../../core/http/api-key-cancelled.error';
 import { EventFormState, KitForm } from '../models/event-form-state.model';
 import { LoadingService } from '../../../core/services/loading.service';
 import { EventCardSkeletonComponent } from '../components/event-card-skeleton/event-card-skeleton.component';
@@ -142,7 +141,6 @@ export class EventsComponent implements OnInit {
         this.loadEvents();
       },
       error: (error) => {
-        if (error instanceof ApiKeyCancelledError) return;
         this.toastService.error(`Erro ao sincronizar: ${error.message}`);
       },
     });
@@ -178,7 +176,6 @@ export class EventsComponent implements OnInit {
         this.loadEvents();
       },
       error: (error) => {
-        if (error instanceof ApiKeyCancelledError) return;
         this.toastService.error(`Erro ao salvar evento: ${error.message}`);
       },
     });
@@ -196,7 +193,6 @@ export class EventsComponent implements OnInit {
         this.loadEvents();
       },
       error: (error) => {
-        if (error instanceof ApiKeyCancelledError) return;
         this.toastService.error(`Erro ao deletar evento: ${error.message}`);
       },
     });

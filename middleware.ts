@@ -3,15 +3,30 @@ declare const process: { env: Record<string, string | undefined> };
 const ADMIN_USER = (process.env['ADMIN_USER'] as string) || 'admincircuito';
 const ADMIN_PASS = process.env['ADMIN_PASS'] as string | undefined;
 
+interface ProxyConfig {
+  prefix: string;
+  envUrl: string;
+  envKey: string;
+  buildTargetUrl: (baseUrl: string, path: string, search: string) => string;
+  envErrorMessage: string;
+  fetchErrorMessage: string;
+}
+
 async function handleApi(request: Request): Promise<Response | undefined> {
   const url = new URL(request.url);
 
   if (url.pathname === '/api/login' && request.method === 'POST') {
     if (!ADMIN_PASS) {
-      return Response.json({ error: 'ADMIN_PASS não configurado' }, { status: 500 });
+      return Response.json(
+        { error: 'ADMIN_PASS não configurado' },
+        { status: 500 },
+      );
     }
 
-    const { username, password } = await request.json() as Record<string, string>;
+    const { username, password } = (await request.json()) as Record<
+      string,
+      string
+    >;
 
     if (username !== ADMIN_USER || password !== ADMIN_PASS) {
       return Response.json({ error: 'Credenciais inválidas' }, { status: 401 });
@@ -19,10 +34,13 @@ async function handleApi(request: Request): Promise<Response | undefined> {
 
     const cookie = `circuito_session=${ADMIN_USER}:${Date.now()}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=1800`;
 
-    return Response.json({ success: true }, {
-      status: 200,
-      headers: { 'Set-Cookie': cookie },
-    });
+    return Response.json(
+      { success: true },
+      {
+        status: 200,
+        headers: { 'Set-Cookie': cookie },
+      },
+    );
   }
 
   if (url.pathname === '/api/me') {
@@ -38,17 +56,96 @@ async function handleApi(request: Request): Promise<Response | undefined> {
   }
 
   if (url.pathname === '/api/logout') {
-    const cookie = 'circuito_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0';
-    return Response.json({ success: true }, {
-      status: 200,
-      headers: { 'Set-Cookie': cookie },
-    });
+    const cookie =
+      'circuito_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0';
+    return Response.json(
+      { success: true },
+      {
+        status: 200,
+        headers: { 'Set-Cookie': cookie },
+      },
+    );
   }
 
   return undefined;
 }
 
-export default async function middleware(request: Request): Promise<Response | undefined> {
+function isAuthenticated(request: Request): boolean {
+  const cookies = request.headers.get('cookie') || '';
+  const match = cookies.match(/circuito_session=([^;]+)/);
+  return !!(match && match[1].startsWith(ADMIN_USER + ';'));
+}
+
+async function handleProxy(
+  request: Request,
+  config: ProxyConfig,
+): Promise<Response | undefined> {
+  const url = new URL(request.url);
+  if (!url.pathname.startsWith(config.prefix)) return undefined;
+
+  const baseUrl = process.env[config.envUrl] as string | undefined;
+  const apiKey = process.env[config.envKey] as string | undefined;
+
+  if (!baseUrl || !apiKey) {
+    return Response.json({ error: config.envErrorMessage }, { status: 500 });
+  }
+  if (!isAuthenticated(request)) {
+    return Response.json({ error: 'Não autenticado' }, { status: 401 });
+  }
+
+  const path = url.pathname.replace(config.prefix, '').replace(/^\/+/, '');
+  const targetUrl = config.buildTargetUrl(baseUrl, path, url.search);
+
+  const headers = new Headers(request.headers);
+  headers.set('x-api-key', apiKey);
+  headers.delete('host');
+
+  const body = ['GET', 'HEAD'].includes(request.method)
+    ? undefined
+    : await request.arrayBuffer();
+
+  try {
+    const response = await fetch(targetUrl, {
+      method: request.method,
+      headers,
+      body,
+    });
+    const responseHeaders = new Headers(response.headers);
+    responseHeaders.delete('set-cookie');
+    return new Response(await response.arrayBuffer(), {
+      status: response.status,
+      headers: responseHeaders,
+    });
+  } catch {
+    return Response.json({ error: config.fetchErrorMessage }, { status: 502 });
+  }
+}
+
+function handleEventsProxy(request: Request): Promise<Response | undefined> {
+  return handleProxy(request, {
+    prefix: '/api/events-proxy',
+    envUrl: 'API_URL',
+    envKey: 'API_KEY',
+    buildTargetUrl: (base, path, search) => `${base}/api/v1/${path}${search}`,
+    envErrorMessage: 'API_URL ou API_KEY não configurados',
+    fetchErrorMessage: 'Erro ao comunicar com a API externa',
+  });
+}
+
+function handlePostsProxy(request: Request): Promise<Response | undefined> {
+  return handleProxy(request, {
+    prefix: '/api/posts-proxy',
+    envUrl: 'POSTS_API_URL',
+    envKey: 'POSTS_API_KEY',
+    buildTargetUrl: (base, path, search) => `${base}/${path}${search}`,
+    envErrorMessage: 'POSTS_API_URL ou POSTS_API_KEY não configurados',
+    fetchErrorMessage: 'Erro ao comunicar com a API de posts',
+  });
+}
+
+export default async function middleware(
+  request: Request,
+): Promise<Response | undefined> {
   const { pathname } = new URL(request.url);
 
   const accept = request.headers.get('accept') || '';

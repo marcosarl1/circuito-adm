@@ -1,26 +1,18 @@
 import { inject, Service, signal } from '@angular/core';
 import {
   HttpClient,
-  HttpContext,
   HttpErrorResponse,
   HttpParams,
 } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { environment } from '../../../../environments/environment';
 import { Event, EventCreatePayload } from '../../../shared/models/event.model';
-import { API_KEY_LABEL } from '../../../core/http/api-key.context';
-import { ApiKeyCancelledError } from '../../../core/http/api-key-cancelled.error';
 
 @Service()
 export class EventsService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
+  private apiUrl = 'apiUrl';
   private allEventsCache = signal<Event[] | null>(null);
-
-  private context(label: string): HttpContext {
-    return new HttpContext().set(API_KEY_LABEL, label);
-  }
 
   getAllEvents(forceRefresh = false): Observable<Event[]> {
     if (!forceRefresh) {
@@ -47,22 +39,16 @@ export class EventsService {
   }
 
   createEvent(data: EventCreatePayload): Observable<any> {
-    return this.http
-      .post(`${this.apiUrl}/api/v1/eventos`, data, {
-        context: this.context('API Key para criar evento'),
-      })
-      .pipe(
-        tap(() => this.clearEventsCache()),
-        catchError(this.handleError),
-      );
+    return this.http.post(`${this.apiUrl}/api/v1/eventos`, data).pipe(
+      tap(() => this.clearEventsCache()),
+      catchError(this.handleError),
+    );
   }
 
   updateEvent(evento_id: string, data: EventCreatePayload): Observable<any> {
     const payload = { evento_id, ...data };
     return this.http
-      .patch(`${this.apiUrl}/api/v1/eventos/${evento_id}`, payload, {
-        context: this.context('API Key para atualizar evento'),
-      })
+      .patch(`${this.apiUrl}/api/v1/eventos/${evento_id}`, payload)
       .pipe(
         tap(() => this.clearEventsCache()),
         catchError(this.handleError),
@@ -70,25 +56,17 @@ export class EventsService {
   }
 
   deleteEvent(id: string): Observable<any> {
-    return this.http
-      .delete(`${this.apiUrl}/api/v1/eventos/${id}`, {
-        context: this.context('API Key para deletar evento'),
-      })
-      .pipe(
-        tap(() => this.clearEventsCache()),
-        catchError(this.handleError),
-      );
+    return this.http.delete(`${this.apiUrl}/api/v1/eventos/${id}`).pipe(
+      tap(() => this.clearEventsCache()),
+      catchError(this.handleError),
+    );
   }
 
   syncBucket(): Observable<any> {
-    return this.http
-      .post(`${this.apiUrl}/api/v1/sync-bucket`, null, {
-        context: this.context('API Key para sincronizar bucket'),
-      })
-      .pipe(
-        tap(() => this.clearEventsCache()),
-        catchError(this.handleError),
-      );
+    return this.http.post(`${this.apiUrl}/api/v1/sync-bucket`, null).pipe(
+      tap(() => this.clearEventsCache()),
+      catchError(this.handleError),
+    );
   }
 
   private clearEventsCache() {
@@ -96,10 +74,6 @@ export class EventsService {
   }
 
   private handleError(error: HttpErrorResponse | Error) {
-    if (error instanceof ApiKeyCancelledError) {
-      return throwError(() => error);
-    }
-
     let errorMessage = 'Erro ao comunicar com o servidor';
     if (error instanceof HttpErrorResponse) {
       if (error.error instanceof ErrorEvent) {
