@@ -1,18 +1,29 @@
-import { inject, Service, signal } from '@angular/core';
+import { inject, isDevMode, Service, signal } from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse,
+  HttpHeaders,
   HttpParams,
 } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
 import { Event, EventCreatePayload } from '../../../shared/models/event.model';
+import { environment } from '../../../../environments/environment';
 
 @Service()
 export class EventsService {
   private http = inject(HttpClient);
-  private apiUrl = 'apiUrl';
   private allEventsCache = signal<Event[] | null>(null);
+
+  private get baseUrl(): string {
+    return isDevMode() ? `${environment.apiUrl}/api/v1` : '/api/events-proxy';
+  }
+
+  private get apiHeaders() {
+    return isDevMode() && environment.apiKey
+      ? { headers: new HttpHeaders({ 'x-api-key': environment.apiKey }) }
+      : {};
+  }
 
   getAllEvents(forceRefresh = false): Observable<Event[]> {
     if (!forceRefresh) {
@@ -35,20 +46,24 @@ export class EventsService {
 
   private fetchPage(page: number, size: number): Observable<Event[]> {
     const params = new HttpParams().set('page', page).set('size', size);
-    return this.http.get<Event[]>(`${this.apiUrl}/api/v1/eventos`, { params });
+    return this.http.get<Event[]>(`${this.baseUrl}/eventos`, { params });
   }
 
   createEvent(data: EventCreatePayload): Observable<any> {
-    return this.http.post(`${this.apiUrl}/api/v1/eventos`, data).pipe(
-      tap(() => this.clearEventsCache()),
-      catchError(this.handleError),
-    );
+    return this.http
+      .post(`${this.baseUrl}/eventos`, data, { ...this.apiHeaders })
+      .pipe(
+        tap(() => this.clearEventsCache()),
+        catchError(this.handleError),
+      );
   }
 
   updateEvent(evento_id: string, data: EventCreatePayload): Observable<any> {
     const payload = { evento_id, ...data };
     return this.http
-      .patch(`${this.apiUrl}/api/v1/eventos/${evento_id}`, payload)
+      .patch(`${this.baseUrl}/eventos/${evento_id}`, payload, {
+        ...this.apiHeaders,
+      })
       .pipe(
         tap(() => this.clearEventsCache()),
         catchError(this.handleError),
@@ -56,17 +71,21 @@ export class EventsService {
   }
 
   deleteEvent(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/api/v1/eventos/${id}`).pipe(
-      tap(() => this.clearEventsCache()),
-      catchError(this.handleError),
-    );
+    return this.http
+      .delete(`${this.baseUrl}/eventos/${id}`, { ...this.apiHeaders })
+      .pipe(
+        tap(() => this.clearEventsCache()),
+        catchError(this.handleError),
+      );
   }
 
   syncBucket(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/api/v1/sync-bucket`, null).pipe(
-      tap(() => this.clearEventsCache()),
-      catchError(this.handleError),
-    );
+    return this.http
+      .post(`${this.baseUrl}/sync-bucket`, null, { ...this.apiHeaders })
+      .pipe(
+        tap(() => this.clearEventsCache()),
+        catchError(this.handleError),
+      );
   }
 
   private clearEventsCache() {

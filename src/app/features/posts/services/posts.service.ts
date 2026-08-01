@@ -1,16 +1,27 @@
-import { inject, Service } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { inject, isDevMode, Service } from '@angular/core';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 
 @Service()
 export class PostsService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/posts-proxy';
 
   publishPost(data: FormData): Observable<string> {
+    const headers =
+      isDevMode() && environment.postsApiKey
+        ? new HttpHeaders({ 'x-api-key': environment.postsApiKey })
+        : undefined;
     return this.http
-      .post(this.apiUrl, data, { responseType: 'text' })
+      .post(isDevMode() ? environment.postsApiUrl : '/api/posts-proxy', data, {
+        responseType: 'text',
+        headers,
+      })
       .pipe(catchError((err) => this.handleError(err)));
   }
 

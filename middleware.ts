@@ -73,7 +73,7 @@ async function handleApi(request: Request): Promise<Response | undefined> {
 function isAuthenticated(request: Request): boolean {
   const cookies = request.headers.get('cookie') || '';
   const match = cookies.match(/circuito_session=([^;]+)/);
-  return !!(match && match[1].startsWith(ADMIN_USER + ';'));
+  return !!(match && match[1].startsWith(ADMIN_USER + ':'));
 }
 
 async function handleProxy(
@@ -149,6 +149,12 @@ export default async function middleware(
   const { pathname } = new URL(request.url);
 
   const accept = request.headers.get('accept') || '';
+
+  const eventsProxy = await handleEventsProxy(request);
+  if (eventsProxy) return eventsProxy;
+
+  const postsProxy = await handlePostsProxy(request);
+  if (postsProxy) return postsProxy;
 
   if (pathname.startsWith('/api/')) {
     return handleApi(request);

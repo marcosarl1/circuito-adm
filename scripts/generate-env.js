@@ -40,6 +40,10 @@ if (!fs.existsSync(outDir)) {
 const content = `
 export const environment = {
   production: false,
+  apiUrl: '${get("API_URL")}',
+  apiKey: '${get("API_KEY")}',
+  postsApiUrl: '${get("POSTS_API_URL")}',
+  postsApiKey: '${get("POSTS_API_KEY")}',
   adminUser: '${get("ADMIN_USER")}',
   adminPass: '${get("ADMIN_PASS")}',
 };
