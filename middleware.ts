@@ -99,6 +99,7 @@ async function handleProxy(
   const headers = new Headers(request.headers);
   headers.set('x-api-key', apiKey);
   headers.delete('host');
+  headers.delete('content-length');
 
   const body = ['GET', 'HEAD'].includes(request.method)
     ? undefined
@@ -137,7 +138,8 @@ function handlePostsProxy(request: Request): Promise<Response | undefined> {
     prefix: '/api/posts-proxy',
     envUrl: 'POSTS_API_URL',
     envKey: 'POSTS_API_KEY',
-    buildTargetUrl: (base, path, search) => `${base}/${path}${search}`,
+    buildTargetUrl: (base, path, search) =>
+      `${base}/${path ? '/' + path : ''}${search}`,
     envErrorMessage: 'POSTS_API_URL ou POSTS_API_KEY não configurados',
     fetchErrorMessage: 'Erro ao comunicar com a API de posts',
   });
