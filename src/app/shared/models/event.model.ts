@@ -38,3 +38,11 @@ export interface EventKit {
 export type EventCreatePayload = Omit<Event, "_id" | "horario"> & {
   horario?: string;
 };
+
+export interface EventPage {
+  eventos: Event[];
+  total: number;
+  total_pages: number;
+  page: number;
+  size: number;
+}

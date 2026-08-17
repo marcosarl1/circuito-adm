@@ -1,5 +1,14 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  computed,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { EventsService } from '../services/events.service';
 import { EventCardComponent } from '../components/event-card/event-card.component';
 import { EventFormModalComponent } from '../components/event-form-modal/event-form-modal.component';
@@ -26,40 +35,27 @@ import { ToastService } from '../../../shared/services/toast.service';
   ],
   templateUrl: './events.component.html',
 })
-export class EventsComponent implements OnInit {
+export class EventsComponent implements OnInit, OnDestroy {
   private eventsService = inject(EventsService);
   private loadingService = inject(LoadingService);
   private confirmModal = inject(ConfirmModalService);
   private toastService = inject(ToastService);
+  private searchSubject = new Subject<string>();
+  private searchSubscription?: Subscription;
 
-  allEvents = signal<Event[]>([]);
+  events = signal<Event[]>([]);
   loading = this.loadingService.loading;
   showForm = signal(false);
   editingId = signal<string | null>(null);
   searchTerm = signal('');
   currentPage = signal(1);
   pageSize = 9;
+  totalPages = signal(1);
+  totalResults = signal(0);
   formData = signal<EventFormState>(this.createEmptyForm());
 
-  filteredEvents = computed(() => {
-    const term = this.searchTerm().toLowerCase().trim();
-    const events = this.allEvents();
-    if (!term) return events;
-
-    return events.filter(
-      (event) =>
-        event.nome_evento?.toLowerCase().includes(term) ||
-        event.categorias_premiadas?.toLowerCase().includes(term) ||
-        event.cidade?.toLowerCase().includes(term) ||
-        event.estado?.toLowerCase().includes(term) ||
-        event.organizador?.toLowerCase().includes(term),
-    );
-  });
-
-  pageEvents = computed(() => {
-    const start = (this.currentPage() - 1) * this.pageSize;
-    return this.filteredEvents().slice(start, start + this.pageSize);
-  });
+  pageEvents = computed(() => this.events());
+  filteredEvents = computed(() => this.events());
 
   visiblePages = computed<(number | null)[]>(() => {
     const total = this.totalPages();
@@ -102,19 +98,31 @@ export class EventsComponent implements OnInit {
     return pages;
   });
 
-  totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.filteredEvents().length / this.pageSize)),
-  );
-
   ngOnInit() {
+    this.eventsService.clearCache();
+    this.searchSubscription = this.searchSubject
+      .pipe(debounceTime(300))
+      .subscribe(() => this.loadEvents());
     this.loadEvents();
   }
 
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+  }
+
   loadEvents() {
-    this.eventsService.getAllEvents().subscribe({
+    this.eventsService.getEvents(this.searchTerm(), this.currentPage()).subscribe({
       next: (data) => {
-        this.allEvents.set(data || []);
-        this.currentPage.set(1);
+        const list = data.eventos || [];
+        this.totalResults.set(data.total ?? 0);
+        if (list.length === 0 && this.currentPage() > 1) {
+          const lastPage = Math.max(1, data.total_pages);
+          this.currentPage.set(lastPage);
+          this.loadEvents();
+          return;
+        }
+        this.events.set(list);
+        this.totalPages.set(Math.max(1, data.total_pages));
       },
       error: (error) => {
         this.toastService.error('Erro ao carregar eventos: ' + error.message);
@@ -125,6 +133,7 @@ export class EventsComponent implements OnInit {
   onSearchChange(term: string) {
     this.searchTerm.set(term);
     this.currentPage.set(1);
+    this.searchSubject.next(term);
   }
 
   openCreateForm() {
@@ -206,15 +215,18 @@ export class EventsComponent implements OnInit {
   nextPage() {
     if (this.currentPage() >= this.totalPages()) return;
     this.currentPage.update((p) => p + 1);
+    this.loadEvents();
   }
 
   previousPage() {
     if (this.currentPage() <= 1) return;
     this.currentPage.update((p) => p - 1);
+    this.loadEvents();
   }
 
   goToPage(page: number) {
     this.currentPage.set(page);
+    this.loadEvents();
   }
 
   addKit() {

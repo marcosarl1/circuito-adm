@@ -68,98 +68,97 @@
       }
     </div>
   </div>
-  <div class="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+  <div
+    class="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between"
+  >
     @if (searchTerm()) {
-      <p class="text-xs text-[var(--muted-foreground)] text-center sm:text-left">
-        {{ filteredEvents().length }} resultado(s) para
-        <strong class="text-[var--foreground)]">{{ searchTerm() }}</strong>
-        nesta página.
+      <p
+        class="text-xs text-[var(--muted-foreground)] text-center sm:text-left"
+      >
+        {{ totalResults() }} resultado(s) para
+        <strong class="text-[var--foreground)]">{{ searchTerm() }} </strong>
         <button
           class="underline bg-transparent border-none cursor-pointer text-xs text-[var(--muted-foreground)] p-0"
-          (click)="onSearchChange('')"
+          (click)="onSearchChange(' ')"
         >
           limpar
         </button>
       </p>
     } @else {
       <span class="text-xs text-[var(--muted-foreground)]">
-        {{ filteredEvents().length }} eventos
+        Página {{ currentPage() }} de {{ totalPages() }}
       </span>
     }
 
-    @if (!searchTerm()) {
-      <div class="flex items-center gap-1 flex-wrap justify-center">
-        <button
-          class="grid h-8 w-8 place-items-center rounded-md border border-[rgba(142,202,230,0.22)] bg-transparent transition-colors hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-40"
-          (click)="previousPage()"
-          [disabled]="currentPage() <= 1"
-          aria-label="Página anterior"
+    <div class="flex items-center gap-1 flex-wrap justify-center">
+      <button
+        class="grid h-8 w-8 place-items-center rounded-md border border-[rgba(142,202,230,0.22)] bg-transparent transition-colors hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-40"
+        (click)="previousPage()"
+        [disabled]="currentPage() <= 1"
+        aria-label="Página anterior"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      @for (page of visiblePages(); track $index) {
+        @if (page === null) {
+          <span
+            class="grid h-8 w-8 place-items-center text-xs text-[var(--muted-foreground)]"
+            >...</span
           >
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-        @for (page of visiblePages(); track $index) {
-          @if (page === null) {
-            <span
-              class="grid h-8 w-8 place-items-center text-xs text-[var(--muted-foreground)]"
-              >...</span
-            >
-          } @else {
-            <button
-              class="grid h-8 w-8 place-items-center rounded-md border text-xs font-medium transition-colors"
-              [class.border-[rgba(142,202,230,0.22)]]="currentPage() !== page"
-              [class.bg-transparent]="currentPage() !== page"
-              [class.text-[var(--color-text-secondary)]]="
-                currentPage() !== page
-              "
-              [class.hover:bg-[var(--accent)]]="currentPage() !== page"
-              [class.border-[var(--primary)]]="currentPage() === page"
-              [class.bg-[rgba(251,133,0,0.12)]]="currentPage() === page"
-              [class.text-[var(--primary)]]="currentPage() === page"
-              [class.font-semibold]="currentPage() === page"
-              (click)="goToPage(page)"
-              [attr.aria-current]="currentPage() === page ? 'page' : null"
-              [attr.aria-label]="'Página ' + page"
-            >
-              {{ page }}
-            </button>
-          }
+        } @else {
+          <button
+            class="grid h-8 w-8 place-items-center rounded-md border text-xs font-medium transition-colors"
+            [class.border-[rgba(142,202,230,0.22)]]="currentPage() !== page"
+            [class.bg-transparent]="currentPage() !== page"
+            [class.text-[var(--color-text-secondary)]]="currentPage() !== page"
+            [class.hover:bg-[var(--accent)]]="currentPage() !== page"
+            [class.border-[var(--primary)]]="currentPage() === page"
+            [class.bg-[rgba(251,133,0,0.12)]]="currentPage() === page"
+            [class.text-[var(--primary)]]="currentPage() === page"
+            [class.font-semibold]="currentPage() === page"
+            (click)="goToPage(page)"
+            [attr.aria-current]="currentPage() === page ? 'page' : null"
+            [attr.aria-label]="'Página ' + page"
+          >
+            {{ page }}
+          </button>
         }
-        <button
-          class="grid h-8 w-8 place-items-center rounded-md border border-[rgba(142,202,230,0.22)] bg-transparent transition-colors hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-40"
-          (click)="nextPage()"
-          [disabled]="currentPage() >= totalPages()"
-          aria-label="Próxima página"
+      }
+      <button
+        class="grid h-8 w-8 place-items-center rounded-md border border-[rgba(142,202,230,0.22)] bg-transparent transition-colors hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-40"
+        (click)="nextPage()"
+        [disabled]="currentPage() >= totalPages()"
+        aria-label="Próxima página"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-      </div>
-    }
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    </div>
   </div>
 }
 @if (!loading() && filteredEvents().length === 0) {

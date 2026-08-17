@@ -1,4 +1,4 @@
-import { inject, isDevMode, Service, signal } from '@angular/core';
+import { inject, isDevMode, Service } from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse,
@@ -6,17 +6,21 @@ import {
   HttpParams,
 } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap, tap } from 'rxjs/operators';
-import { Event, EventCreatePayload } from '../../../shared/models/event.model';
+import { catchError, tap } from 'rxjs/operators';
+import {
+  EventCreatePayload,
+  EventPage,
+} from '../../../shared/models/event.model';
 import { environment } from '../../../../environments/environment';
 
 @Service()
 export class EventsService {
   private http = inject(HttpClient);
-  private allEventsCache = signal<Event[] | null>(null);
+  private pageSize = 9;
+  private eventsCache = new Map<string, EventPage>();
 
   private get baseUrl(): string {
-    return isDevMode() ? `${environment.apiUrl}/api/v1` : '/api/events-proxy';
+    return isDevMode() ? `${environment.apiUrl}api/v1` : '/api/events-proxy';
   }
 
   private get apiHeaders() {
@@ -25,35 +29,28 @@ export class EventsService {
       : {};
   }
 
-  getAllEvents(forceRefresh = false): Observable<Event[]> {
-    if (!forceRefresh) {
-      const cached = this.allEventsCache();
-      if (cached) return of(cached);
+  getEvents(search = '', page = 1): Observable<EventPage> {
+    const query = search?.trim() || '';
+
+    const key = query ? `q:${query}:${page}` : `p:${page}`;
+    const cached = this.eventsCache.get(key);
+    if (cached) return of(cached);
+
+    let params = new HttpParams().set('page', page).set('size', this.pageSize);
+    if (query) {
+      params = params.set('q', query);
     }
-    const pageSize = 100;
-    const all: Event[] = [];
 
-    const load = (page: number): Observable<Event[]> =>
-      this.fetchPage(page, pageSize).pipe(
-        concatMap((events) => {
-          all.push(...events);
-          return events.length >= pageSize ? load(page + 1) : of(all);
-        }),
-      );
-
-    return load(1).pipe(tap((events) => this.allEventsCache.set(events)));
-  }
-
-  private fetchPage(page: number, size: number): Observable<Event[]> {
-    const params = new HttpParams().set('page', page).set('size', size);
-    return this.http.get<Event[]>(`${this.baseUrl}/eventos`, { params });
+    return this.http
+      .get<EventPage>(`${this.baseUrl}/eventos`, { params })
+      .pipe(tap((data) => this.eventsCache.set(key, data)));
   }
 
   createEvent(data: EventCreatePayload): Observable<any> {
     return this.http
       .post(`${this.baseUrl}/eventos`, data, { ...this.apiHeaders })
       .pipe(
-        tap(() => this.clearEventsCache()),
+        tap(() => this.clearCache()),
         catchError(this.handleError),
       );
   }
@@ -65,7 +62,7 @@ export class EventsService {
         ...this.apiHeaders,
       })
       .pipe(
-        tap(() => this.clearEventsCache()),
+        tap(() => this.clearCache()),
         catchError(this.handleError),
       );
   }
@@ -74,7 +71,7 @@ export class EventsService {
     return this.http
       .delete(`${this.baseUrl}/eventos/${id}`, { ...this.apiHeaders })
       .pipe(
-        tap(() => this.clearEventsCache()),
+        tap(() => this.clearCache()),
         catchError(this.handleError),
       );
   }
@@ -83,13 +80,13 @@ export class EventsService {
     return this.http
       .post(`${this.baseUrl}/sync-bucket`, null, { ...this.apiHeaders })
       .pipe(
-        tap(() => this.clearEventsCache()),
+        tap(() => this.clearCache()),
         catchError(this.handleError),
       );
   }
 
-  private clearEventsCache() {
-    this.allEventsCache.set(null);
+  clearCache() {
+    this.eventsCache.clear();
   }
 
   private handleError(error: HttpErrorResponse | Error) {
