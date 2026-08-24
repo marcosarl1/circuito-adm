@@ -1,0 +1,114 @@
+<div
+  class="fixed inset-0 z-[200] grid place-items-center bg-[rgba(0,0,0,0.72)] p-4 max-md:p-0"
+  (click)="close.emit()"
+>
+  <div
+    class="card flex max-h-[min(90vh,920px)] w-full max-w-[1040px] flex-col overflow-hidden max-md:max-h-screen max-md:rounded-none"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="scrape-report-title"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="card-header border-b border-[var(--color-border-light)]">
+      <h3 id="scrape-report-title" class="m-0">Relatório da coleta</h3>
+      <p class="mb-0 mt-1 text-sm text-[var(--color-text-secondary)]">
+        Revise os dados antes de importar.
+      </p>
+    </div>
+
+    <div class="modal-body md:p-6">
+      @if (!report()) {
+        <p class="text-sm text-[var(--color-text-secondary)]">Carregando...</p>
+      } @else {
+        <section class="mb-5">
+          <h4 class="m-0 mb-2 text-base font-semibold">Fontes</h4>
+          <ul class="grid gap-2">
+            @for (scraper of report()!.scrapers; track scraper.nome) {
+              <li
+                class="flex items-center justify-between rounded-md border border-[var(--color-border-light)] px-3 py-2 text-sm"
+              >
+                <span>{{ scraper.nome }}</span>
+                <span
+                  [class.text-green-500]="scraper.ok"
+                  [class.text-red-500]="!scraper.ok"
+                >
+                  {{ scraper.ok ? 'OK' : 'FALHOU' }} · {{ scraper.duration_s }}s
+                </span>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="mb-5">
+          <h4 class="m-0 mb-2 text-base font-semibold">Validação dos CSVs</h4>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-[var(--color-text-secondary)]">
+                <th class="py-1">Fonte</th>
+                <th>Total</th>
+                <th>Duplicados</th>
+                <th>Sem preço</th>
+                <th>Passados</th>
+                <th>Sem imagem</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (csv of report()!.csvs; track csv.fonte) {
+                <tr class="border-t border-[var(--color-border-light)]">
+                  <td class="py-1">{{ csv.fonte }}</td>
+                  <td>{{ csv.total }}</td>
+                  <td>{{ csv.duplicados }}</td>
+                  <td>{{ csv.sem_preco }}</td>
+                  <td>{{ csv.eventos_passados }}</td>
+                  <td>{{ csv.sem_imagem }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      }
+
+      @if (importing()) {
+        <p class="text-sm text-[var(--color-text-secondary)]">
+          Importando para o banco...
+        </p>
+      }
+
+      @if (importResult(); as result) {
+        <div
+          class="mb-4 rounded-md border border-[rgba(142,202,230,0.22)] p-3 text-sm"
+        >
+          {{ result.novos }} novos, {{ result.atualizados }} atualizados.
+          Total no banco: {{ result.total }}.
+        </div>
+      }
+
+      @if (error(); as err) {
+        <div
+          class="mb-4 rounded-md border border-red-500/40 p-3 text-sm text-red-400"
+        >
+          {{ err }}
+        </div>
+      }
+    </div>
+
+    <div
+      class="card-footer flex flex-wrap items-center justify-end gap-3 border-t border-[var(--color-border-light)] p-4"
+    >
+      <button
+        class="btn btn-secondary"
+        (click)="close.emit()"
+        [disabled]="importing()"
+      >
+        Fechar
+      </button>
+      <button
+        class="btn btn-primary"
+        (click)="import.emit()"
+        [disabled]="importing() || !report()"
+      >
+        Importar para o banco
+      </button>
+    </div>
+  </div>
+</div>
