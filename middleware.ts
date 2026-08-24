@@ -7,6 +7,7 @@ interface ProxyConfig {
   prefix: string;
   envUrl: string;
   envKey: string;
+  scrapeEnvKey?: string;
   buildTargetUrl: (baseUrl: string, path: string, search: string) => string;
   envErrorMessage: string;
   fetchErrorMessage: string;
@@ -84,7 +85,10 @@ async function handleProxy(
   if (!url.pathname.startsWith(config.prefix)) return undefined;
 
   const baseUrl = process.env[config.envUrl] as string | undefined;
-  const apiKey = process.env[config.envKey] as string | undefined;
+  let apiKey = process.env[config.envKey] as string | undefined;
+  if (config.scrapeEnvKey && url.pathname.includes('/scrape/')) {
+    apiKey = process.env[config.scrapeEnvKey] || apiKey;
+  }
 
   if (!baseUrl || !apiKey) {
     return Response.json({ error: config.envErrorMessage }, { status: 500 });
@@ -127,6 +131,7 @@ function handleEventsProxy(request: Request): Promise<Response | undefined> {
     prefix: '/api/events-proxy',
     envUrl: 'API_URL',
     envKey: 'API_KEY',
+    scrapeEnvKey: 'SCRAPERS_API_KEY',
     buildTargetUrl: (base, path, search) => `${base}/api/v1/${path}${search}`,
     envErrorMessage: 'API_URL ou API_KEY não configurados',
     fetchErrorMessage: 'Erro ao comunicar com a API externa',
