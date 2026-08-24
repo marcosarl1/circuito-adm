@@ -18,6 +18,8 @@ import {
   EventKit,
 } from '../../../shared/models/event.model';
 import { EventFormState, KitForm } from '../models/event-form-state.model';
+import { ScrapeImportResult, ScrapeReport } from '../models/scrape.model';
+import { ScrapeReportModalComponent } from '../components/scrape-report-modal/scrape-report-modal.component';
 import { LoadingService } from '../../../core/services/loading.service';
 import { EventCardSkeletonComponent } from '../components/event-card-skeleton/event-card-skeleton.component';
 import { ConfirmModalService } from '../../../shared/services/confirm-modal.service';
@@ -32,6 +34,7 @@ import { ToastService } from '../../../shared/services/toast.service';
     EventFormModalComponent,
     EventCardSkeletonComponent,
     ConfirmModalComponent,
+    ScrapeReportModalComponent,
   ],
   templateUrl: './events.component.html',
 })
@@ -53,6 +56,15 @@ export class EventsComponent implements OnInit, OnDestroy {
   totalPages = signal(1);
   totalResults = signal(0);
   formData = signal<EventFormState>(this.createEmptyForm());
+
+  showScrapeModal = signal(false);
+  scrapeRunning = signal(false);
+  scraping = signal(false);
+  scrapeReport = signal<ScrapeReport | null>(null);
+  importing = signal(false);
+  importResult = signal<ScrapeImportResult | null>(null);
+  scrapeError = signal<string | null>(null);
+  private scrapePolling?: ReturnType<typeof setInterval>;
 
   pageEvents = computed(() => this.events());
   filteredEvents = computed(() => this.events());
@@ -108,6 +120,7 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.searchSubscription?.unsubscribe();
+    this.clearScrapePolling();
   }
 
   loadEvents() {
@@ -126,6 +139,90 @@ export class EventsComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.toastService.error('Erro ao carregar eventos: ' + error.message);
+      },
+    });
+  }
+
+  runScrapers() {
+    if (this.scrapeRunning()) return;
+    this.scrapeRunning.set(true);
+    this.scraping.set(true);
+    this.scrapeError.set(null);
+    this.scrapeReport.set(null);
+    this.importResult.set(null);
+
+    this.eventsService.runScrape().subscribe({
+      next: ({ job_id }) => this.pollScrapeStatus(job_id),
+      error: (error) => {
+        this.scrapeRunning.set(false);
+        this.scraping.set(false);
+        this.scrapeError.set(error.message);
+        this.openScrapeReport();
+      },
+    });
+  }
+
+  private pollScrapeStatus(jobId: string) {
+    this.scrapePolling = setInterval(() => {
+      this.eventsService.getScrapeStatus(jobId).subscribe({
+        next: (status) => {
+          if (status.status === 'complete') {
+            this.scrapeRunning.set(false);
+            this.scraping.set(false);
+            this.scrapeReport.set(status.report);
+            this.clearScrapePolling();
+            this.openScrapeReport();
+          } else if (status.status === 'failed') {
+            this.scrapeRunning.set(false);
+            this.scraping.set(false);
+            this.scrapeReport.set(status.report);
+            this.scrapeError.set(status.error);
+            this.clearScrapePolling();
+            this.openScrapeReport();
+          }
+        },
+        error: (error) => {
+          this.scrapeRunning.set(false);
+          this.scraping.set(false);
+          this.scrapeError.set(error.message);
+          this.clearScrapePolling();
+          this.openScrapeReport();
+        },
+      });
+    }, 4000);
+  }
+
+  private clearScrapePolling() {
+    if (this.scrapePolling) {
+      clearInterval(this.scrapePolling);
+      this.scrapePolling = undefined;
+    }
+  }
+
+  openScrapeReport() {
+    this.showScrapeModal.set(true);
+  }
+
+  closeScrapeReport() {
+    this.showScrapeModal.set(false);
+    this.scrapeReport.set(null);
+    this.importResult.set(null);
+    this.scrapeError.set(null);
+    this.scraping.set(false);
+  }
+
+  importScrapedEvents() {
+    this.importing.set(true);
+    this.scrapeError.set(null);
+    this.eventsService.importScrapedEvents().subscribe({
+      next: (result) => {
+        this.importing.set(false);
+        this.importResult.set(result);
+        this.loadEvents();
+      },
+      error: (error) => {
+        this.importing.set(false);
+        this.scrapeError.set(error.message);
       },
     });
   }

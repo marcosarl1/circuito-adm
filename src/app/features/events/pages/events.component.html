@@ -29,6 +29,13 @@
     </button>
     <button
       class="btn btn-secondary whitespace-nowrap"
+      (click)="runScrapers()"
+      [disabled]="loading() || scrapeRunning()"
+    >
+      {{ scrapeRunning() ? 'Coletando...' : 'Rodar scrapers' }}
+    </button>
+    <button
+      class="btn btn-secondary whitespace-nowrap"
       (click)="syncBucket()"
       [disabled]="loading()"
     >
@@ -180,5 +187,15 @@
       </p>
     </div>
   </div>
+}
+@if (showScrapeModal()) {
+  <app-scrape-report-modal
+    [report]="scrapeReport()"
+    [importing]="importing()"
+    [importResult]="importResult()"
+    [error]="scrapeError()"
+    (import)="importScrapedEvents()"
+    (close)="closeScrapeReport()"
+  ></app-scrape-report-modal>
 }
 <app-confirm-modal></app-confirm-modal>
