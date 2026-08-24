@@ -46,6 +46,7 @@ export const environment = {
   postsApiKey: '${get("POSTS_API_KEY")}',
   adminUser: '${get("ADMIN_USER")}',
   adminPass: '${get("ADMIN_PASS")}',
+  scrapersApiKey: '${get("SCRAPERS_API_KEY")}',
 };
 `;
 
