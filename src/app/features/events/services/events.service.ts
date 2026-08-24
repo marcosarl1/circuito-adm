@@ -1,5 +1,6 @@
 import { inject, isDevMode, Service } from '@angular/core';
 import {
+  HttpContext,
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
@@ -11,6 +12,8 @@ import {
   EventCreatePayload,
   EventPage,
 } from '../../../shared/models/event.model';
+import { SKIP_LOADING } from '../../../core/contexts/skip-loading.context';
+import { ScrapeImportResult, ScrapeJobStatus } from '../models/scrape.model';
 import { environment } from '../../../../environments/environment';
 
 @Service()
@@ -29,6 +32,12 @@ export class EventsService {
       : {};
   }
 
+  private get scrapeHeaders() {
+    return isDevMode() && environment.scrapersApiKey
+      ? { headers: new HttpHeaders({ 'x-api-key': environment.scrapersApiKey }) }
+      : {};
+  }
+
   getEvents(search = '', page = 1): Observable<EventPage> {
     const query = search?.trim() || '';
 
@@ -44,6 +53,32 @@ export class EventsService {
     return this.http
       .get<EventPage>(`${this.baseUrl}/eventos`, { params })
       .pipe(tap((data) => this.eventsCache.set(key, data)));
+  }
+
+  runScrape(): Observable<{ job_id: string }> {
+    return this.http.post<{ job_id: string }>(
+      `${this.baseUrl}/scrape/run`,
+      null,
+      { ...this.scrapeHeaders },
+    );
+  }
+
+  getScrapeStatus(jobId: string): Observable<ScrapeJobStatus> {
+    return this.http.get<ScrapeJobStatus>(
+      `${this.baseUrl}/scrape/status/${jobId}`,
+      {
+        ...this.scrapeHeaders,
+        context: new HttpContext().set(SKIP_LOADING, true),
+      },
+    );
+  }
+
+  importScrapedEvents(): Observable<ScrapeImportResult> {
+    return this.http.post<ScrapeImportResult>(
+      `${this.baseUrl}/scrape/import`,
+      null,
+      { ...this.scrapeHeaders },
+    );
   }
 
   createEvent(data: EventCreatePayload): Observable<any> {
