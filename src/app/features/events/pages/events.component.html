@@ -32,7 +32,7 @@
       (click)="runScrapers()"
       [disabled]="loading() || scrapeRunning()"
     >
-      {{ scrapeRunning() ? 'Coletando...' : 'Rodar scrapers' }}
+      {{ scrapeRunning() ? "Coletando..." : "Rodar scrapers" }}
     </button>
     <button
       class="btn btn-secondary whitespace-nowrap"
@@ -55,7 +55,7 @@
   ></app-event-form-modal>
 }
 
-@if (loading()) {
+@if (showSkeleton()) {
   <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
     @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track item) {
       <app-event-card-skeleton />
@@ -63,7 +63,7 @@
   </div>
 }
 
-@if (!loading() && pageEvents().length > 0) {
+@if (!showSkeleton() && pageEvents().length > 0) {
   <div class="events-list">
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
       @for (event of pageEvents(); track event._id) {
@@ -168,7 +168,7 @@
     </div>
   </div>
 }
-@if (!loading() && filteredEvents().length === 0) {
+@if (!loading() && !showSkeleton() && filteredEvents().length === 0) {
   <div class="card">
     <div
       class="mx-auto my-10 grid max-w-[420px] justify-items-center px-4 text-center sm:my-16"
