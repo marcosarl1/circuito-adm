@@ -20,6 +20,7 @@ import {
 import { EventFormState, KitForm } from '../models/event-form-state.model';
 import { ScrapeImportResult, ScrapeReport } from '../models/scrape.model';
 import { ScrapeReportModalComponent } from '../components/scrape-report-modal/scrape-report-modal.component';
+import { ScrapeCooldownModalComponent } from '../components/scrape-cooldown-modal/scrape-cooldown-modal.component';
 import { LoadingService } from '../../../core/services/loading.service';
 import { EventCardSkeletonComponent } from '../components/event-card-skeleton/event-card-skeleton.component';
 import { ConfirmModalService } from '../../../shared/services/confirm-modal.service';
@@ -35,6 +36,7 @@ import { ToastService } from '../../../shared/services/toast.service';
     EventCardSkeletonComponent,
     ConfirmModalComponent,
     ScrapeReportModalComponent,
+    ScrapeCooldownModalComponent,
   ],
   templateUrl: './events.component.html',
 })
@@ -64,6 +66,8 @@ export class EventsComponent implements OnInit, OnDestroy {
   importing = signal(false);
   importResult = signal<ScrapeImportResult | null>(null);
   scrapeError = signal<string | null>(null);
+  showScrapeCooldown = signal(false);
+  lastFinishedAt = signal<string | null>(null);
   private scrapePolling?: ReturnType<typeof setInterval>;
 
   pageEvents = computed(() => this.events());
@@ -116,6 +120,7 @@ export class EventsComponent implements OnInit, OnDestroy {
       .pipe(debounceTime(300))
       .subscribe(() => this.loadEvents());
     this.loadEvents();
+    this.loadLastRun();
   }
 
   ngOnDestroy() {
@@ -145,6 +150,22 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   runScrapers() {
     if (this.scrapeRunning()) return;
+    if (this.isWithinCooldown()) {
+      this.showScrapeCooldown.set(true);
+      return;
+    }
+    this.startScrape();
+  }
+
+  private isWithinCooldown(): boolean {
+    const raw = this.lastFinishedAt();
+    if (!raw) return false;
+    const finished = new Date(raw).getTime();
+    if (Number.isNaN(finished)) return false;
+    return Date.now() - finished < 15 * 24 * 60 * 60 * 1000;
+  }
+
+  private startScrape() {
     this.scrapeRunning.set(true);
     this.scraping.set(true);
     this.scrapeError.set(null);
@@ -162,6 +183,28 @@ export class EventsComponent implements OnInit, OnDestroy {
     });
   }
 
+  confirmRecentScrape() {
+    this.showScrapeCooldown.set(false);
+    this.startScrape();
+  }
+
+  cancelRecentScrape() {
+    this.showScrapeCooldown.set(false);
+  }
+
+  private loadLastRun() {
+    this.eventsService.getLastRun().subscribe({
+      next: (data) => {
+        if (data.finished_at) {
+          this.lastFinishedAt.set(data.finished_at);
+        }
+      },
+      error: () => {
+        // Sem registro de última coleta: cooldown permanece desativado.
+      },
+    });
+  }
+
   private pollScrapeStatus(jobId: string) {
     this.scrapePolling = setInterval(() => {
       this.eventsService.getScrapeStatus(jobId).subscribe({
@@ -170,6 +213,9 @@ export class EventsComponent implements OnInit, OnDestroy {
             this.scrapeRunning.set(false);
             this.scraping.set(false);
             this.scrapeReport.set(status.report);
+            if (status.finished_at) {
+              this.lastFinishedAt.set(status.finished_at);
+            }
             this.clearScrapePolling();
             this.openScrapeReport();
           } else if (status.status === 'failed') {

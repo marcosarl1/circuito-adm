@@ -188,6 +188,13 @@
     </div>
   </div>
 }
+@if (showScrapeCooldown()) {
+  <app-scrape-cooldown-modal
+    [lastFinishedAt]="lastFinishedAt()"
+    (proceed)="confirmRecentScrape()"
+    (cancel)="cancelRecentScrape()"
+  ></app-scrape-cooldown-modal>
+}
 @if (showScrapeModal()) {
   <app-scrape-report-modal
     [report]="scrapeReport()"

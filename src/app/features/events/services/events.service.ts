@@ -73,6 +73,16 @@ export class EventsService {
     );
   }
 
+  getLastRun(): Observable<{ finished_at: string | null }> {
+    return this.http.get<{ finished_at: string | null }>(
+      `${this.baseUrl}/scrape/last-run`,
+      {
+        ...this.scrapeHeaders,
+        context: new HttpContext().set(SKIP_LOADING, true),
+      },
+    );
+  }
+
   importScrapedEvents(): Observable<ScrapeImportResult> {
     return this.http.post<ScrapeImportResult>(
       `${this.baseUrl}/scrape/import`,

@@ -1,0 +1,42 @@
+<div
+  class="fixed inset-0 z-[210] grid place-items-center bg-[rgba(0,0,0,0.72)] p-4 max-md:p-0"
+  (click)="cancel.emit()"
+>
+  <div
+    class="card w-full max-w-[520px] overflow-hidden max-md:max-h-screen max-md:rounded-none"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="scrape-cooldown-title"
+    aria-describedby="scrape-cooldown-desc"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="card-header border-b border-[var(--color-border-light)]">
+      <h3 id="scrape-cooldown-title" class="m-0">Coleta recente</h3>
+    </div>
+
+    <div class="modal-body md:p-6">
+      <p id="scrape-cooldown-desc" class="m-0 text-sm">
+        @if (diasAtras === 0) {
+          A última rodada foi <strong>hoje</strong>, em
+        } @else {
+          A última rodada foi há
+          <strong>{{ diasAtras }} {{ diasAtras === 1 ? "dia" : "dias" }}</strong
+          >, em
+        }
+        <strong>{{ dataFormatada }}</strong> às
+        <strong>{{ horaFormatada }}</strong
+        >. Deseja rodar novamente?
+      </p>
+    </div>
+    <div
+      class="card-footer flex flex-wrap items-center justify-end gap-3 border-t border-[var(--color-border-light)] p-4"
+    >
+      <button class="btn btn-secondary" (click)="cancel.emit()">
+        Cancelar
+      </button>
+      <button class="btn btn-primary" (click)="proceed.emit()">
+        Rodar novamente
+      </button>
+    </div>
+  </div>
+</div>
