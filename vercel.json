@@ -1,4 +1,10 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/admin-panel/browser"
+  "outputDirectory": "dist/admin-panel/browser",
+  "crons": [
+    {
+      "path": "/api/warmup",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }

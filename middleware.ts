@@ -132,7 +132,11 @@ function handleEventsProxy(request: Request): Promise<Response | undefined> {
     envUrl: 'API_URL',
     envKey: 'API_KEY',
     scrapeEnvKey: 'SCRAPERS_API_KEY',
-    buildTargetUrl: (base, path, search) => `${base}/api/v1/${path}${search}`,
+    buildTargetUrl: (base, path, search) => {
+      const b = base.replace(/\/$/, '');
+      if (path === 'health' || path.startsWith('health')) return `${b}/health${search}`;
+      return `${b}/api/v1/${path}${search}`;
+    },
     envErrorMessage: 'API_URL ou API_KEY não configurados',
     fetchErrorMessage: 'Erro ao comunicar com a API externa',
   });
@@ -150,9 +154,36 @@ function handlePostsProxy(request: Request): Promise<Response | undefined> {
   });
 }
 
+async function handleWarmup(request: Request): Promise<Response | undefined> {
+  const url = new URL(request.url);
+  if (url.pathname !== '/api/warmup') return undefined;
+
+  const warmTargets: Promise<unknown>[] = [];
+  const apiUrl = process.env['API_URL'] as string | undefined;
+  if (apiUrl) {
+    // endpoint leve e sem auth — ideal para tirar do cold start
+    warmTargets.push(fetch(`${apiUrl.replace(/\/$/, '')}/health`).catch(() => {}));
+  }
+  const postsUrl = process.env['POSTS_API_URL'] as string | undefined;
+  const postsKey = process.env['POSTS_API_KEY'] as string | undefined;
+  if (postsUrl && postsKey) {
+    warmTargets.push(
+      fetch(`${postsUrl.replace(/\/$/, '')}/`, {
+        headers: { 'x-api-key': postsKey },
+      }).catch(() => {}),
+    );
+  }
+  // não bloqueia o cron — dispara e responde imediatamente
+  if (warmTargets.length) void Promise.allSettled(warmTargets);
+  return Response.json({ ok: true, warmed: warmTargets.length });
+}
+
 export default async function middleware(
   request: Request,
 ): Promise<Response | undefined> {
+  const warmup = await handleWarmup(request);
+  if (warmup) return warmup;
+
   const { pathname } = new URL(request.url);
 
   const accept = request.headers.get('accept') || '';
