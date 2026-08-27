@@ -171,6 +171,10 @@ export class EventsComponent implements OnInit, OnDestroy {
     this.scrapeError.set(null);
     this.scrapeReport.set(null);
     this.importResult.set(null);
+    this.toastService.info(
+      'Scrapers em execução — coletando eventos. Avisaremos quando o relatório estiver pronto.',
+      6000,
+    );
 
     this.eventsService.runScrape().subscribe({
       next: ({ job_id }) => this.pollScrapeStatus(job_id),
@@ -178,6 +182,7 @@ export class EventsComponent implements OnInit, OnDestroy {
         this.scrapeRunning.set(false);
         this.scraping.set(false);
         this.scrapeError.set(error.message);
+        this.toastService.error(error.message, 7000);
         this.openScrapeReport();
       },
     });
