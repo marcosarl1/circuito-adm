@@ -264,11 +264,18 @@ export class EventsComponent implements OnInit, OnDestroy {
       next: (result) => {
         this.importing.set(false);
         this.importResult.set(result);
+        this.showScrapeModal.set(false);
+        this.scrapeReport.set(null);
+        this.scrapeError.set(null);
+        this.toastService.success(
+          `Importação concluída — ${result.novos} novos e ${result.atualizados} atualizados. Total no banco: ${result.total}.`,
+          15000,
+        );
         this.loadEvents();
       },
       error: (error) => {
         this.importing.set(false);
-        this.scrapeError.set(error.message);
+        this.toastService.error(error.message, 7000);
       },
     });
   }

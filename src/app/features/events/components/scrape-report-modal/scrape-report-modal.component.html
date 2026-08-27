@@ -1,5 +1,5 @@
 <div
-  class="fixed inset-0 z-[200] grid place-items-center bg-[rgba(0,0,0,0.72)] p-4 max-md:p-0"
+  class="fixed inset-0 z-[200] grid place-items-center bg-[rgba(0,9,14,0.72)] p-4 backdrop-blur-[8px] max-md:p-0"
   (click)="close.emit()"
 >
   <div
@@ -9,106 +9,781 @@
     aria-labelledby="scrape-report-title"
     (click)="$event.stopPropagation()"
   >
-    <div class="card-header border-b border-[var(--color-border-light)]">
-      <h3 id="scrape-report-title" class="m-0">Relatório da coleta</h3>
-      <p class="mb-0 mt-1 text-sm text-[var(--color-text-secondary)]">
-        Revise os dados antes de importar.
-      </p>
-    </div>
-
-    <div class="modal-body md:p-6">
-      @if (!report()) {
-        <p class="text-sm text-[var(--color-text-secondary)]">Carregando...</p>
-      } @else {
-        <section class="mb-5">
-          <h4 class="m-0 mb-2 text-base font-semibold">Fontes</h4>
-          <ul class="grid gap-2">
-            @for (scraper of report()!.scrapers; track scraper.nome) {
-              <li
-                class="flex items-center justify-between rounded-md border border-[var(--color-border-light)] px-3 py-2 text-sm"
-              >
-                <span>{{ scraper.nome }}</span>
-                <span
-                  [class.text-green-500]="scraper.ok"
-                  [class.text-red-500]="!scraper.ok"
-                >
-                  {{ scraper.ok ? 'OK' : 'FALHOU' }} · {{ scraper.duration_s }}s
-                </span>
-              </li>
-            }
-          </ul>
-        </section>
-
-        <section class="mb-5">
-          <h4 class="m-0 mb-2 text-base font-semibold">Validação dos CSVs</h4>
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="text-left text-[var(--color-text-secondary)]">
-                <th class="py-1">Fonte</th>
-                <th>Total</th>
-                <th>Duplicados</th>
-                <th>Sem preço</th>
-                <th>Passados</th>
-                <th>Sem imagem</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (csv of report()!.csvs; track csv.fonte) {
-                <tr class="border-t border-[var(--color-border-light)]">
-                  <td class="py-1">{{ csv.fonte }}</td>
-                  <td>{{ csv.total }}</td>
-                  <td>{{ csv.duplicados }}</td>
-                  <td>{{ csv.sem_preco }}</td>
-                  <td>{{ csv.eventos_passados }}</td>
-                  <td>{{ csv.sem_imagem }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </section>
-      }
-
-      @if (importing()) {
-        <p class="text-sm text-[var(--color-text-secondary)]">
-          Importando para o banco...
-        </p>
-      }
-
-      @if (importResult(); as result) {
-        <div
-          class="mb-4 rounded-md border border-[rgba(142,202,230,0.22)] p-3 text-sm"
-        >
-          {{ result.novos }} novos, {{ result.atualizados }} atualizados.
-          Total no banco: {{ result.total }}.
-        </div>
-      }
-
-      @if (error(); as err) {
-        <div
-          class="mb-4 rounded-md border border-red-500/40 p-3 text-sm text-red-400"
-        >
-          {{ err }}
-        </div>
-      }
-    </div>
-
+    <!-- header -->
     <div
-      class="card-footer flex flex-wrap items-center justify-end gap-3 border-t border-[var(--color-border-light)] p-4"
+      class="flex shrink-0 items-start justify-between gap-4 border-b border-[rgba(142,202,230,0.18)] bg-[var(--card)] px-6 py-5 max-md:px-4 max-md:py-4"
     >
+      <div class="min-w-0 flex-1">
+        <h3
+          id="scrape-report-title"
+          class="m-0 text-[1.15rem] font-semibold tracking-tight"
+        >
+          Relatório da coleta
+        </h3>
+        <p class="mt-1 text-sm leading-5 text-[var(--color-text-secondary)]">
+          Revise os dados antes de salvar.
+        </p>
+
+        @if (report()) {
+          <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
+            <span
+              class="inline-flex items-center gap-1.5 rounded-full border border-[rgba(142,202,230,0.18)] bg-[rgba(142,202,230,0.08)] px-2.5 py-1 font-medium text-[var(--color-text-secondary)]"
+            >
+              <span
+                class="h-1.5 w-1.5 rounded-full bg-[var(--brand-sky-200)]"
+              ></span>
+              {{ summary().total }} fontes
+            </span>
+            <span
+              class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 font-medium text-emerald-300"
+            >
+              <span
+                class="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]"
+              ></span>
+              {{ summary().ok }} OK
+            </span>
+            @if (summary().fail > 0) {
+              <span
+                class="inline-flex items-center gap-1.5 rounded-full border border-red-500/25 bg-red-500/10 px-2.5 py-1 font-medium text-red-300"
+              >
+                <span
+                  class="h-1.5 w-1.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]"
+                ></span>
+                {{ summary().fail }} falha(s)
+              </span>
+            }
+            <span class="text-[var(--color-text-secondary)]">
+              · {{ summary().duration.toFixed(1) }}s
+            </span>
+            @if (hasCsvs()) {
+              <span
+                class="hidden items-center gap-1 text-[var(--color-text-secondary)] sm:inline-flex"
+              >
+                · {{ totalEventsCount() }} eventos no total
+              </span>
+            }
+          </div>
+        }
+      </div>
+
       <button
-        class="btn btn-secondary"
+        type="button"
+        class="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-[rgba(142,202,230,0.18)] bg-transparent text-[var(--color-text-secondary)] transition-colors hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)]"
         (click)="close.emit()"
-        [disabled]="importing()"
+        aria-label="Fechar"
       >
-        Fechar
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
       </button>
-      <button
-        class="btn btn-primary"
-        (click)="import.emit()"
-        [disabled]="importing() || !report()"
+    </div>
+
+    <!-- body -->
+    <div class="flex-1 overflow-auto bg-[var(--card)]">
+      <div class="grid gap-6 p-6 max-md:p-4">
+        @if (!report()) {
+          <div class="grid place-items-center gap-3 py-10">
+            <div
+              class="h-6 w-6 animate-spin rounded-full border-2 border-[rgba(142,202,230,0.18)] border-t-[var(--brand-sky-500)]"
+            ></div>
+            <p class="text-sm text-[var(--color-text-secondary)]">
+              Carregando relatório...
+            </p>
+          </div>
+        } @else {
+          <!-- FONTES -->
+          <section>
+            <div
+              class="mb-3 flex flex-wrap items-baseline justify-between gap-2"
+            >
+              <h4
+                class="m-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]"
+              >
+                Fontes
+              </h4>
+              @if (hasScrapers()) {
+                <span class="text-xs text-[var(--color-text-secondary)]">
+                  @if (remaining() > 0 && !expanded()) {
+                    +{{ remaining() }} ocultas
+                  } @else if (summary().fail === 0) {
+                    todas operacionais
+                  } @else {
+                    toque para ver detalhe
+                  }
+                </span>
+              }
+            </div>
+
+            @if (!hasScrapers()) {
+              <div
+                class="grid place-items-center gap-3 rounded-xl border border-dashed border-[rgba(142,202,230,0.18)] bg-[rgba(0,9,14,0.22)] px-6 py-10 text-center"
+              >
+                <div
+                  class="grid h-10 w-10 place-items-center rounded-full bg-[rgba(142,202,230,0.08)] text-[var(--brand-sky-200)]"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-3.5-3.5" />
+                    <path d="M8.5 11h6" />
+                  </svg>
+                </div>
+                <div>
+                  <p class="m-0 text-sm font-semibold text-[var(--foreground)]">
+                    Nenhuma fonte retornou dados
+                  </p>
+                  <p
+                    class="mx-auto mt-1 max-w-[36ch] text-xs leading-5 text-[var(--color-text-secondary)]"
+                  >
+                    A coleta terminou sem registrar scrapers. Tente rodar
+                    novamente ou verifique a conexão com os coletores.
+                  </p>
+                </div>
+              </div>
+            } @else {
+              <div
+                class="flex flex-wrap gap-2"
+                role="list"
+                aria-label="Lista de fontes"
+              >
+                @for (scraper of visibleScrapers(); track scraper.nome) {
+                  <button
+                    type="button"
+                    role="listitem"
+                    class="group inline-flex max-w-full items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all hover:-translate-y-[1px] hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                    [class.border-emerald-500/20]="scraper.ok"
+                    [class.bg-emerald-500/10]="scraper.ok"
+                    [class.text-emerald-200]="scraper.ok"
+                    [class.hover:bg-emerald-500/15]="scraper.ok"
+                    [class.border-red-500/25]="!scraper.ok"
+                    [class.bg-red-500/10]="!scraper.ok"
+                    [class.text-red-200]="!scraper.ok"
+                    [class.hover:bg-red-500/15]="!scraper.ok"
+                    [class.ring-2]="selectedDetail() === scraper.nome"
+                    [class.ring-emerald-500/30]="
+                      selectedDetail() === scraper.nome && scraper.ok
+                    "
+                    [class.ring-red-500/30]="
+                      selectedDetail() === scraper.nome && !scraper.ok
+                    "
+                    (click)="toggleDetail(scraper.nome)"
+                    [attr.aria-expanded]="selectedDetail() === scraper.nome"
+                    [attr.title]="
+                      (scraper.ok ? 'OK' : 'FALHOU') +
+                      ' · ' +
+                      scraper.duration_s +
+                      's' +
+                      (hasDetail(scraper) ? ' · clique para detalhes' : '')
+                    "
+                  >
+                    <span
+                      class="h-1.5 w-1.5 shrink-0 rounded-full"
+                      [class.bg-emerald-500]="scraper.ok"
+                      [class.shadow-[0_0_6px_rgba(16,185,129,0.55)]]="
+                        scraper.ok
+                      "
+                      [class.bg-red-500]="!scraper.ok"
+                      [class.shadow-[0_0_6px_rgba(239,68,68,0.55)]]="
+                        !scraper.ok
+                      "
+                    ></span>
+                    <span class="truncate">{{ scraper.nome }}</span>
+                    <span
+                      class="shrink-0 rounded-full px-1.5 py-0 text-[10px] font-semibold leading-none tracking-wide"
+                      [class.bg-emerald-500/20]="scraper.ok"
+                      [class.text-emerald-300]="scraper.ok"
+                      [class.bg-red-500/20]="!scraper.ok"
+                      [class.text-red-300]="!scraper.ok"
+                    >
+                      {{ scraper.duration_s }}s
+                    </span>
+                    @if (hasDetail(scraper)) {
+                      <svg
+                        class="h-3 w-3 shrink-0 opacity-60 transition-transform group-hover:opacity-100"
+                        [class.rotate-180]="selectedDetail() === scraper.nome"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>
+                    }
+                  </button>
+                }
+
+                @if (
+                  remaining() > 0 ||
+                  (report()!.scrapers.length > 8 && expanded())
+                ) {
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-1.5 rounded-full border border-dashed border-[rgba(142,202,230,0.28)] bg-transparent px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] transition-colors hover:border-[rgba(142,202,230,0.45)] hover:bg-[rgba(142,202,230,0.08)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                    (click)="toggleExpanded()"
+                  >
+                    @if (expanded()) {
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                      </svg>
+                      Mostrar menos
+                    } @else {
+                      +{{ remaining() }} fontes
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>
+                    }
+                  </button>
+                }
+              </div>
+
+              @if (selectedScraper(); as sel) {
+                @if (sel.detail || sel.stderr) {
+                  <div
+                    class="mt-3 rounded-lg border bg-[rgba(0,9,14,0.35)] p-3 text-xs leading-relaxed"
+                    [class.border-emerald-500/15]="sel.ok"
+                    [class.border-red-500/20]="!sel.ok"
+                  >
+                    <div class="mb-1.5 flex items-center justify-between gap-2">
+                      <span
+                        class="font-semibold tracking-wide"
+                        [class.text-emerald-300]="sel.ok"
+                        [class.text-red-300]="!sel.ok"
+                      >
+                        {{ sel.nome }} — {{ sel.ok ? "OK" : "FALHOU" }}
+                      </span>
+                      <button
+                        type="button"
+                        class="text-[11px] text-[var(--color-text-secondary)] underline decoration-dotted underline-offset-2 hover:text-[var(--foreground)]"
+                        (click)="selectedDetail.set(null)"
+                      >
+                        fechar
+                      </button>
+                    </div>
+                    @if (sel.detail) {
+                      <p
+                        class="m-0 whitespace-pre-wrap break-words text-[var(--color-text-secondary)]"
+                      >
+                        {{ sel.detail }}
+                      </p>
+                    }
+                    @if (sel.stderr) {
+                      <pre
+                        class="mt-2 max-h-[160px] overflow-auto whitespace-pre-wrap break-words rounded-md bg-[rgba(0,0,0,0.28)] p-2.5 font-mono text-[11px] leading-4 text-red-200/90"
+                        >{{ sel.stderr }}</pre>
+                    }
+                  </div>
+                } @else {
+                  <p
+                    class="mt-3 rounded-lg border border-[rgba(142,202,230,0.12)] bg-[rgba(142,202,230,0.06)] px-3 py-2 text-xs text-[var(--color-text-secondary)]"
+                  >
+                    Nenhum detalhe adicional para
+                    <strong class="font-semibold text-[var(--foreground)]">{{
+                      sel.nome
+                    }}</strong
+                    >.
+                  </p>
+                }
+              }
+            }
+          </section>
+
+          <!-- TIMELINE -->
+          @if (hasScrapers() && timelineMeta(); as meta) {
+            <section>
+              <div
+                class="mb-3 flex flex-wrap items-baseline justify-between gap-2"
+              >
+                <h4
+                  class="m-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]"
+                >
+                  Timeline
+                </h4>
+                <span
+                  class="text-xs tabular-nums text-[var(--color-text-secondary)]"
+                >
+                  @if (meta.startLabel && meta.endLabel) {
+                    {{ meta.startLabel }} → {{ meta.endLabel }}
+
+                    {{ meta.totalFromScrapers.toFixed(1) }}s somados
+                  }
+                </span>
+              </div>
+
+              <div
+                class="overflow-hidden rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)]"
+              >
+                @for (bar of timelineBars(); track bar.nome) {
+                  <div
+                    class="flex items-center gap-3 border-b border-[rgba(142,202,230,0.06)] px-3 py-2.5 last:border-b-0 hover:bg-[rgba(142,202,230,0.04)]"
+                  >
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="h-1.5 w-1.5 shrink-0 rounded-full"
+                          [class.bg-emerald-500]="bar.ok"
+                          [class.bg-red-500]="!bar.ok"
+                        ></span>
+                        <span
+                          class="truncate text-xs font-medium text-[var(--foreground)]"
+                          >{{ bar.nome }}</span
+                        >
+                        @if (bar.isBottleneck) {
+                          <span
+                            class="inline-flex shrink-0 items-center rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300"
+                          >
+                            gargalo
+                          </span>
+                        }
+                      </div>
+                      <div
+                        class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]"
+                      >
+                        <div
+                          class="h-full rounded-full transition-all"
+                          [class.bg-emerald-500]="bar.ok && !bar.isBottleneck"
+                          [class.bg-amber-400]="bar.isBottleneck && bar.ok"
+                          [class.bg-red-500]="!bar.ok"
+                          [style.width.%]="bar.width"
+                        ></div>
+                      </div>
+                    </div>
+                    <span
+                      class="shrink-0 rounded-full border px-2 py-1 text-[11px] font-semibold tabular-nums leading-none"
+                      [class.border-emerald-500/20]="bar.ok"
+                      [class.bg-emerald-500/10]="bar.ok"
+                      [class.text-emerald-200]="bar.ok"
+                      [class.border-red-500/20]="!bar.ok"
+                      [class.bg-red-500/10]="!bar.ok"
+                      [class.text-red-200]="!bar.ok"
+                    >
+                      {{ bar.duration_s }}s
+                    </span>
+                  </div>
+                }
+              </div>
+            </section>
+          }
+
+          <!-- VALIDAÇÃO CSV -->
+          <section>
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+              <h4
+                class="m-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]"
+              >
+                Validação dos CSVs
+              </h4>
+              <div class="flex flex-wrap items-center gap-2">
+                <!-- toggle só alertas -->
+                <button
+                  type="button"
+                  role="switch"
+                  [attr.aria-checked]="onlyAlerts()"
+                  (click)="toggleOnlyAlerts()"
+                  class="inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                  [class.border-amber-500/30]="onlyAlerts()"
+                  [class.bg-amber-500/15]="onlyAlerts()"
+                  [class.text-amber-200]="onlyAlerts()"
+                  [class.border-[rgba(142,202,230,0.18)]]="!onlyAlerts()"
+                  [class.bg-[rgba(142,202,230,0.08)]]="!onlyAlerts()"
+                  [class.text-[var(--color-text-secondary)]]="!onlyAlerts()"
+                >
+                  <span
+                    class="grid h-3.5 w-3.5 place-items-center rounded-full border text-[10px] leading-none"
+                    [class.border-amber-400]="onlyAlerts()"
+                    [class.bg-amber-500]="onlyAlerts()"
+                    [class.text-white]="onlyAlerts()"
+                    [class.border-[rgba(142,202,230,0.35)]]="!onlyAlerts()"
+                    [class.bg-transparent]="!onlyAlerts()"
+                  >
+                    @if (onlyAlerts()) {
+                      ✓
+                    }
+                  </span>
+                  Só com alertas
+                  @if (alertsCount() > 0) {
+                    <span
+                      class="rounded-full bg-black/20 px-1.5 py-0 text-[10px] font-bold"
+                      >{{ alertsCount() }}</span
+                    >
+                  }
+                </button>
+
+                <!-- sort -->
+                <div
+                  class="inline-flex overflow-hidden rounded-full border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.28)] p-0.5 text-xs"
+                >
+                  <button
+                    type="button"
+                    class="rounded-full px-2.5 py-1 font-medium transition-colors"
+                    [class.bg-[var(--brand-navy-500)]]="sortBy() === 'total'"
+                    [class.text-white]="sortBy() === 'total'"
+                    [class.text-[var(--color-text-secondary)]]="
+                      sortBy() !== 'total'
+                    "
+                    (click)="setSort('total')"
+                  >
+                    Total
+                    @if (sortBy() === "total") {
+                      <span aria-hidden="true">{{
+                        sortDir() === "desc" ? " ↓" : " ↑"
+                      }}</span>
+                    }
+                  </button>
+                  <button
+                    type="button"
+                    class="rounded-full px-2.5 py-1 font-medium transition-colors"
+                    [class.bg-[var(--brand-navy-500)]]="
+                      sortBy() === 'duplicados'
+                    "
+                    [class.text-white]="sortBy() === 'duplicados'"
+                    [class.text-[var(--color-text-secondary)]]="
+                      sortBy() !== 'duplicados'
+                    "
+                    (click)="setSort('duplicados')"
+                  >
+                    Duplicados
+                    @if (sortBy() === "duplicados") {
+                      <span aria-hidden="true">{{
+                        sortDir() === "desc" ? " ↓" : " ↑"
+                      }}</span>
+                    }
+                  </button>
+                  <button
+                    type="button"
+                    class="rounded-full px-2.5 py-1 font-medium transition-colors"
+                    [class.bg-[var(--brand-navy-500)]]="sortBy() === 'fonte'"
+                    [class.text-white]="sortBy() === 'fonte'"
+                    [class.text-[var(--color-text-secondary)]]="
+                      sortBy() !== 'fonte'
+                    "
+                    (click)="setSort('fonte')"
+                  >
+                    A–Z
+                    @if (sortBy() === "fonte") {
+                      <span aria-hidden="true">{{
+                        sortDir() === "asc" ? " ↓" : " ↑"
+                      }}</span>
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            @if (!hasCsvs()) {
+              <div
+                class="grid place-items-center gap-3 rounded-xl border border-dashed border-[rgba(142,202,230,0.18)] bg-[rgba(0,9,14,0.22)] px-6 py-10 text-center"
+              >
+                <div
+                  class="grid h-10 w-10 place-items-center rounded-full bg-[rgba(142,202,230,0.08)] text-[var(--brand-sky-200)]"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                    />
+                    <path d="M14 2v6h6" />
+                    <path d="M10 13H8" />
+                    <path d="M16 17H8" />
+                    <path d="M13 13h1" />
+                  </svg>
+                </div>
+                <div>
+                  <p class="m-0 text-sm font-semibold text-[var(--foreground)]">
+                    Nenhum CSV gerado
+                  </p>
+                  <p
+                    class="mx-auto mt-1 max-w-[38ch] text-xs leading-5 text-[var(--color-text-secondary)]"
+                  >
+                    Nenhum arquivo passou pela validação. Isso pode indicar que
+                    todas as fontes falharam ou retornaram vazias.
+                  </p>
+                </div>
+              </div>
+            } @else if (filteredAndSortedCsvs().length === 0) {
+              <div
+                class="rounded-lg border border-[rgba(142,202,230,0.12)] bg-[rgba(142,202,230,0.06)] px-4 py-6 text-center"
+              >
+                <p class="m-0 text-sm font-medium text-[var(--foreground)]">
+                  Nenhum arquivo com alerta
+                </p>
+                <p class="mt-1 text-xs text-[var(--color-text-secondary)]">
+                  Desative “Só com alertas” para ver todos os
+                  {{ report()!.csvs.length }} arquivos.
+                </p>
+                <button
+                  type="button"
+                  class="mt-3 rounded-full border border-[rgba(142,202,230,0.18)] bg-[rgba(142,202,230,0.08)] px-3 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[rgba(142,202,230,0.12)]"
+                  (click)="onlyAlerts.set(false)"
+                >
+                  Mostrar todos
+                </button>
+              </div>
+            } @else {
+              <div
+                class="overflow-hidden rounded-lg border border-[rgba(142,202,230,0.14)]"
+              >
+                <div class="max-h-[320px] overflow-auto">
+                  <table class="w-full min-w-[560px] border-collapse text-sm">
+                    <thead
+                      class="sticky top-0 z-10 bg-[rgba(1,19,28,0.96)] backdrop-blur"
+                    >
+                      <tr
+                        class="text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
+                      >
+                        <th class="whitespace-nowrap px-3 py-2.5">
+                          <button
+                            type="button"
+                            class="inline-flex items-center gap-1 font-semibold hover:text-[var(--foreground)]"
+                            (click)="setSort('fonte')"
+                          >
+                            Fonte
+                            @if (sortBy() === "fonte") {
+                              <span>{{ sortDir() === "asc" ? "↑" : "↓" }}</span>
+                            }
+                          </button>
+                        </th>
+                        <th class="whitespace-nowrap px-2 py-2.5 text-right">
+                          <button
+                            type="button"
+                            class="inline-flex items-center gap-1 font-semibold hover:text-[var(--foreground)]"
+                            (click)="setSort('total')"
+                          >
+                            Total
+                            @if (sortBy() === "total") {
+                              <span>{{
+                                sortDir() === "desc" ? "↓" : "↑"
+                              }}</span>
+                            }
+                          </button>
+                        </th>
+                        <th class="whitespace-nowrap px-2 py-2.5 text-right">
+                          <button
+                            type="button"
+                            class="inline-flex items-center gap-1 font-semibold hover:text-[var(--foreground)]"
+                            (click)="setSort('duplicados')"
+                          >
+                            Duplicados
+                            @if (sortBy() === "duplicados") {
+                              <span>{{
+                                sortDir() === "desc" ? "↓" : "↑"
+                              }}</span>
+                            }
+                          </button>
+                        </th>
+                        <th
+                          class="whitespace-nowrap px-2 py-2.5 text-right font-semibold"
+                        >
+                          Sem preço
+                        </th>
+                        <th
+                          class="whitespace-nowrap px-2 py-2.5 text-right font-semibold"
+                        >
+                          Passados
+                        </th>
+                        <th
+                          class="whitespace-nowrap px-2 py-2.5 text-right font-semibold"
+                        >
+                          Sem imagem
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[rgba(142,202,230,0.08)]">
+                      @for (csv of filteredAndSortedCsvs(); track csv.fonte) {
+                        <tr
+                          class="transition-colors hover:bg-[rgba(142,202,230,0.06)]"
+                        >
+                          <td class="px-3 py-2.5">
+                            <span class="inline-flex items-center gap-2">
+                              <span
+                                class="h-1.5 w-1.5 shrink-0 rounded-full"
+                                [class.bg-emerald-500]="csv.ok"
+                                [class.bg-amber-500]="!csv.ok"
+                              ></span>
+                              <span
+                                class="text-[13px] font-medium leading-none"
+                                >{{ csv.fonte }}</span
+                              >
+                            </span>
+                          </td>
+                          <td
+                            class="px-2 py-2.5 text-right tabular-nums text-[13px] font-semibold"
+                          >
+                            {{ csv.total }}
+                          </td>
+                          <td
+                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                            [class.text-amber-300]="csv.duplicados > 0"
+                            [class.text-[var(--color-text-secondary)]]="
+                              csv.duplicados === 0
+                            "
+                          >
+                            {{ csv.duplicados }}
+                          </td>
+                          <td
+                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                            [class.text-amber-300]="csv.sem_preco > 0"
+                            [class.text-[var(--color-text-secondary)]]="
+                              csv.sem_preco === 0
+                            "
+                          >
+                            {{ csv.sem_preco }}
+                          </td>
+                          <td
+                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                            [class.text-[var(--color-text-secondary)]]="
+                              csv.eventos_passados === 0
+                            "
+                          >
+                            {{ csv.eventos_passados }}
+                          </td>
+                          <td
+                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                            [class.text-amber-300]="csv.sem_imagem > 0"
+                            [class.text-[var(--color-text-secondary)]]="
+                              csv.sem_imagem === 0
+                            "
+                          >
+                            {{ csv.sem_imagem }}
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+                <div
+                  class="flex items-center justify-between border-t border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.28)] px-3 py-2 text-[11px] text-[var(--color-text-secondary)]"
+                >
+                  <span
+                    >{{ filteredAndSortedCsvs().length }} de
+                    {{ report()!.csvs.length }} arquivos</span
+                  >
+                  <span class="hidden sm:inline"
+                    >Clique no cabeçalho para ordenar</span
+                  >
+                  <span class="sm:hidden">Arraste →</span>
+                </div>
+              </div>
+            }
+          </section>
+        }
+
+        @if (importing()) {
+          <div
+            class="flex items-center gap-3 rounded-lg border border-[rgba(142,202,230,0.18)] bg-[rgba(142,202,230,0.08)] px-3 py-3 text-sm text-[var(--color-text-secondary)]"
+          >
+            <span
+              class="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-[rgba(142,202,230,0.18)] border-t-[var(--brand-teal-500)]"
+            ></span>
+            Salvando eventos...
+          </div>
+        }
+
+        @if (error(); as err) {
+          <div
+            class="rounded-lg border border-red-500/25 bg-red-500/10 px-3 py-3 text-sm leading-5 text-red-200"
+          >
+            {{ err }}
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- footer -->
+    <div
+      class="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-[rgba(142,202,230,0.18)] bg-[var(--card)] p-4 max-md:flex-col-reverse"
+    >
+      <span
+        class="text-xs text-[var(--color-text-secondary)] max-md:text-center"
       >
-        Importar para o banco
-      </button>
+        @if (hasCsvs()) {
+          {{ totalEventsCount() }} eventos prontos para salvar
+        } @else {
+          Nenhum evento para salvar
+        }
+      </span>
+      <div
+        class="flex items-center gap-3 max-md:w-full max-md:flex-col-reverse"
+      >
+        <button
+          type="button"
+          class="btn btn-secondary max-md:w-full"
+          (click)="close.emit()"
+          [disabled]="importing()"
+        >
+          Fechar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary max-md:w-full"
+          (click)="import.emit()"
+          [disabled]="
+            importing() || !report() || !hasCsvs() || totalEventsCount() === 0
+          "
+          [attr.aria-busy]="importing()"
+        >
+          @if (importing()) {
+            <span
+              class="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
+            ></span>
+            Salvando...
+          } @else {
+            Confirmar importação
+          }
+        </button>
+      </div>
     </div>
   </div>
 </div>

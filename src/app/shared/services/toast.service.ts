@@ -6,21 +6,21 @@ export class ToastService {
   private _toasts = signal<Toast[]>([]);
   readonly toasts = this._toasts.asReadonly();
 
-  success(message: string): void {
-    this.add('success', message);
+  success(message: string, durationMs = 5000): void {
+    this.add('success', message, durationMs);
   }
 
-  error(message: string): void {
-    this.add('error', message);
+  error(message: string, durationMs = 7000): void {
+    this.add('error', message, durationMs);
   }
 
   dismiss(id: string): void {
     this._toasts.update((toasts) => toasts.filter((t) => t.id !== id));
   }
 
-  private add(type: ToastType, message: string): void {
+  private add(type: ToastType, message: string, durationMs = 5000): void {
     const id = crypto.randomUUID();
     this._toasts.update((toasts) => [...toasts, { id, type, message }]);
-    setTimeout(() => this.dismiss(id), 5000);
+    setTimeout(() => this.dismiss(id), durationMs);
   }
 }
