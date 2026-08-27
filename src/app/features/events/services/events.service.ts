@@ -59,7 +59,10 @@ export class EventsService {
     return this.http.post<{ job_id: string }>(
       `${this.baseUrl}/scrape/run`,
       null,
-      { ...this.scrapeHeaders },
+      {
+        ...this.scrapeHeaders,
+        context: new HttpContext().set(SKIP_LOADING, true),
+      },
     );
   }
 
@@ -87,7 +90,10 @@ export class EventsService {
     return this.http.post<ScrapeImportResult>(
       `${this.baseUrl}/scrape/import`,
       null,
-      { ...this.scrapeHeaders },
+      {
+        ...this.scrapeHeaders,
+        context: new HttpContext().set(SKIP_LOADING, true),
+      },
     );
   }
 
