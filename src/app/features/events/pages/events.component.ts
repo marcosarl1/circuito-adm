@@ -50,6 +50,9 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   events = signal<Event[]>([]);
   loading = this.loadingService.loading;
+  showColdHint = signal(false);
+  /** skeletons só quando não há dado stale para exibir */
+  showSkeleton = computed(() => this.loading() && this.events().length === 0);
   showForm = signal(false);
   editingId = signal<string | null>(null);
   searchTerm = signal('');
@@ -69,6 +72,7 @@ export class EventsComponent implements OnInit, OnDestroy {
   showScrapeCooldown = signal(false);
   lastFinishedAt = signal<string | null>(null);
   private scrapePolling?: ReturnType<typeof setInterval>;
+  private coldHintTimer?: ReturnType<typeof setTimeout>;
 
   pageEvents = computed(() => this.events());
   filteredEvents = computed(() => this.events());
@@ -115,7 +119,11 @@ export class EventsComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit() {
-    this.eventsService.clearCache();
+    this.eventsService.restorePersisted();
+    // hidrata SWR: mostra stale imediatamente enquanto revalida
+    const stale = this.eventsService.getStale(this.searchTerm(), this.currentPage());
+    if (stale) this.applyPage(stale);
+
     this.searchSubscription = this.searchSubject
       .pipe(debounceTime(300))
       .subscribe(() => this.loadEvents());
@@ -126,23 +134,41 @@ export class EventsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.searchSubscription?.unsubscribe();
     this.clearScrapePolling();
+    if (this.coldHintTimer) clearTimeout(this.coldHintTimer);
+  }
+
+  private applyPage(data: { eventos?: Event[]; total?: number; total_pages?: number }) {
+    const list = data.eventos || [];
+    this.totalResults.set(data.total ?? 0);
+    if (list.length === 0 && this.currentPage() > 1) {
+      const lastPage = Math.max(1, data.total_pages ?? 1);
+      this.currentPage.set(lastPage);
+      this.loadEvents();
+      return;
+    }
+    this.events.set(list);
+    this.totalPages.set(Math.max(1, data.total_pages ?? 1));
   }
 
   loadEvents() {
+    if (this.coldHintTimer) clearTimeout(this.coldHintTimer);
+    this.showColdHint.set(false);
+    // se ainda carregando após 2s, mostra hint de cold start
+    if (this.events().length === 0) {
+      this.coldHintTimer = setTimeout(() => {
+        if (this.loading()) this.showColdHint.set(true);
+      }, 2000);
+    }
+
     this.eventsService.getEvents(this.searchTerm(), this.currentPage()).subscribe({
       next: (data) => {
-        const list = data.eventos || [];
-        this.totalResults.set(data.total ?? 0);
-        if (list.length === 0 && this.currentPage() > 1) {
-          const lastPage = Math.max(1, data.total_pages);
-          this.currentPage.set(lastPage);
-          this.loadEvents();
-          return;
-        }
-        this.events.set(list);
-        this.totalPages.set(Math.max(1, data.total_pages));
+        if (this.coldHintTimer) clearTimeout(this.coldHintTimer);
+        this.showColdHint.set(false);
+        this.applyPage(data);
       },
       error: (error) => {
+        if (this.coldHintTimer) clearTimeout(this.coldHintTimer);
+        this.showColdHint.set(false);
         this.toastService.error('Erro ao carregar eventos: ' + error.message);
       },
     });

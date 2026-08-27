@@ -16,6 +16,14 @@ import { SKIP_LOADING } from '../../../core/contexts/skip-loading.context';
 import { ScrapeImportResult, ScrapeJobStatus } from '../models/scrape.model';
 import { environment } from '../../../../environments/environment';
 
+const PERSIST_KEY_PREFIX = 'circuito:events:v1:';
+const PERSIST_TTL_MS = 5 * 60 * 1000;
+
+interface PersistedEntry {
+  data: EventPage;
+  ts: number;
+}
+
 @Service()
 export class EventsService {
   private http = inject(HttpClient);
@@ -52,7 +60,63 @@ export class EventsService {
 
     return this.http
       .get<EventPage>(`${this.baseUrl}/eventos`, { params })
-      .pipe(tap((data) => this.eventsCache.set(key, data)));
+      .pipe(
+        tap((data) => {
+          this.eventsCache.set(key, data);
+          this.persist(key, data);
+        }),
+      );
+  }
+
+  /** SWR: tenta devolver stale de localStorage para render imediato */
+  getStale(search = '', page = 1): EventPage | null {
+    const query = search?.trim() || '';
+    const key = query ? `q:${query}:${page}` : `p:${page}`;
+    // memória primeiro
+    const mem = this.eventsCache.get(key);
+    if (mem) return mem;
+    // depois localStorage
+    try {
+      const raw = localStorage.getItem(PERSIST_KEY_PREFIX + key);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as PersistedEntry;
+      if (!parsed?.data || typeof parsed.ts !== 'number') return null;
+      if (Date.now() - parsed.ts > PERSIST_TTL_MS) return null;
+      // hidrata memória para próximos hits
+      this.eventsCache.set(key, parsed.data);
+      return parsed.data;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Restaura todas as chaves persistidas para o Map em memória (chamado no bootstrap) */
+  restorePersisted(): void {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !k.startsWith(PERSIST_KEY_PREFIX)) continue;
+        const raw = localStorage.getItem(k);
+        if (!raw) continue;
+        const parsed = JSON.parse(raw) as PersistedEntry;
+        if (!parsed?.data || typeof parsed.ts !== 'number') continue;
+        if (Date.now() - parsed.ts > PERSIST_TTL_MS) {
+          localStorage.removeItem(k);
+          continue;
+        }
+        const cacheKey = k.slice(PERSIST_KEY_PREFIX.length);
+        if (!this.eventsCache.has(cacheKey)) {
+          this.eventsCache.set(cacheKey, parsed.data);
+        }
+      }
+    } catch {}
+  }
+
+  private persist(key: string, data: EventPage): void {
+    try {
+      const entry: PersistedEntry = { data, ts: Date.now() };
+      localStorage.setItem(PERSIST_KEY_PREFIX + key, JSON.stringify(entry));
+    } catch {}
   }
 
   runScrape(): Observable<{ job_id: string }> {
@@ -138,6 +202,14 @@ export class EventsService {
 
   clearCache() {
     this.eventsCache.clear();
+    try {
+      const toRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k?.startsWith(PERSIST_KEY_PREFIX)) toRemove.push(k);
+      }
+      toRemove.forEach((k) => localStorage.removeItem(k));
+    } catch {}
   }
 
   private handleError(error: HttpErrorResponse | Error) {
