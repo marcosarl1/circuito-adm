@@ -517,7 +517,7 @@
                 class="overflow-hidden rounded-lg border border-[rgba(142,202,230,0.14)]"
               >
                 <div class="max-h-[320px] overflow-auto">
-                  <table class="w-full min-w-[560px] border-collapse text-sm">
+                  <table class="w-full min-w-[680px] border-collapse text-sm">
                     <thead
                       class="sticky top-0 z-10 bg-[rgba(1,19,28,0.96)] backdrop-blur"
                     >
@@ -693,19 +693,172 @@
                           </button>
                         </th>
                         <th
-                          class="whitespace-nowrap px-2 py-2.5 text-right font-semibold"
+                          class="whitespace-nowrap px-2 py-2.5 text-right"
+                          [attr.aria-sort]="
+                            sortBy() === 'sem_preco'
+                              ? sortDir() === 'desc'
+                                ? 'descending'
+                                : 'ascending'
+                              : 'none'
+                          "
                         >
-                          Sem preço
+                          <button
+                            type="button"
+                            class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            [class.bg-[rgba(142,202,230,0.14)]]="
+                              sortBy() === 'sem_preco'
+                            "
+                            [class.text-[var(--foreground)]]="
+                              sortBy() === 'sem_preco'
+                            "
+                            [class.text-[var(--color-text-secondary)]]="
+                              sortBy() !== 'sem_preco'
+                            "
+                            [class.hover:text-[var(--foreground)]]="
+                              sortBy() !== 'sem_preco'
+                            "
+                            (click)="setSort('sem_preco')"
+                            [attr.title]="
+                              sortBy() === 'sem_preco'
+                                ? 'Ordenado ' + sortDir()
+                                : 'Ordenar por sem preço'
+                            "
+                          >
+                            Sem preço
+                            @if (sortBy() === "sem_preco") {
+                              <hugeicons-icon
+                                [icon]="
+                                  sortDir() === 'desc'
+                                    ? ArrowDown01Icon
+                                    : ArrowUp01Icon
+                                "
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.9"
+                                class="shrink-0"
+                              />
+                            } @else {
+                              <hugeicons-icon
+                                [icon]="ArrowUpDownIcon"
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.7"
+                                class="shrink-0 opacity-50"
+                              />
+                            }
+                          </button>
                         </th>
                         <th
-                          class="whitespace-nowrap px-2 py-2.5 text-right font-semibold"
+                          class="whitespace-nowrap px-2 py-2.5 text-right"
+                          [attr.aria-sort]="
+                            sortBy() === 'passados'
+                              ? sortDir() === 'desc'
+                                ? 'descending'
+                                : 'ascending'
+                              : 'none'
+                          "
                         >
-                          Passados
+                          <button
+                            type="button"
+                            class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            [class.bg-[rgba(142,202,230,0.14)]]="
+                              sortBy() === 'passados'
+                            "
+                            [class.text-[var(--foreground)]]="
+                              sortBy() === 'passados'
+                            "
+                            [class.text-[var(--color-text-secondary)]]="
+                              sortBy() !== 'passados'
+                            "
+                            [class.hover:text-[var(--foreground)]]="
+                              sortBy() !== 'passados'
+                            "
+                            (click)="setSort('passados')"
+                            [attr.title]="
+                              sortBy() === 'passados'
+                                ? 'Ordenado ' + sortDir()
+                                : 'Ordenar por passados'
+                            "
+                          >
+                            Passados
+                            @if (sortBy() === "passados") {
+                              <hugeicons-icon
+                                [icon]="
+                                  sortDir() === 'desc'
+                                    ? ArrowDown01Icon
+                                    : ArrowUp01Icon
+                                "
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.9"
+                                class="shrink-0"
+                              />
+                            } @else {
+                              <hugeicons-icon
+                                [icon]="ArrowUpDownIcon"
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.7"
+                                class="shrink-0 opacity-50"
+                              />
+                            }
+                          </button>
                         </th>
                         <th
-                          class="whitespace-nowrap px-2 py-2.5 text-right font-semibold"
+                          class="whitespace-nowrap px-2 py-2.5 text-right"
+                          [attr.aria-sort]="
+                            sortBy() === 'sem_imagem'
+                              ? sortDir() === 'desc'
+                                ? 'descending'
+                                : 'ascending'
+                              : 'none'
+                          "
                         >
-                          Sem imagem
+                          <button
+                            type="button"
+                            class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            [class.bg-[rgba(142,202,230,0.14)]]="
+                              sortBy() === 'sem_imagem'
+                            "
+                            [class.text-[var(--foreground)]]="
+                              sortBy() === 'sem_imagem'
+                            "
+                            [class.text-[var(--color-text-secondary)]]="
+                              sortBy() !== 'sem_imagem'
+                            "
+                            [class.hover:text-[var(--foreground)]]="
+                              sortBy() !== 'sem_imagem'
+                            "
+                            (click)="setSort('sem_imagem')"
+                            [attr.title]="
+                              sortBy() === 'sem_imagem'
+                                ? 'Ordenado ' + sortDir()
+                                : 'Ordenar por sem imagem'
+                            "
+                          >
+                            Sem imagem
+                            @if (sortBy() === "sem_imagem") {
+                              <hugeicons-icon
+                                [icon]="
+                                  sortDir() === 'desc'
+                                    ? ArrowDown01Icon
+                                    : ArrowUp01Icon
+                                "
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.9"
+                                class="shrink-0"
+                              />
+                            } @else {
+                              <hugeicons-icon
+                                [icon]="ArrowUpDownIcon"
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.7"
+                                class="shrink-0 opacity-50"
+                              />
+                            }
+                          </button>
                         </th>
                       </tr>
                     </thead>
@@ -754,6 +907,8 @@
                           </td>
                           <td
                             class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                            [class.text-amber-200]="csv.eventos_passados > 0"
+                            [class.font-semibold]="csv.eventos_passados > 0"
                             [class.text-[var(--color-text-secondary)]]="
                               csv.eventos_passados === 0
                             "

@@ -12,7 +12,13 @@ import {
   ScrapeScraperResult,
 } from '../../models/scrape.model';
 
-type SortKey = 'total' | 'duplicados' | 'fonte';
+type SortKey =
+  | 'total'
+  | 'duplicados'
+  | 'fonte'
+  | 'sem_preco'
+  | 'sem_imagem'
+  | 'passados';
 
 @Component({
   selector: 'app-scrape-report-modal',
@@ -121,6 +127,17 @@ export class ScrapeReportModalComponent {
       }
       if (key === 'duplicados') {
         return dir === 'asc' ? a.duplicados - b.duplicados : b.duplicados - a.duplicados;
+      }
+      if (key === 'sem_preco') {
+        return dir === 'asc' ? a.sem_preco - b.sem_preco : b.sem_preco - a.sem_preco;
+      }
+      if (key === 'sem_imagem') {
+        return dir === 'asc' ? a.sem_imagem - b.sem_imagem : b.sem_imagem - a.sem_imagem;
+      }
+      if (key === 'passados') {
+        return dir === 'asc'
+          ? a.eventos_passados - b.eventos_passados
+          : b.eventos_passados - a.eventos_passados;
       }
       // total
       return dir === 'asc' ? a.total - b.total : b.total - a.total;
