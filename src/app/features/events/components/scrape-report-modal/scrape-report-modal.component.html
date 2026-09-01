@@ -27,27 +27,27 @@
         @if (report()) {
           <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
             <span
-              class="inline-flex items-center gap-1.5 rounded-full border border-[rgba(142,202,230,0.18)] bg-[rgba(142,202,230,0.08)] px-2.5 py-1 font-medium text-[var(--color-text-secondary)]"
+              class="inline-flex min-h-[26px] items-center gap-1.5 rounded-full border border-[rgba(142,202,230,0.22)] bg-[#0b2532] px-2.5 py-1 font-medium text-[#bae6f5]"
             >
               <span
-                class="h-1.5 w-1.5 rounded-full bg-[var(--brand-sky-200)]"
+                class="h-1.5 w-1.5 rounded-full bg-[#8ecae6]"
               ></span>
               {{ summary().total }} fontes
             </span>
             <span
-              class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 font-medium text-emerald-300"
+              class="inline-flex min-h-[26px] items-center gap-1.5 rounded-full border border-emerald-800/50 bg-[#0f2e22] px-2.5 py-1 font-medium text-emerald-100"
             >
               <span
-                class="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]"
+                class="h-1.5 w-1.5 rounded-full bg-emerald-400"
               ></span>
               {{ summary().ok }} OK
             </span>
             @if (summary().fail > 0) {
               <span
-                class="inline-flex items-center gap-1.5 rounded-full border border-red-500/25 bg-red-500/10 px-2.5 py-1 font-medium text-red-300"
+                class="inline-flex min-h-[26px] items-center gap-1.5 rounded-full border border-red-800/50 bg-[#3a1212] px-2.5 py-1 font-medium text-red-100"
               >
                 <span
-                  class="h-1.5 w-1.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]"
+                  class="h-1.5 w-1.5 rounded-full bg-red-400"
                 ></span>
                 {{ summary().fail }} falha(s)
               </span>
@@ -162,7 +162,7 @@
               </div>
             } @else {
               <div
-                class="flex flex-wrap gap-2"
+                class="flex flex-wrap items-center content-start gap-2"
                 role="list"
                 aria-label="Lista de fontes"
               >
@@ -170,20 +170,20 @@
                   <button
                     type="button"
                     role="listitem"
-                    class="group inline-flex max-w-full items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all hover:-translate-y-[1px] hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
-                    [class.border-emerald-500/20]="scraper.ok"
-                    [class.bg-emerald-500/10]="scraper.ok"
-                    [class.text-emerald-200]="scraper.ok"
-                    [class.hover:bg-emerald-500/15]="scraper.ok"
-                    [class.border-red-500/25]="!scraper.ok"
-                    [class.bg-red-500/10]="!scraper.ok"
-                    [class.text-red-200]="!scraper.ok"
-                    [class.hover:bg-red-500/15]="!scraper.ok"
+                    class="group inline-flex max-w-full min-h-[32px] items-center justify-center gap-2 rounded-full border px-3 py-1 text-xs font-medium leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                    [class.border-emerald-800/50]="scraper.ok"
+                    [class.bg-emerald-950]="scraper.ok"
+                    [class.text-emerald-100]="scraper.ok"
+                    [class.hover:bg-emerald-900]="scraper.ok"
+                    [class.border-red-900/60]="!scraper.ok"
+                    [class.bg-red-950]="!scraper.ok"
+                    [class.text-red-100]="!scraper.ok"
+                    [class.hover:bg-red-900]="!scraper.ok"
                     [class.ring-2]="selectedDetail() === scraper.nome"
-                    [class.ring-emerald-500/30]="
+                    [class.ring-emerald-600/30]="
                       selectedDetail() === scraper.nome && scraper.ok
                     "
-                    [class.ring-red-500/30]="
+                    [class.ring-red-600/30]="
                       selectedDetail() === scraper.nome && !scraper.ok
                     "
                     (click)="toggleDetail(scraper.nome)"
@@ -197,23 +197,21 @@
                     "
                   >
                     <span
-                      class="h-1.5 w-1.5 shrink-0 rounded-full"
-                      [class.bg-emerald-500]="scraper.ok"
-                      [class.shadow-[0_0_6px_rgba(16,185,129,0.55)]]="
-                        scraper.ok
-                      "
-                      [class.bg-red-500]="!scraper.ok"
-                      [class.shadow-[0_0_6px_rgba(239,68,68,0.55)]]="
-                        !scraper.ok
-                      "
+                      class="h-2 w-2 shrink-0 rounded-full"
+                      [class.bg-emerald-400]="scraper.ok"
+                      [class.bg-red-400]="!scraper.ok"
                     ></span>
-                    <span class="truncate">{{ scraper.nome }}</span>
+                    <span class="truncate leading-none">{{ scraper.nome }}</span>
                     <span
-                      class="shrink-0 rounded-full px-1.5 py-0 text-[10px] font-semibold leading-none tracking-wide"
-                      [class.bg-emerald-500/20]="scraper.ok"
-                      [class.text-emerald-300]="scraper.ok"
-                      [class.bg-red-500/20]="!scraper.ok"
-                      [class.text-red-300]="!scraper.ok"
+                      class="inline-flex shrink-0 items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none tracking-wide"
+                      [class.bg-emerald-900]="scraper.ok"
+                      [class.text-emerald-100]="scraper.ok"
+                      [class.border]="scraper.ok"
+                      [class.border-emerald-800/40]="scraper.ok"
+                      [class.bg-red-900]="!scraper.ok"
+                      [class.text-red-100]="!scraper.ok"
+                      [class.border]="!scraper.ok"
+                      [class.border-red-900/40]="!scraper.ok"
                     >
                       {{ scraper.duration_s }}s
                     </span>
@@ -284,14 +282,16 @@
                 @if (sel.detail || sel.stderr) {
                   <div
                     class="mt-3 rounded-lg border bg-[rgba(0,9,14,0.35)] p-3 text-xs leading-relaxed"
-                    [class.border-emerald-500/15]="sel.ok"
-                    [class.border-red-500/20]="!sel.ok"
+                    [class.border-emerald-800/40]="sel.ok"
+                    [class.bg-emerald-950/30]="sel.ok"
+                    [class.border-red-800/40]="!sel.ok"
+                    [class.bg-red-950/30]="!sel.ok"
                   >
                     <div class="mb-1.5 flex items-center justify-between gap-2">
                       <span
                         class="font-semibold tracking-wide"
-                        [class.text-emerald-300]="sel.ok"
-                        [class.text-red-300]="!sel.ok"
+                        [class.text-emerald-200]="sel.ok"
+                        [class.text-red-200]="!sel.ok"
                       >
                         {{ sel.nome }} — {{ sel.ok ? "OK" : "FALHOU" }}
                       </span>
@@ -362,43 +362,43 @@
                   >
                     <div class="min-w-0 flex-1">
                       <div class="flex items-center gap-2">
-                        <span
-                          class="h-1.5 w-1.5 shrink-0 rounded-full"
-                          [class.bg-emerald-500]="bar.ok"
-                          [class.bg-red-500]="!bar.ok"
-                        ></span>
+                          <span
+                            class="h-1.5 w-1.5 shrink-0 rounded-full"
+                            [class.bg-emerald-400]="bar.ok"
+                            [class.bg-red-400]="!bar.ok"
+                          ></span>
                         <span
                           class="truncate text-xs font-medium text-[var(--foreground)]"
                           >{{ bar.nome }}</span
                         >
                         @if (bar.isBottleneck) {
                           <span
-                            class="inline-flex shrink-0 items-center rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300"
+                            class="inline-flex shrink-0 items-center rounded-full border border-amber-800/40 bg-amber-950 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-100"
                           >
                             gargalo
                           </span>
                         }
                       </div>
                       <div
-                        class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]"
+                        class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-[rgba(142,202,230,0.14)]"
                       >
                         <div
                           class="h-full rounded-full transition-all"
-                          [class.bg-emerald-500]="bar.ok && !bar.isBottleneck"
-                          [class.bg-amber-400]="bar.isBottleneck && bar.ok"
-                          [class.bg-red-500]="!bar.ok"
+                          [class.bg-emerald-600]="bar.ok && !bar.isBottleneck"
+                          [class.bg-amber-500]="bar.isBottleneck && bar.ok"
+                          [class.bg-red-600]="!bar.ok"
                           [style.width.%]="bar.width"
                         ></div>
                       </div>
                     </div>
                     <span
                       class="shrink-0 rounded-full border px-2 py-1 text-[11px] font-semibold tabular-nums leading-none"
-                      [class.border-emerald-500/20]="bar.ok"
-                      [class.bg-emerald-500/10]="bar.ok"
-                      [class.text-emerald-200]="bar.ok"
-                      [class.border-red-500/20]="!bar.ok"
-                      [class.bg-red-500/10]="!bar.ok"
-                      [class.text-red-200]="!bar.ok"
+                      [class.border-emerald-800/50]="bar.ok"
+                      [class.bg-emerald-950]="bar.ok"
+                      [class.text-emerald-100]="bar.ok"
+                      [class.border-red-800/50]="!bar.ok"
+                      [class.bg-red-950]="!bar.ok"
+                      [class.text-red-100]="!bar.ok"
                     >
                       {{ bar.duration_s }}s
                     </span>
@@ -424,17 +424,17 @@
                   [attr.aria-checked]="onlyAlerts()"
                   (click)="toggleOnlyAlerts()"
                   class="inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
-                  [class.border-amber-500/30]="onlyAlerts()"
-                  [class.bg-amber-500/15]="onlyAlerts()"
-                  [class.text-amber-200]="onlyAlerts()"
+                  [class.border-amber-700/50]="onlyAlerts()"
+                  [class.bg-amber-950]="onlyAlerts()"
+                  [class.text-amber-100]="onlyAlerts()"
                   [class.border-[rgba(142,202,230,0.18)]]="!onlyAlerts()"
                   [class.bg-[rgba(142,202,230,0.08)]]="!onlyAlerts()"
                   [class.text-[var(--color-text-secondary)]]="!onlyAlerts()"
                 >
                   <span
                     class="grid h-3.5 w-3.5 place-items-center rounded-full border text-[10px] leading-none"
-                    [class.border-amber-400]="onlyAlerts()"
-                    [class.bg-amber-500]="onlyAlerts()"
+                    [class.border-amber-600]="onlyAlerts()"
+                    [class.bg-amber-600]="onlyAlerts()"
                     [class.text-white]="onlyAlerts()"
                     [class.border-[rgba(142,202,230,0.35)]]="!onlyAlerts()"
                     [class.bg-transparent]="!onlyAlerts()"
@@ -451,65 +451,6 @@
                     >
                   }
                 </button>
-
-                <!-- sort -->
-                <div
-                  class="inline-flex overflow-hidden rounded-full border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.28)] p-0.5 text-xs"
-                >
-                  <button
-                    type="button"
-                    class="rounded-full px-2.5 py-1 font-medium transition-colors"
-                    [class.bg-[var(--brand-navy-500)]]="sortBy() === 'total'"
-                    [class.text-white]="sortBy() === 'total'"
-                    [class.text-[var(--color-text-secondary)]]="
-                      sortBy() !== 'total'
-                    "
-                    (click)="setSort('total')"
-                  >
-                    Total
-                    @if (sortBy() === "total") {
-                      <span aria-hidden="true">{{
-                        sortDir() === "desc" ? " ↓" : " ↑"
-                      }}</span>
-                    }
-                  </button>
-                  <button
-                    type="button"
-                    class="rounded-full px-2.5 py-1 font-medium transition-colors"
-                    [class.bg-[var(--brand-navy-500)]]="
-                      sortBy() === 'duplicados'
-                    "
-                    [class.text-white]="sortBy() === 'duplicados'"
-                    [class.text-[var(--color-text-secondary)]]="
-                      sortBy() !== 'duplicados'
-                    "
-                    (click)="setSort('duplicados')"
-                  >
-                    Duplicados
-                    @if (sortBy() === "duplicados") {
-                      <span aria-hidden="true">{{
-                        sortDir() === "desc" ? " ↓" : " ↑"
-                      }}</span>
-                    }
-                  </button>
-                  <button
-                    type="button"
-                    class="rounded-full px-2.5 py-1 font-medium transition-colors"
-                    [class.bg-[var(--brand-navy-500)]]="sortBy() === 'fonte'"
-                    [class.text-white]="sortBy() === 'fonte'"
-                    [class.text-[var(--color-text-secondary)]]="
-                      sortBy() !== 'fonte'
-                    "
-                    (click)="setSort('fonte')"
-                  >
-                    A–Z
-                    @if (sortBy() === "fonte") {
-                      <span aria-hidden="true">{{
-                        sortDir() === "asc" ? " ↓" : " ↑"
-                      }}</span>
-                    }
-                  </button>
-                </div>
               </div>
             </div>
 
@@ -583,43 +524,171 @@
                       <tr
                         class="text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
                       >
-                        <th class="whitespace-nowrap px-3 py-2.5">
+                        <th
+                          class="whitespace-nowrap px-3 py-2.5"
+                          [attr.aria-sort]="
+                            sortBy() === 'fonte'
+                              ? sortDir() === 'asc'
+                                ? 'ascending'
+                                : 'descending'
+                              : 'none'
+                          "
+                        >
                           <button
                             type="button"
-                            class="inline-flex items-center gap-1 font-semibold hover:text-[var(--foreground)]"
+                            class="inline-flex items-center gap-1 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            [class.bg-[rgba(142,202,230,0.14)]]="
+                              sortBy() === 'fonte'
+                            "
+                            [class.text-[var(--foreground)]]="
+                              sortBy() === 'fonte'
+                            "
+                            [class.text-[var(--color-text-secondary)]]="
+                              sortBy() !== 'fonte'
+                            "
+                            [class.hover:text-[var(--foreground)]]="
+                              sortBy() !== 'fonte'
+                            "
                             (click)="setSort('fonte')"
+                            [attr.title]="
+                              sortBy() === 'fonte'
+                                ? 'Ordenado ' + sortDir()
+                                : 'Ordenar por fonte'
+                            "
                           >
                             Fonte
                             @if (sortBy() === "fonte") {
-                              <span>{{ sortDir() === "asc" ? "↑" : "↓" }}</span>
+                              <hugeicons-icon
+                                [icon]="
+                                  sortDir() === 'asc'
+                                    ? ArrowUp01Icon
+                                    : ArrowDown01Icon
+                                "
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.9"
+                                class="shrink-0"
+                              />
+                            } @else {
+                              <hugeicons-icon
+                                [icon]="ArrowUpDownIcon"
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.7"
+                                class="shrink-0 opacity-50"
+                              />
                             }
                           </button>
                         </th>
-                        <th class="whitespace-nowrap px-2 py-2.5 text-right">
+                        <th
+                          class="whitespace-nowrap px-2 py-2.5 text-right"
+                          [attr.aria-sort]="
+                            sortBy() === 'total'
+                              ? sortDir() === 'desc'
+                                ? 'descending'
+                                : 'ascending'
+                              : 'none'
+                          "
+                        >
                           <button
                             type="button"
-                            class="inline-flex items-center gap-1 font-semibold hover:text-[var(--foreground)]"
+                            class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            [class.bg-[rgba(142,202,230,0.14)]]="
+                              sortBy() === 'total'
+                            "
+                            [class.text-[var(--foreground)]]="
+                              sortBy() === 'total'
+                            "
+                            [class.text-[var(--color-text-secondary)]]="
+                              sortBy() !== 'total'
+                            "
+                            [class.hover:text-[var(--foreground)]]="
+                              sortBy() !== 'total'
+                            "
                             (click)="setSort('total')"
+                            [attr.title]="
+                              sortBy() === 'total'
+                                ? 'Ordenado ' + sortDir()
+                                : 'Ordenar por total'
+                            "
                           >
                             Total
                             @if (sortBy() === "total") {
-                              <span>{{
-                                sortDir() === "desc" ? "↓" : "↑"
-                              }}</span>
+                              <hugeicons-icon
+                                [icon]="
+                                  sortDir() === 'desc'
+                                    ? ArrowDown01Icon
+                                    : ArrowUp01Icon
+                                "
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.9"
+                                class="shrink-0"
+                              />
+                            } @else {
+                              <hugeicons-icon
+                                [icon]="ArrowUpDownIcon"
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.7"
+                                class="shrink-0 opacity-50"
+                              />
                             }
                           </button>
                         </th>
-                        <th class="whitespace-nowrap px-2 py-2.5 text-right">
+                        <th
+                          class="whitespace-nowrap px-2 py-2.5 text-right"
+                          [attr.aria-sort]="
+                            sortBy() === 'duplicados'
+                              ? sortDir() === 'desc'
+                                ? 'descending'
+                                : 'ascending'
+                              : 'none'
+                          "
+                        >
                           <button
                             type="button"
-                            class="inline-flex items-center gap-1 font-semibold hover:text-[var(--foreground)]"
+                            class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            [class.bg-[rgba(142,202,230,0.14)]]="
+                              sortBy() === 'duplicados'
+                            "
+                            [class.text-[var(--foreground)]]="
+                              sortBy() === 'duplicados'
+                            "
+                            [class.text-[var(--color-text-secondary)]]="
+                              sortBy() !== 'duplicados'
+                            "
+                            [class.hover:text-[var(--foreground)]]="
+                              sortBy() !== 'duplicados'
+                            "
                             (click)="setSort('duplicados')"
+                            [attr.title]="
+                              sortBy() === 'duplicados'
+                                ? 'Ordenado ' + sortDir()
+                                : 'Ordenar por duplicados'
+                            "
                           >
                             Duplicados
                             @if (sortBy() === "duplicados") {
-                              <span>{{
-                                sortDir() === "desc" ? "↓" : "↑"
-                              }}</span>
+                              <hugeicons-icon
+                                [icon]="
+                                  sortDir() === 'desc'
+                                    ? ArrowDown01Icon
+                                    : ArrowUp01Icon
+                                "
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.9"
+                                class="shrink-0"
+                              />
+                            } @else {
+                              <hugeicons-icon
+                                [icon]="ArrowUpDownIcon"
+                                [size]="16"
+                                color="currentColor"
+                                [strokeWidth]="1.7"
+                                class="shrink-0 opacity-50"
+                              />
                             }
                           </button>
                         </th>
@@ -649,8 +718,8 @@
                             <span class="inline-flex items-center gap-2">
                               <span
                                 class="h-1.5 w-1.5 shrink-0 rounded-full"
-                                [class.bg-emerald-500]="csv.ok"
-                                [class.bg-amber-500]="!csv.ok"
+                                [class.bg-emerald-400]="csv.ok"
+                                [class.bg-amber-400]="!csv.ok"
                               ></span>
                               <span
                                 class="text-[13px] font-medium leading-none"
@@ -665,7 +734,8 @@
                           </td>
                           <td
                             class="px-2 py-2.5 text-right tabular-nums text-[13px]"
-                            [class.text-amber-300]="csv.duplicados > 0"
+                            [class.text-amber-200]="csv.duplicados > 0"
+                            [class.font-semibold]="csv.duplicados > 0"
                             [class.text-[var(--color-text-secondary)]]="
                               csv.duplicados === 0
                             "
@@ -674,7 +744,8 @@
                           </td>
                           <td
                             class="px-2 py-2.5 text-right tabular-nums text-[13px]"
-                            [class.text-amber-300]="csv.sem_preco > 0"
+                            [class.text-amber-200]="csv.sem_preco > 0"
+                            [class.font-semibold]="csv.sem_preco > 0"
                             [class.text-[var(--color-text-secondary)]]="
                               csv.sem_preco === 0
                             "
@@ -691,7 +762,8 @@
                           </td>
                           <td
                             class="px-2 py-2.5 text-right tabular-nums text-[13px]"
-                            [class.text-amber-300]="csv.sem_imagem > 0"
+                            [class.text-amber-200]="csv.sem_imagem > 0"
+                            [class.font-semibold]="csv.sem_imagem > 0"
                             [class.text-[var(--color-text-secondary)]]="
                               csv.sem_imagem === 0
                             "
@@ -733,7 +805,7 @@
 
         @if (error(); as err) {
           <div
-            class="rounded-lg border border-red-500/25 bg-red-500/10 px-3 py-3 text-sm leading-5 text-red-200"
+            class="rounded-lg border border-red-800/50 bg-red-950 px-3 py-3 text-sm leading-5 text-red-100"
           >
             {{ err }}
           </div>
