@@ -68,7 +68,8 @@
 
       <button
         type="button"
-        class="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-[rgba(142,202,230,0.18)] bg-transparent text-[var(--color-text-secondary)] transition-colors hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)]"
+        data-autofocus
+        class="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-[rgba(142,202,230,0.18)] bg-transparent text-[var(--color-text-secondary)] transition-colors hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
         (click)="close.emit()"
         aria-label="Fechar"
       >

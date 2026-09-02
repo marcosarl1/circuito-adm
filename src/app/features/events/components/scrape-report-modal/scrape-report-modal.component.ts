@@ -1,4 +1,16 @@
-import { Component, computed, HostListener, input, output, signal } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  ElementRef,
+  HostListener,
+  inject,
+  input,
+  OnDestroy,
+  output,
+  signal,
+} from '@angular/core';
+import { A11yModule, InteractivityChecker } from '@angular/cdk/a11y';
 import {
   ScrapeCsvSummary,
   ScrapeImportResult,
@@ -16,10 +28,10 @@ type SortKey =
 
 @Component({
   selector: 'app-scrape-report-modal',
-  imports: [],
+  imports: [A11yModule],
   templateUrl: './scrape-report-modal.component.html',
 })
-export class ScrapeReportModalComponent {
+export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
   report = input<ScrapeReport | null>(null);
   importing = input(false);
   importResult = input<ScrapeImportResult | null>(null);
@@ -27,6 +39,11 @@ export class ScrapeReportModalComponent {
 
   import = output<void>();
   close = output<void>();
+
+  private el = inject(ElementRef<HTMLElement>);
+  private checker = inject(InteractivityChecker, { optional: true });
+  private previousOverflow: string | null = null;
+  private previousActiveElement: HTMLElement | null = null;
 
   @HostListener('window:keydown', ['$event'])
   onWindowKeydown(event: KeyboardEvent): void {
@@ -38,6 +55,61 @@ export class ScrapeReportModalComponent {
       return;
     }
     this.close.emit();
+  }
+
+  @HostListener('keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Tab') return;
+    this.trapTab(event);
+  }
+
+  ngAfterViewInit(): void {
+    this.previousActiveElement = document.activeElement as HTMLElement | null;
+    this.previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    // focus first focusable inside modal
+    queueMicrotask(() => {
+      const target =
+        (this.el.nativeElement.querySelector('[data-autofocus]') as HTMLElement | null) ??
+        this.findFocusable()[0];
+      target?.focus();
+    });
+  }
+
+  ngOnDestroy(): void {
+    document.body.style.overflow = this.previousOverflow ?? '';
+    this.previousActiveElement?.focus?.();
+  }
+
+  private findFocusable(): HTMLElement[] {
+    const root = this.el.nativeElement;
+    const nodes = root.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    return (Array.from(nodes) as HTMLElement[]).filter((n) => {
+      if (n.closest('[hidden]') || n.getAttribute('aria-hidden') === 'true') return false;
+      if (this.checker) return this.checker.isTabbable(n);
+      return n.tabIndex >= 0 || n instanceof HTMLButtonElement || n instanceof HTMLAnchorElement;
+    });
+  }
+
+  private trapTab(event: KeyboardEvent): void {
+    const focusable = this.findFocusable();
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+    if (event.shiftKey) {
+      if (active === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   }
 
   // badge system
