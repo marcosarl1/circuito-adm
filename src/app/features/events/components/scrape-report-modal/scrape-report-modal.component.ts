@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, HostListener, input, output, signal } from '@angular/core';
 import {
   ScrapeCsvSummary,
   ScrapeImportResult,
@@ -27,6 +27,18 @@ export class ScrapeReportModalComponent {
 
   import = output<void>();
   close = output<void>();
+
+  @HostListener('window:keydown', ['$event'])
+  onWindowKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Escape') return;
+    // close detail first, then modal
+    if (this.selectedDetail()) {
+      this.selectedDetail.set(null);
+      event.preventDefault();
+      return;
+    }
+    this.close.emit();
+  }
 
   // badge system
   expanded = signal(false);

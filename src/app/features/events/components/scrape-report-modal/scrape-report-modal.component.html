@@ -188,6 +188,9 @@
                     "
                     (click)="toggleDetail(scraper.nome)"
                     [attr.aria-expanded]="selectedDetail() === scraper.nome"
+                    [attr.aria-controls]="
+                      hasDetail(scraper) ? 'scraper-detail-panel' : null
+                    "
                     [attr.title]="
                       (scraper.ok ? 'OK' : 'FALHOU') +
                       ' · ' +
@@ -281,6 +284,9 @@
               @if (selectedScraper(); as sel) {
                 @if (sel.detail || sel.stderr) {
                   <div
+                    id="scraper-detail-panel"
+                    role="region"
+                    [attr.aria-label]="'Detalhe de ' + sel.nome"
                     class="mt-3 rounded-lg border bg-[rgba(0,9,14,0.35)] p-3 text-xs leading-relaxed"
                     [class.border-emerald-800/40]="sel.ok"
                     [class.bg-emerald-950/30]="sel.ok"
@@ -297,10 +303,12 @@
                       </span>
                       <button
                         type="button"
-                        class="text-[11px] text-[var(--color-text-secondary)] underline decoration-dotted underline-offset-2 hover:text-[var(--foreground)]"
+                        class="inline-flex min-h-[28px] items-center justify-center rounded-md border border-transparent px-2.5 py-1 text-xs font-medium text-[var(--color-text-secondary)] underline decoration-dotted underline-offset-2 transition-colors hover:border-[rgba(142,202,230,0.18)] hover:bg-[rgba(142,202,230,0.08)] hover:text-[var(--foreground)] hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                         (click)="selectedDetail.set(null)"
+                        aria-label="Fechar detalhe"
                       >
                         fechar
+                        <span aria-hidden="true" class="ml-1">×</span>
                       </button>
                     </div>
                     @if (sel.detail) {
