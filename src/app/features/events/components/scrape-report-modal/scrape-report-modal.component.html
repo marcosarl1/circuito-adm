@@ -584,7 +584,8 @@
               <div
                 class="overflow-hidden rounded-lg border border-[rgba(142,202,230,0.14)]"
               >
-                <div class="max-h-[320px] overflow-auto">
+                <!-- desktop table -->
+                <div class="hidden max-h-[320px] overflow-auto md:block">
                   <table class="w-full min-w-[680px] border-collapse text-sm">
                     <thead
                       class="sticky top-0 z-10 bg-[rgba(1,19,28,0.96)] backdrop-blur"
@@ -902,6 +903,97 @@
                     </tbody>
                   </table>
                 </div>
+                <!-- mobile cards 2x2 -->
+                <div class="grid max-h-[380px] gap-2 overflow-auto p-2 md:hidden">
+                  @for (csv of filteredAndSortedCsvs(); track csv.fonte) {
+                    <div
+                      class="rounded-lg border border-[rgba(142,202,230,0.12)] bg-[rgba(0,9,14,0.22)] p-3"
+                    >
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="flex min-w-0 items-center gap-2">
+                          <span
+                            class="h-2 w-2 shrink-0 rounded-full"
+                            [class.bg-emerald-400]="csv.ok"
+                            [class.bg-amber-400]="!csv.ok"
+                          ></span>
+                          <span class="truncate text-[13px] font-semibold leading-none"
+                            >{{ csv.fonte }}</span
+                          >
+                        </span>
+                        <span
+                          class="shrink-0 rounded-full border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.28)] px-2 py-1 text-[11px] font-bold tabular-nums leading-none"
+                          >{{ csv.total }} total</span
+                        >
+                      </div>
+                      <div class="mt-3 grid grid-cols-2 gap-2">
+                        <div
+                          class="rounded-md border border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.18)] px-2.5 py-2"
+                        >
+                          <div
+                            class="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]"
+                          >
+                            Duplicados
+                          </div>
+                          <div
+                            class="mt-1 text-[13px] font-semibold tabular-nums"
+                            [class.text-amber-200]="csv.duplicados > 0"
+                            [class.text-[var(--color-text-secondary)]]="csv.duplicados === 0"
+                          >
+                            {{ csv.duplicados }}
+                          </div>
+                        </div>
+                        <div
+                          class="rounded-md border border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.18)] px-2.5 py-2"
+                        >
+                          <div
+                            class="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]"
+                          >
+                            Sem preço
+                          </div>
+                          <div
+                            class="mt-1 text-[13px] font-semibold tabular-nums"
+                            [class.text-amber-200]="csv.sem_preco > 0"
+                            [class.text-[var(--color-text-secondary)]]="csv.sem_preco === 0"
+                          >
+                            {{ csv.sem_preco }}
+                          </div>
+                        </div>
+                        <div
+                          class="rounded-md border border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.18)] px-2.5 py-2"
+                        >
+                          <div
+                            class="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]"
+                          >
+                            Passados
+                          </div>
+                          <div
+                            class="mt-1 text-[13px] font-semibold tabular-nums"
+                            [class.text-amber-200]="csv.eventos_passados > 0"
+                            [class.text-[var(--color-text-secondary)]]="csv.eventos_passados === 0"
+                          >
+                            {{ csv.eventos_passados }}
+                          </div>
+                        </div>
+                        <div
+                          class="rounded-md border border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.18)] px-2.5 py-2"
+                        >
+                          <div
+                            class="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]"
+                          >
+                            Sem imagem
+                          </div>
+                          <div
+                            class="mt-1 text-[13px] font-semibold tabular-nums"
+                            [class.text-amber-200]="csv.sem_imagem > 0"
+                            [class.text-[var(--color-text-secondary)]]="csv.sem_imagem === 0"
+                          >
+                            {{ csv.sem_imagem }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
                 <div
                   class="flex items-center justify-between border-t border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.28)] px-3 py-2 text-[11px] text-[var(--color-text-secondary)]"
                 >
@@ -909,10 +1001,8 @@
                     >{{ filteredAndSortedCsvs().length }} de
                     {{ report()!.csvs.length }} arquivos</span
                   >
-                  <span class="hidden sm:inline"
-                    >Clique no cabeçalho para ordenar</span
-                  >
-                  <span class="sm:hidden">Arraste →</span>
+                  <span class="hidden md:inline">Clique no cabeçalho para ordenar</span>
+                  <span class="md:hidden">{{ filteredAndSortedCsvs().length }} itens</span>
                 </div>
               </div>
             }
