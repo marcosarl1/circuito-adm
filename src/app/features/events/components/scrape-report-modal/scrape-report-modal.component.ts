@@ -1,10 +1,4 @@
 import { Component, computed, input, output, signal } from '@angular/core';
-import { HugeiconsIconComponent } from '@hugeicons/angular';
-import {
-  ArrowDown01Icon,
-  ArrowUp01Icon,
-  ArrowUpDownIcon,
-} from '@hugeicons/core-free-icons';
 import {
   ScrapeCsvSummary,
   ScrapeImportResult,
@@ -22,7 +16,7 @@ type SortKey =
 
 @Component({
   selector: 'app-scrape-report-modal',
-  imports: [HugeiconsIconComponent],
+  imports: [],
   templateUrl: './scrape-report-modal.component.html',
 })
 export class ScrapeReportModalComponent {
@@ -33,11 +27,6 @@ export class ScrapeReportModalComponent {
 
   import = output<void>();
   close = output<void>();
-
-  // hugeicons
-  ArrowUp01Icon = ArrowUp01Icon;
-  ArrowDown01Icon = ArrowDown01Icon;
-  ArrowUpDownIcon = ArrowUpDownIcon;
 
   // badge system
   expanded = signal(false);

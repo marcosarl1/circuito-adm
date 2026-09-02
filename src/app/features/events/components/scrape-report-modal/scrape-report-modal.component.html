@@ -558,25 +558,9 @@
                           >
                             Fonte
                             @if (sortBy() === "fonte") {
-                              <hugeicons-icon
-                                [icon]="
-                                  sortDir() === 'asc'
-                                    ? ArrowUp01Icon
-                                    : ArrowDown01Icon
-                                "
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.9"
-                                class="shrink-0"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'asc' ? 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z' : 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z'"></path></svg>
                             } @else {
-                              <hugeicons-icon
-                                [icon]="ArrowUpDownIcon"
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.7"
-                                class="shrink-0 opacity-50"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
                             }
                           </button>
                         </th>
@@ -614,25 +598,9 @@
                           >
                             Total
                             @if (sortBy() === "total") {
-                              <hugeicons-icon
-                                [icon]="
-                                  sortDir() === 'desc'
-                                    ? ArrowDown01Icon
-                                    : ArrowUp01Icon
-                                "
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.9"
-                                class="shrink-0"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'desc' ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z' : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'"></path></svg>
                             } @else {
-                              <hugeicons-icon
-                                [icon]="ArrowUpDownIcon"
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.7"
-                                class="shrink-0 opacity-50"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
                             }
                           </button>
                         </th>
@@ -670,25 +638,9 @@
                           >
                             Duplicados
                             @if (sortBy() === "duplicados") {
-                              <hugeicons-icon
-                                [icon]="
-                                  sortDir() === 'desc'
-                                    ? ArrowDown01Icon
-                                    : ArrowUp01Icon
-                                "
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.9"
-                                class="shrink-0"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'desc' ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z' : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'"></path></svg>
                             } @else {
-                              <hugeicons-icon
-                                [icon]="ArrowUpDownIcon"
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.7"
-                                class="shrink-0 opacity-50"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
                             }
                           </button>
                         </th>
@@ -726,25 +678,9 @@
                           >
                             Sem preço
                             @if (sortBy() === "sem_preco") {
-                              <hugeicons-icon
-                                [icon]="
-                                  sortDir() === 'desc'
-                                    ? ArrowDown01Icon
-                                    : ArrowUp01Icon
-                                "
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.9"
-                                class="shrink-0"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'desc' ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z' : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'"></path></svg>
                             } @else {
-                              <hugeicons-icon
-                                [icon]="ArrowUpDownIcon"
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.7"
-                                class="shrink-0 opacity-50"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
                             }
                           </button>
                         </th>
@@ -782,25 +718,9 @@
                           >
                             Passados
                             @if (sortBy() === "passados") {
-                              <hugeicons-icon
-                                [icon]="
-                                  sortDir() === 'desc'
-                                    ? ArrowDown01Icon
-                                    : ArrowUp01Icon
-                                "
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.9"
-                                class="shrink-0"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'desc' ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z' : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'"></path></svg>
                             } @else {
-                              <hugeicons-icon
-                                [icon]="ArrowUpDownIcon"
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.7"
-                                class="shrink-0 opacity-50"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
                             }
                           </button>
                         </th>
@@ -838,25 +758,9 @@
                           >
                             Sem imagem
                             @if (sortBy() === "sem_imagem") {
-                              <hugeicons-icon
-                                [icon]="
-                                  sortDir() === 'desc'
-                                    ? ArrowDown01Icon
-                                    : ArrowUp01Icon
-                                "
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.9"
-                                class="shrink-0"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'desc' ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z' : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'"></path></svg>
                             } @else {
-                              <hugeicons-icon
-                                [icon]="ArrowUpDownIcon"
-                                [size]="16"
-                                color="currentColor"
-                                [strokeWidth]="1.7"
-                                class="shrink-0 opacity-50"
-                              />
+                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
                             }
                           </button>
                         </th>
