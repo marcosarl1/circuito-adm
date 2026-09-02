@@ -201,7 +201,7 @@
               </div>
             } @else {
               <div
-                class="flex flex-wrap items-center content-start gap-2"
+                class="grid grid-cols-1 gap-2 md:grid-cols-2"
                 role="list"
                 aria-label="Lista de fontes"
               >
@@ -209,14 +209,12 @@
                   <button
                     type="button"
                     role="listitem"
-                    class="group inline-flex max-w-full min-h-[32px] items-center justify-center gap-2 rounded-full border px-3 py-1 text-xs font-medium leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                    class="group flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                     [class.border-emerald-800/50]="scraper.ok"
                     [class.bg-emerald-950]="scraper.ok"
-                    [class.text-emerald-100]="scraper.ok"
                     [class.hover:bg-emerald-900]="scraper.ok"
                     [class.border-red-900/60]="!scraper.ok"
                     [class.bg-red-950]="!scraper.ok"
-                    [class.text-red-100]="!scraper.ok"
                     [class.hover:bg-red-900]="!scraper.ok"
                     [class.ring-2]="selectedDetail() === scraper.nome"
                     [class.ring-emerald-600/30]="
@@ -230,48 +228,53 @@
                     [attr.aria-controls]="
                       hasDetail(scraper) ? 'scraper-detail-panel' : null
                     "
-                    [attr.title]="
-                      (scraper.ok ? 'OK' : 'FALHOU') +
-                      ' · ' +
-                      scraper.duration_s +
-                      's' +
-                      (hasDetail(scraper) ? ' · clique para detalhes' : '')
-                    "
+                    [attr.title]="scraper.nome"
                   >
-                    <span
-                      class="h-2 w-2 shrink-0 rounded-full"
-                      [class.bg-emerald-400]="scraper.ok"
-                      [class.bg-red-400]="!scraper.ok"
-                    ></span>
-                    <span class="truncate leading-none">{{ scraper.nome }}</span>
-                    <span
-                      class="inline-flex shrink-0 items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none tracking-wide"
-                      [class.bg-emerald-900]="scraper.ok"
-                      [class.text-emerald-100]="scraper.ok"
-                      [class.border]="scraper.ok"
-                      [class.border-emerald-800/40]="scraper.ok"
-                      [class.bg-red-900]="!scraper.ok"
-                      [class.text-red-100]="!scraper.ok"
-                      [class.border]="!scraper.ok"
-                      [class.border-red-900/40]="!scraper.ok"
-                    >
-                      {{ scraper.duration_s }}s
-                    </span>
-                    @if (hasDetail(scraper)) {
-                      <svg
-                        class="h-3 w-3 shrink-0 opacity-60 transition-transform group-hover:opacity-100"
-                        [class.rotate-180]="selectedDetail() === scraper.nome"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        aria-hidden="true"
+                    <span class="flex min-w-0 items-center gap-2.5">
+                      <span
+                        class="h-2 w-2 shrink-0 rounded-full"
+                        [class.bg-emerald-400]="scraper.ok"
+                        [class.bg-red-400]="!scraper.ok"
+                      ></span>
+                      <span
+                        class="min-w-0 break-words text-xs font-medium leading-tight"
+                        [class.text-emerald-100]="scraper.ok"
+                        [class.text-red-100]="!scraper.ok"
+                        >{{ scraper.nome }}</span
                       >
-                        <path d="m6 9 6 6 6-6" />
-                      </svg>
-                    }
+                    </span>
+                    <span class="flex shrink-0 items-center gap-2">
+                      <span
+                        class="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-bold leading-none tabular-nums"
+                        [class.bg-emerald-900]="scraper.ok"
+                        [class.text-emerald-100]="scraper.ok"
+                        [class.border]="scraper.ok"
+                        [class.border-emerald-800/40]="scraper.ok"
+                        [class.bg-red-900]="!scraper.ok"
+                        [class.text-red-100]="!scraper.ok"
+                        [class.border]="!scraper.ok"
+                        [class.border-red-900/40]="!scraper.ok"
+                      >
+                        {{ scraper.duration_s }}s
+                      </span>
+                      @if (hasDetail(scraper)) {
+                        <svg
+                          class="h-3.5 w-3.5 shrink-0 opacity-60 transition-transform group-hover:opacity-100"
+                          [class.rotate-180]="selectedDetail() === scraper.nome"
+                          [class.text-emerald-200]="scraper.ok"
+                          [class.text-red-200]="!scraper.ok"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="m6 9 6 6 6-6" />
+                        </svg>
+                      }
+                    </span>
                   </button>
                 }
 
@@ -281,7 +284,7 @@
                 ) {
                   <button
                     type="button"
-                    class="inline-flex items-center gap-1.5 rounded-full border border-dashed border-[rgba(142,202,230,0.28)] bg-transparent px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] transition-colors hover:border-[rgba(142,202,230,0.45)] hover:bg-[rgba(142,202,230,0.08)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                    class="col-span-full inline-flex w-fit justify-self-center items-center gap-1.5 rounded-full border border-dashed border-[rgba(142,202,230,0.28)] bg-transparent px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] transition-colors hover:border-[rgba(142,202,230,0.45)] hover:bg-[rgba(142,202,230,0.08)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                     (click)="toggleExpanded()"
                   >
                     @if (expanded()) {
