@@ -153,7 +153,9 @@
               </h4>
               @if (hasScrapers()) {
                 <span class="text-xs text-[var(--color-text-secondary)]">
-                  @if (remaining() > 0 && !expanded()) {
+                  @if (scraperCountLabel(); as label) {
+                    {{ label }}
+                  } @else if (remaining() > 0 && !expanded()) {
                     +{{ remaining() }} ocultas
                   } @else if (summary().fail === 0) {
                     todas operacionais
@@ -163,6 +165,46 @@
                 </span>
               }
             </div>
+            @if (hasScrapers()) {
+              <div class="mb-3 flex items-center gap-2">
+                <div class="relative flex-1">
+                  <svg
+                    class="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-text-secondary)]"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-3.5-3.5" />
+                  </svg>
+                  <input
+                    type="search"
+                    placeholder="Buscar fonte..."
+                    class="h-8 w-full rounded-full border border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.35)] py-1 pl-8 pr-8 text-xs text-[var(--foreground)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--brand-teal-500)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal-500)]/30"
+                    [value]="scraperQuery()"
+                    (input)="scraperQuery.set($any($event.target).value)"
+                    aria-label="Buscar fonte"
+                  />
+                  @if (scraperQuery()) {
+                    <button
+                      type="button"
+                      class="absolute right-1 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-[var(--color-text-secondary)] hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)]"
+                      (click)="scraperQuery.set('')"
+                      aria-label="Limpar busca"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                  }
+                </div>
+                @if (filteredScrapers().length === 0) {
+                  <span class="shrink-0 text-xs text-[var(--color-text-secondary)]">nenhum resultado</span>
+                }
+              </div>
+            }
 
             @if (!hasScrapers()) {
               <div
@@ -198,6 +240,22 @@
                     novamente ou verifique a conexão com os coletores.
                   </p>
                 </div>
+              </div>
+            } @else if (filteredScrapers().length === 0) {
+              <div
+                class="grid place-items-center gap-2 rounded-lg border border-dashed border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.14)] px-6 py-8 text-center"
+              >
+                <p class="m-0 text-sm font-medium text-[var(--foreground)]">Nenhuma fonte encontrada</p>
+                <p class="m-0 text-xs text-[var(--color-text-secondary)]">
+                  Nenhum resultado para “{{ scraperQuery() }}”.
+                </p>
+                <button
+                  type="button"
+                  class="mt-1 text-xs font-medium text-[var(--brand-sky-500)] underline underline-offset-2 hover:text-[var(--brand-sky-200)]"
+                  (click)="scraperQuery.set('')"
+                >
+                  Limpar busca
+                </button>
               </div>
             } @else {
               <div
@@ -485,6 +543,31 @@
                 Validação dos CSVs
               </h4>
               <div class="flex flex-wrap items-center gap-2">
+                <!-- chip counts -->
+                @if (hasCsvs()) {
+                  <div class="hidden items-center gap-1.5 text-[11px] sm:flex">
+                    @if (csvChipCounts().duplicados > 0) {
+                      <span class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+                        >dup {{ csvChipCounts().duplicados }}</span
+                      >
+                    }
+                    @if (csvChipCounts().sem_preco > 0) {
+                      <span class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+                        >sem preço {{ csvChipCounts().sem_preco }}</span
+                      >
+                    }
+                    @if (csvChipCounts().sem_imagem > 0) {
+                      <span class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+                        >sem img {{ csvChipCounts().sem_imagem }}</span
+                      >
+                    }
+                    @if (csvChipCounts().passados > 0) {
+                      <span class="inline-flex items-center rounded-full border border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.28)] px-2 py-0.5 font-medium text-[var(--color-text-secondary)]"
+                        >passados {{ csvChipCounts().passados }}</span
+                      >
+                    }
+                  </div>
+                }
                 <!-- toggle só alertas -->
                 <button
                   type="button"
@@ -521,6 +604,46 @@
                 </button>
               </div>
             </div>
+            @if (hasCsvs()) {
+              <div class="mb-3 flex items-center gap-2">
+                <div class="relative flex-1">
+                  <svg
+                    class="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-text-secondary)]"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-3.5-3.5" />
+                  </svg>
+                  <input
+                    type="search"
+                    placeholder="Filtrar por fonte..."
+                    class="h-8 w-full rounded-full border border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.35)] py-1 pl-8 pr-8 text-xs text-[var(--foreground)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--brand-teal-500)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal-500)]/30"
+                    [value]="csvQuery()"
+                    (input)="csvQuery.set($any($event.target).value)"
+                    aria-label="Filtrar CSV por fonte"
+                  />
+                  @if (csvQuery()) {
+                    <button
+                      type="button"
+                      class="absolute right-1 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-[var(--color-text-secondary)] hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)]"
+                      (click)="csvQuery.set('')"
+                      aria-label="Limpar filtro"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                  }
+                </div>
+                @if (csvQuery().trim() && filteredAndSortedCsvs().length === 0) {
+                  <span class="shrink-0 text-xs text-[var(--color-text-secondary)]">sem resultado</span>
+                }
+              </div>
+            }
 
             @if (!hasCsvs()) {
               <div

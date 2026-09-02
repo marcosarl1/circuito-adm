@@ -115,6 +115,8 @@ export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
   // badge system
   expanded = signal(false);
   selectedDetail = signal<string | null>(null);
+  scraperQuery = signal('');
+  csvQuery = signal('');
 
   // filtros / ordenação CSV
   onlyAlerts = signal(false);
@@ -134,16 +136,30 @@ export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
   hasScrapers = computed(() => (this.report()?.scrapers.length ?? 0) > 0);
   hasCsvs = computed(() => (this.report()?.csvs.length ?? 0) > 0);
 
-  visibleScrapers = computed<ScrapeScraperResult[]>(() => {
+  filteredScrapers = computed<ScrapeScraperResult[]>(() => {
     const list = this.report()?.scrapers ?? [];
+    const q = this.scraperQuery().trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((s) => s.nome.toLowerCase().includes(q));
+  });
+
+  visibleScrapers = computed<ScrapeScraperResult[]>(() => {
+    const list = this.filteredScrapers();
     if (this.expanded() || list.length <= 8) return list;
     return list.slice(0, 8);
   });
 
   remaining = computed(() => {
-    const total = this.report()?.scrapers?.length ?? 0;
+    const total = this.filteredScrapers().length;
     if (this.expanded() || total <= 8) return 0;
     return total - 8;
+  });
+
+  scraperCountLabel = computed(() => {
+    const total = this.report()?.scrapers.length ?? 0;
+    const filtered = this.filteredScrapers().length;
+    if (!this.scraperQuery().trim()) return null;
+    return `${filtered} de ${total}`;
   });
 
   selectedScraper = computed<ScrapeScraperResult | null>(() => {
@@ -187,6 +203,10 @@ export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
   // csvs filtrados e ordenados
   filteredAndSortedCsvs = computed<ScrapeCsvSummary[]>(() => {
     let list = this.report()?.csvs ?? [];
+    const q = this.csvQuery().trim().toLowerCase();
+    if (q) {
+      list = list.filter((c) => c.fonte.toLowerCase().includes(q));
+    }
     if (this.onlyAlerts()) {
       list = list.filter((c) => this.isWithAlerts(c));
     }
@@ -221,6 +241,16 @@ export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
   alertsCount = computed(() => {
     const csvs = this.report()?.csvs ?? [];
     return csvs.filter((c) => this.isWithAlerts(c)).length;
+  });
+
+  csvChipCounts = computed(() => {
+    const csvs = this.report()?.csvs ?? [];
+    return {
+      duplicados: csvs.filter((c) => c.duplicados > 0).length,
+      sem_preco: csvs.filter((c) => c.sem_preco > 0).length,
+      sem_imagem: csvs.filter((c) => c.sem_imagem > 0).length,
+      passados: csvs.filter((c) => c.eventos_passados > 0).length,
+    };
   });
 
   totalEventsCount = computed(() => {
