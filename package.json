@@ -7,14 +7,18 @@
     "prestart": "npm run generate-env",
     "start": "ng serve",
     "prebuild": "npm run generate-env",
-    "build": "ng build",
+    "build": "node --max-old-space-size=4096 ./node_modules/@angular/cli/bin/ng.js build || (cat /tmp/ng-*/angular-errors.log && exit 1)",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "dependencies": {
     "@angular/animations": "^22.0.7",
     "@angular/aria": "^22.0.6",
+    "@angular/cdk": "^22.0.6",
     "@angular/common": "^22.0.7",
     "@angular/compiler": "^22.0.7",
     "@angular/core": "^22.0.7",
@@ -45,5 +49,12 @@
     "postcss": "^8.5.15",
     "tailwindcss": "^3.4.19",
     "typescript": "~6.0.3"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.6.0": true,
+    "lmdb@3.5.4": true,
+    "msgpackr-extract@3.0.4": true,
+    "esbuild@0.27.7": true,
+    "esbuild@0.28.1": true
   }
 }
