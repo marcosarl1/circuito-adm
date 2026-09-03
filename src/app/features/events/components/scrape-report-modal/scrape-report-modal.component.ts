@@ -271,7 +271,13 @@ export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
   }
 
   isWithAlerts(csv: ScrapeCsvSummary): boolean {
-    return !csv.ok || csv.duplicados > 0 || csv.sem_preco > 0 || csv.sem_imagem > 0;
+    return (
+      !csv.ok ||
+      csv.duplicados > 0 ||
+      csv.sem_preco > 0 ||
+      csv.sem_imagem > 0 ||
+      csv.eventos_passados > 0
+    );
   }
 
   toggleOnlyAlerts() {
@@ -294,6 +300,7 @@ export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
       return d.toLocaleString('pt-BR', {
         day: '2-digit',
         month: '2-digit',
+        year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
       });
@@ -301,4 +308,6 @@ export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
       return iso;
     }
   }
+
+
 }
