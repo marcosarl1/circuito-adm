@@ -3,7 +3,7 @@
   (click)="close.emit()"
 >
   <div
-    class="card flex max-h-[min(90vh,920px)] w-full max-w-[1040px] flex-col overflow-hidden max-md:max-h-screen max-md:rounded-none"
+    class="card flex max-h-[min(90vh,920px)] w-full max-w-[1040px] flex-col overflow-hidden max-md:max-h-[100dvh] max-md:overflow-auto max-md:rounded-none"
     role="dialog"
     aria-modal="true"
     aria-labelledby="scrape-report-title"
@@ -11,7 +11,7 @@
   >
     <!-- header -->
     <div
-      class="flex shrink-0 items-start justify-between gap-4 border-b border-[rgba(142,202,230,0.18)] bg-[var(--card)] px-6 py-5 max-md:px-4 max-md:py-4"
+      class="flex shrink-0 flex-col gap-4 border-b border-[rgba(142,202,230,0.18)] bg-[var(--card)] px-6 py-5 max-md:px-4 max-md:py-4 lg:flex-row lg:items-center lg:justify-between max-md:shrink"
     >
       <div class="min-w-0 flex-1">
         <h3
@@ -23,113 +23,106 @@
         <p class="mt-1 text-sm leading-5 text-[var(--color-text-secondary)]">
           Revise os dados antes de salvar.
         </p>
-
-        @if (report()) {
-          <div class="mt-4 mx-auto grid max-w-[560px] grid-cols-3 place-items-stretch gap-2 max-sm:max-w-none max-sm:grid-cols-1">
-            <div
-              class="grid place-items-center rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] px-3 py-2.5 text-center"
-            >
-              <div
-                class="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
-              >
-                Fontes
-              </div>
-              <div class="mt-1 flex items-baseline justify-center gap-2">
-                <span class="text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
-                  >{{ summary().total }}</span
-                >
-                <span class="text-xs font-mono tabular-nums"
-                  ><span class="text-teal-300">{{ summary().ok }} OK</span
-                  >@if (summary().fail > 0) {
-                    <span class="text-red-300"> · {{ summary().fail }} falha(s)</span>
-                  }</span
-                >
-              </div>
-            </div>
-            <div
-              class="grid place-items-center rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] px-3 py-2.5 text-center"
-            >
-              <div
-                class="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
-              >
-                Eventos válidos
-              </div>
-              <div class="mt-1 flex items-baseline justify-center gap-1.5">
-                <span class="text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
-                  >{{ totalEventsCount() }}</span
-                >
-                <span class="text-xs text-[var(--color-text-secondary)]"
-                  >@if (hasCsvs()) {
-                    {{ report()!.csvs.length }} arquivos
-                  } @else {
-                    nenhum arquivo
-                  }</span
-                >
-              </div>
-            </div>
-            <div
-              class="grid place-items-center rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] px-3 py-2.5 text-center"
-            >
-              <div
-                class="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
-              >
-                Tempo real
-              </div>
-              <div class="mt-1 flex items-baseline justify-center gap-1.5">
-                @if (timelineMeta(); as meta) {
-                  @if (meta.totalWall !== null) {
-                    <span class="text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
-                      >{{ meta.totalWall.toFixed(1) }}s</span
-                    >
-                    <span
-                      class="text-xs font-mono tabular-nums text-[var(--color-text-secondary)]"
-                      title="Soma sequencial"
-                      >{{ meta.totalFromScrapers.toFixed(1) }}s somados</span
-                    >
-                  } @else {
-                    <span class="text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
-                      >{{ summary().duration.toFixed(1) }}s</span
-                    >
-                    <span class="text-xs text-[var(--color-text-secondary)]">somados</span>
-                  }
-                } @else {
-                  <span class="text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
-                    >{{ summary().duration.toFixed(1) }}s</span
-                  >
-                  <span class="text-xs text-[var(--color-text-secondary)]">somados</span>
-                }
-              </div>
-            </div>
-          </div>
-        }
       </div>
 
-      <button
-        type="button"
-        data-autofocus
-        class="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-[rgba(142,202,230,0.18)] bg-transparent text-[var(--color-text-secondary)] transition-colors hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
-        (click)="close.emit()"
-        aria-label="Fechar"
-      >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
+      @if (report()) {
+        <div
+          class="grid w-full grid-cols-3 gap-1.5 md:gap-2 lg:ml-auto lg:w-auto lg:max-w-[560px] lg:shrink-0"
         >
-          <path d="M18 6 6 18" />
-          <path d="m6 6 12 12" />
-        </svg>
-      </button>
+          <div
+            class="grid place-items-center rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] px-2 py-2 md:px-3 md:py-2.5 text-center"
+          >
+            <div
+              class="flex items-center justify-center gap-1 text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
+            >
+              <svg class="h-3.5 w-3.5 shrink-0 lg:hidden" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,40H40A16,16,0,0,0,24,56V88a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,32H40V56H216ZM40,104H216v16H40Zm0,32H216v16H40Zm0,32H216v24H40Z"></path></svg>
+              <span>Fontes</span>
+            </div>
+            <div class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-2">
+              <span
+                class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
+                >{{ summary().total }}</span
+              >
+              <span class="max-w-[80px] truncate text-[10px] md:max-w-none md:text-xs font-mono tabular-nums"
+                ><span class="text-teal-300">{{ summary().ok }} OK</span>
+                @if (summary().fail > 0) {
+                  <span class="text-red-300">
+                    · {{ summary().fail }} falha(s)</span
+                  >
+                }
+              </span>
+            </div>
+          </div>
+          <div
+            class="grid place-items-center rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] px-2 py-2 md:px-3 md:py-2.5 text-center"
+          >
+            <div
+              class="flex items-center justify-center gap-1 text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
+            >
+              <svg class="h-3.5 w-3.5 shrink-0 lg:hidden" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm44.48-100.48-48-48a8,8,0,0,0-11.32,0l-24,24a8,8,0,0,0,11.32,11.32L112,114.34l42.34-42.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
+              <span class="hidden lg:inline whitespace-nowrap">Eventos válidos</span><span class="lg:hidden whitespace-nowrap">Eventos</span>
+            </div>
+            <div class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-1.5">
+              <span
+                class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
+                >{{ totalEventsCount() }}</span
+              >
+              <span class="text-xs text-[var(--color-text-secondary)]">
+                @if (hasCsvs()) {
+                  {{ report()!.csvs.length }} arquivos
+                } @else {
+                  nenhum arquivo
+                }
+              </span>
+            </div>
+          </div>
+          <div
+            class="grid place-items-center rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] px-2 py-2 md:px-3 md:py-2.5 text-center"
+          >
+            <div
+              class="flex items-center justify-center gap-1 text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
+            >
+              <svg class="h-3.5 w-3.5 shrink-0 lg:hidden" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,144,128Z"></path></svg>
+              <span>Tempo real</span>
+            </div>
+            <div class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-1.5">
+              @if (timelineMeta(); as meta) {
+                @if (meta.totalWall !== null) {
+                  <span
+                    class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
+                    >{{ meta.totalWall.toFixed(1) }}s</span
+                  >
+                  <span
+                    class="max-w-[80px] truncate text-[10px] md:max-w-none md:text-xs font-mono tabular-nums text-[var(--color-text-secondary)]"
+                    title="Soma sequencial"
+                    >{{ meta.totalFromScrapers.toFixed(1) }}s somados</span
+                  >
+                } @else {
+                  <span
+                    class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
+                    >{{ summary().duration.toFixed(1) }}s</span
+                  >
+                  <span class="text-xs text-[var(--color-text-secondary)]"
+                    >somados</span
+                  >
+                }
+              } @else {
+                <span
+                  class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
+                  >{{ summary().duration.toFixed(1) }}s</span
+                >
+                <span class="text-xs text-[var(--color-text-secondary)]"
+                  >somados</span
+                >
+              }
+            </div>
+          </div>
+        </div>
+      }
     </div>
 
     <!-- body -->
-    <div class="flex-1 overflow-auto bg-[var(--card)]">
+    <div class="flex-1 overflow-auto bg-[var(--card)] max-md:flex-none max-md:overflow-visible">
       <div class="grid gap-4 p-6 max-md:p-4">
         @if (!report()) {
           <div class="grid place-items-center gap-3 py-10">
@@ -142,7 +135,9 @@
           </div>
         } @else {
           <!-- FONTES -->
-          <section class="rounded-xl border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] p-4 max-md:p-3">
+          <section
+            class="rounded-xl border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] p-4 max-md:p-3"
+          >
             <div
               class="mb-3 flex flex-wrap items-baseline justify-between gap-2"
             >
@@ -196,12 +191,28 @@
                       (click)="scraperQuery.set('')"
                       aria-label="Limpar busca"
                     >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                      </svg>
                     </button>
                   }
                 </div>
                 @if (filteredScrapers().length === 0) {
-                  <span class="shrink-0 text-xs text-[var(--color-text-secondary)]">nenhum resultado</span>
+                  <span
+                    class="shrink-0 text-xs text-[var(--color-text-secondary)]"
+                    >nenhum resultado</span
+                  >
                 }
               </div>
             }
@@ -245,7 +256,9 @@
               <div
                 class="grid place-items-center gap-2 rounded-lg border border-dashed border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.14)] px-6 py-8 text-center"
               >
-                <p class="m-0 text-sm font-medium text-[var(--foreground)]">Nenhuma fonte encontrada</p>
+                <p class="m-0 text-sm font-medium text-[var(--foreground)]">
+                  Nenhuma fonte encontrada
+                </p>
                 <p class="m-0 text-xs text-[var(--color-text-secondary)]">
                   Nenhum resultado para “{{ scraperQuery() }}”.
                 </p>
@@ -274,25 +287,37 @@
                     [class.border-red-900/60]="!scraper.ok"
                     [class.bg-red-950]="!scraper.ok"
                     [class.hover:bg-red-900]="hasDetail(scraper) && !scraper.ok"
-                    [class.ring-2]="hasDetail(scraper) && selectedDetail() === scraper.nome"
+                    [class.ring-2]="
+                      hasDetail(scraper) && selectedDetail() === scraper.nome
+                    "
                     [class.ring-teal-600/30]="
-                      hasDetail(scraper) && selectedDetail() === scraper.nome && scraper.ok
+                      hasDetail(scraper) &&
+                      selectedDetail() === scraper.nome &&
+                      scraper.ok
                     "
                     [class.ring-red-600/30]="
-                      hasDetail(scraper) && selectedDetail() === scraper.nome && !scraper.ok
+                      hasDetail(scraper) &&
+                      selectedDetail() === scraper.nome &&
+                      !scraper.ok
                     "
                     [class.cursor-pointer]="hasDetail(scraper)"
                     [class.cursor-default]="!hasDetail(scraper)"
                     [class.opacity-80]="!hasDetail(scraper)"
                     [class.hover:opacity-100]="!hasDetail(scraper)"
                     (click)="hasDetail(scraper) && toggleDetail(scraper.nome)"
-                    [attr.aria-expanded]="hasDetail(scraper) ? (selectedDetail() === scraper.nome) : null"
+                    [attr.aria-expanded]="
+                      hasDetail(scraper)
+                        ? selectedDetail() === scraper.nome
+                        : null
+                    "
                     [attr.aria-controls]="
                       hasDetail(scraper) ? 'scraper-detail-panel' : null
                     "
                     [attr.aria-disabled]="!hasDetail(scraper)"
                     [attr.title]="
-                      hasDetail(scraper) ? scraper.nome + ' · clique para detalhes' : scraper.nome
+                      hasDetail(scraper)
+                        ? scraper.nome + ' · clique para detalhes'
+                        : scraper.nome
                     "
                   >
                     <span class="flex min-w-0 items-center gap-2.5">
@@ -310,17 +335,15 @@
                     </span>
                     <span class="flex shrink-0 items-center gap-2">
                       <span
-                        class="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-bold leading-none font-mono tabular-nums"
-                        [class.bg-teal-900]="scraper.ok"
-                        [class.text-teal-100]="scraper.ok"
-                        [class.border]="scraper.ok"
+                        class="inline-flex self-center items-center justify-center rounded-full border px-2 py-0.5 text-[11px] font-bold font-mono tabular-nums leading-[1.2]"
                         [class.border-teal-800/40]="scraper.ok"
-                        [class.bg-red-900]="!scraper.ok"
-                        [class.text-red-100]="!scraper.ok"
-                        [class.border]="!scraper.ok"
+                        [class.text-teal-100]="scraper.ok"
                         [class.border-red-900/40]="!scraper.ok"
+                        [class.text-red-100]="!scraper.ok"
                       >
-                        {{ scraper.duration_s }}s
+                        <span class="relative top-0.5">
+                          {{ scraper.duration_s }}s
+                        </span>
                       </span>
                       @if (hasDetail(scraper)) {
                         <svg
@@ -448,7 +471,9 @@
 
           <!-- TIMELINE -->
           @if (hasScrapers() && timelineMeta(); as meta) {
-            <section class="rounded-xl border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] p-4 max-md:p-3">
+            <section
+              class="rounded-xl border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] p-4 max-md:p-3"
+            >
               <div
                 class="mb-3 flex flex-wrap items-baseline justify-between gap-2"
               >
@@ -466,13 +491,17 @@
                       <span class="inline-flex items-center gap-1">
                         · {{ meta.totalWall.toFixed(1) }}s real
                         <span
-                          class="hidden sm:inline"
+                          class="hidden md:inline"
                           title="Soma sequencial de todos os scrapers; real é o wall-clock com paralelismo"
-                          >· {{ meta.totalFromScrapers.toFixed(1) }}s somados</span
+                          >· {{ meta.totalFromScrapers.toFixed(1) }}s
+                          somados</span
                         >
                       </span>
                     } @else {
-                      <span>· {{ meta.totalFromScrapers.toFixed(1) }}s somados</span>
+                      <span
+                        >· {{ meta.totalFromScrapers.toFixed(1) }}s
+                        somados</span
+                      >
                     }
                   } @else {
                     <span
@@ -494,11 +523,11 @@
                   >
                     <div class="min-w-0 flex-1">
                       <div class="flex items-center gap-2">
-                          <span
-                            class="h-1.5 w-1.5 shrink-0 rounded-full"
-                            [class.bg-teal-400]="bar.ok"
-                            [class.bg-red-400]="!bar.ok"
-                          ></span>
+                        <span
+                          class="h-1.5 w-1.5 shrink-0 rounded-full"
+                          [class.bg-teal-400]="bar.ok"
+                          [class.bg-red-400]="!bar.ok"
+                        ></span>
                         <span
                           class="truncate text-xs font-medium text-[var(--foreground)]"
                           >{{ bar.nome }}</span
@@ -525,15 +554,13 @@
                       </div>
                     </div>
                     <span
-                      class="shrink-0 rounded-full border px-2 py-1 text-[11px] font-semibold font-mono tabular-nums leading-none"
+                      class="inline-flex shrink-0 items-center justify-center rounded-full border bg-transparent px-2 py-1 text-[11px] font-semibold font-mono tabular-nums leading-[1.2]"
                       [class.border-teal-800/50]="bar.ok"
-                      [class.bg-teal-950]="bar.ok"
                       [class.text-teal-100]="bar.ok"
                       [class.border-red-800/50]="!bar.ok"
-                      [class.bg-red-950]="!bar.ok"
                       [class.text-red-100]="!bar.ok"
                     >
-                      {{ bar.duration_s }}s
+                      <span class="relative top-0.5">{{ bar.duration_s }}s</span>
                     </span>
                   </div>
                 }
@@ -542,7 +569,9 @@
           }
 
           <!-- VALIDAÇÃO CSV -->
-          <section class="rounded-xl border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] p-4 max-md:p-3">
+          <section
+            class="rounded-xl border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] p-4 max-md:p-3"
+          >
             <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
               <h4
                 class="m-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]"
@@ -552,24 +581,28 @@
               <div class="flex flex-wrap items-center gap-2">
                 <!-- chip counts -->
                 @if (hasCsvs()) {
-                  <div class="hidden items-center gap-1.5 text-[11px] sm:flex">
+                  <div class="hidden items-center gap-1.5 text-[11px] md:flex">
                     @if (csvChipCounts().duplicados > 0) {
-                      <span class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+                      <span
+                        class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
                         >dup {{ csvChipCounts().duplicados }}</span
                       >
                     }
                     @if (csvChipCounts().sem_preco > 0) {
-                      <span class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+                      <span
+                        class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
                         >sem preço {{ csvChipCounts().sem_preco }}</span
                       >
                     }
                     @if (csvChipCounts().sem_imagem > 0) {
-                      <span class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+                      <span
+                        class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
                         >sem img {{ csvChipCounts().sem_imagem }}</span
                       >
                     }
                     @if (csvChipCounts().passados > 0) {
-                      <span class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+                      <span
+                        class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
                         >passados {{ csvChipCounts().passados }}</span
                       >
                     }
@@ -642,12 +675,30 @@
                       (click)="csvQuery.set('')"
                       aria-label="Limpar filtro"
                     >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                      </svg>
                     </button>
                   }
                 </div>
-                @if (csvQuery().trim() && filteredAndSortedCsvs().length === 0) {
-                  <span class="shrink-0 text-xs text-[var(--color-text-secondary)]">sem resultado</span>
+                @if (
+                  csvQuery().trim() && filteredAndSortedCsvs().length === 0
+                ) {
+                  <span
+                    class="shrink-0 text-xs text-[var(--color-text-secondary)]"
+                    >sem resultado</span
+                  >
                 }
               </div>
             }
@@ -757,9 +808,35 @@
                           >
                             Fonte
                             @if (sortBy() === "fonte") {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'asc' ? 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z' : 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z'"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  [attr.d]="
+                                    sortDir() === 'asc'
+                                      ? 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'
+                                      : 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z'
+                                  "
+                                ></path>
+                              </svg>
                             } @else {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0 opacity-50"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"
+                                ></path>
+                              </svg>
                             }
                           </button>
                         </th>
@@ -797,9 +874,35 @@
                           >
                             Total
                             @if (sortBy() === "total") {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'desc' ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z' : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  [attr.d]="
+                                    sortDir() === 'desc'
+                                      ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z'
+                                      : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'
+                                  "
+                                ></path>
+                              </svg>
                             } @else {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0 opacity-50"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"
+                                ></path>
+                              </svg>
                             }
                           </button>
                         </th>
@@ -837,9 +940,35 @@
                           >
                             Duplicados
                             @if (sortBy() === "duplicados") {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'desc' ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z' : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  [attr.d]="
+                                    sortDir() === 'desc'
+                                      ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z'
+                                      : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'
+                                  "
+                                ></path>
+                              </svg>
                             } @else {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0 opacity-50"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"
+                                ></path>
+                              </svg>
                             }
                           </button>
                         </th>
@@ -877,9 +1006,35 @@
                           >
                             Sem preço
                             @if (sortBy() === "sem_preco") {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'desc' ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z' : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  [attr.d]="
+                                    sortDir() === 'desc'
+                                      ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z'
+                                      : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'
+                                  "
+                                ></path>
+                              </svg>
                             } @else {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0 opacity-50"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"
+                                ></path>
+                              </svg>
                             }
                           </button>
                         </th>
@@ -917,9 +1072,35 @@
                           >
                             Passados
                             @if (sortBy() === "passados") {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'desc' ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z' : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  [attr.d]="
+                                    sortDir() === 'desc'
+                                      ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z'
+                                      : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'
+                                  "
+                                ></path>
+                              </svg>
                             } @else {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0 opacity-50"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"
+                                ></path>
+                              </svg>
                             }
                           </button>
                         </th>
@@ -957,9 +1138,35 @@
                           >
                             Sem imagem
                             @if (sortBy() === "sem_imagem") {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0" aria-hidden="true"><path [attr.d]="sortDir() === 'desc' ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z' : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  [attr.d]="
+                                    sortDir() === 'desc'
+                                      ? 'M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z'
+                                      : 'M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z'
+                                  "
+                                ></path>
+                              </svg>
                             } @else {
-                              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" class="shrink-0 opacity-50" aria-hidden="true"><path d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"></path></svg>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 256 256"
+                                fill="currentColor"
+                                class="shrink-0 opacity-50"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  d="M117.66,170.34a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32L72,188.69V48a8,8,0,0,1,16,0V188.69l18.34-18.35A8,8,0,0,1,117.66,170.34Zm96-96-32-32a8,8,0,0,0-11.32,0l-32,32a8,8,0,0,0,11.32,11.32L168,67.31V208a8,8,0,0,0,16,0V67.31l18.34,18.35a8,8,0,0,0,11.32-11.32Z"
+                                ></path>
+                              </svg>
                             }
                           </button>
                         </th>
@@ -1034,7 +1241,9 @@
                   </table>
                 </div>
                 <!-- mobile cards 2x2 -->
-                <div class="grid max-h-[380px] gap-2 overflow-auto p-2 md:hidden">
+                <div
+                  class="grid max-h-[380px] gap-2 overflow-auto p-2 md:hidden"
+                >
                   @for (csv of filteredAndSortedCsvs(); track csv.fonte) {
                     <div
                       class="rounded-lg border border-[rgba(142,202,230,0.12)] bg-[rgba(0,9,14,0.22)] p-3"
@@ -1046,7 +1255,8 @@
                             [class.bg-teal-400]="csv.ok"
                             [class.bg-amber-400]="!csv.ok"
                           ></span>
-                          <span class="truncate text-[13px] font-semibold leading-none"
+                          <span
+                            class="truncate text-[13px] font-semibold leading-none"
                             >{{ csv.fonte }}</span
                           >
                         </span>
@@ -1067,7 +1277,9 @@
                           <div
                             class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
                             [class.text-amber-200]="csv.duplicados > 0"
-                            [class.text-[var(--color-text-secondary)]]="csv.duplicados === 0"
+                            [class.text-[var(--color-text-secondary)]]="
+                              csv.duplicados === 0
+                            "
                           >
                             {{ csv.duplicados }}
                           </div>
@@ -1083,7 +1295,9 @@
                           <div
                             class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
                             [class.text-amber-200]="csv.sem_preco > 0"
-                            [class.text-[var(--color-text-secondary)]]="csv.sem_preco === 0"
+                            [class.text-[var(--color-text-secondary)]]="
+                              csv.sem_preco === 0
+                            "
                           >
                             {{ csv.sem_preco }}
                           </div>
@@ -1099,7 +1313,9 @@
                           <div
                             class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
                             [class.text-amber-200]="csv.eventos_passados > 0"
-                            [class.text-[var(--color-text-secondary)]]="csv.eventos_passados === 0"
+                            [class.text-[var(--color-text-secondary)]]="
+                              csv.eventos_passados === 0
+                            "
                           >
                             {{ csv.eventos_passados }}
                           </div>
@@ -1115,7 +1331,9 @@
                           <div
                             class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
                             [class.text-amber-200]="csv.sem_imagem > 0"
-                            [class.text-[var(--color-text-secondary)]]="csv.sem_imagem === 0"
+                            [class.text-[var(--color-text-secondary)]]="
+                              csv.sem_imagem === 0
+                            "
                           >
                             {{ csv.sem_imagem }}
                           </div>
@@ -1131,8 +1349,12 @@
                     >{{ filteredAndSortedCsvs().length }} de
                     {{ report()!.csvs.length }} arquivos</span
                   >
-                  <span class="hidden md:inline">Clique no cabeçalho para ordenar</span>
-                  <span class="md:hidden">{{ filteredAndSortedCsvs().length }} itens</span>
+                  <span class="hidden md:inline"
+                    >Clique no cabeçalho para ordenar</span
+                  >
+                  <span class="md:hidden"
+                    >{{ filteredAndSortedCsvs().length }} itens</span
+                  >
                 </div>
               </div>
             }
@@ -1164,22 +1386,50 @@
                 </svg>
               </div>
               <div>
-                <p class="m-0 text-sm font-semibold text-teal-100">Importação concluída</p>
-                <p class="m-0 text-xs text-teal-200/70">{{ result.total }} eventos no banco</p>
+                <p class="m-0 text-sm font-semibold text-teal-100">
+                  Importação concluída
+                </p>
+                <p class="m-0 text-xs text-teal-200/70">
+                  {{ result.total }} eventos no banco
+                </p>
               </div>
             </div>
             <div class="mt-4 grid grid-cols-3 gap-2">
               <div class="rounded-lg bg-black/20 px-3 py-2.5 text-center">
-                <div class="text-[10px] font-semibold uppercase tracking-[0.08em] text-teal-200/60">Novos</div>
-                <div class="mt-1 text-lg font-semibold leading-none font-mono tabular-nums text-white">{{ result.novos }}</div>
+                <div
+                  class="text-[10px] font-semibold uppercase tracking-[0.08em] text-teal-200/60"
+                >
+                  Novos
+                </div>
+                <div
+                  class="mt-1 flex items-center justify-center text-lg font-semibold leading-none font-mono tabular-nums text-white"
+                >
+                  {{ result.novos }}
+                </div>
               </div>
               <div class="rounded-lg bg-black/20 px-3 py-2.5 text-center">
-                <div class="text-[10px] font-semibold uppercase tracking-[0.08em] text-teal-200/60">Atualizados</div>
-                <div class="mt-1 text-lg font-semibold leading-none font-mono tabular-nums text-white">{{ result.atualizados }}</div>
+                <div
+                  class="text-[10px] font-semibold uppercase tracking-[0.08em] text-teal-200/60"
+                >
+                  Atualizados
+                </div>
+                <div
+                  class="mt-1 flex items-center justify-center text-lg font-semibold leading-none font-mono tabular-nums text-white"
+                >
+                  {{ result.atualizados }}
+                </div>
               </div>
               <div class="rounded-lg bg-black/20 px-3 py-2.5 text-center">
-                <div class="text-[10px] font-semibold uppercase tracking-[0.08em] text-teal-200/60">Total</div>
-                <div class="mt-1 text-lg font-semibold leading-none font-mono tabular-nums text-white">{{ result.total }}</div>
+                <div
+                  class="text-[10px] font-semibold uppercase tracking-[0.08em] text-teal-200/60"
+                >
+                  Total
+                </div>
+                <div
+                  class="mt-1 flex items-center justify-center text-lg font-semibold leading-none font-mono tabular-nums text-white"
+                >
+                  {{ result.total }}
+                </div>
               </div>
             </div>
           </div>
@@ -1195,16 +1445,31 @@
                 class="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-[rgba(142,202,230,0.18)] border-t-[var(--brand-teal-500)]"
                 aria-hidden="true"
               ></span>
-              <p class="m-0 text-sm font-medium text-[var(--foreground)]">Salvando eventos...</p>
-              <span class="ml-auto text-xs font-mono tabular-nums text-[var(--color-text-secondary)]">aguarde</span>
+              <p class="m-0 text-sm font-medium text-[var(--foreground)]">
+                Salvando eventos...
+              </p>
+              <span
+                class="ml-auto text-xs font-mono tabular-nums text-[var(--color-text-secondary)]"
+                >aguarde</span
+              >
             </div>
-            <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-[rgba(142,202,230,0.14)]">
-              <div class="h-full w-2/3 animate-pulse rounded-full bg-[var(--brand-teal-500)]"></div>
+            <div
+              class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-[rgba(142,202,230,0.14)]"
+            >
+              <div
+                class="h-full w-2/3 animate-pulse rounded-full bg-[var(--brand-teal-500)]"
+              ></div>
             </div>
             <div class="mt-3 grid gap-2">
-              <div class="h-3 w-full animate-pulse rounded bg-[rgba(142,202,230,0.08)]"></div>
-              <div class="h-3 w-5/6 animate-pulse rounded bg-[rgba(142,202,230,0.08)]"></div>
-              <div class="h-3 w-4/6 animate-pulse rounded bg-[rgba(142,202,230,0.08)]"></div>
+              <div
+                class="h-3 w-full animate-pulse rounded bg-[rgba(142,202,230,0.08)]"
+              ></div>
+              <div
+                class="h-3 w-5/6 animate-pulse rounded bg-[rgba(142,202,230,0.08)]"
+              ></div>
+              <div
+                class="h-3 w-4/6 animate-pulse rounded bg-[rgba(142,202,230,0.08)]"
+              ></div>
             </div>
           </div>
         }
@@ -1221,7 +1486,7 @@
 
     <!-- footer -->
     <div
-      class="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-[rgba(142,202,230,0.18)] bg-[var(--card)] p-4 max-md:flex-col-reverse"
+      class="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-[rgba(142,202,230,0.18)] bg-[var(--card)] p-4 max-md:sticky max-md:bottom-0 max-md:z-10 max-md:flex-col-reverse"
     >
       <span
         class="text-xs text-[var(--color-text-secondary)] max-md:text-center"
@@ -1237,7 +1502,8 @@
       >
         <button
           type="button"
-          class="btn btn-secondary max-md:w-full"
+          data-autofocus
+          class="btn btn-secondary max-md:w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
           (click)="close.emit()"
           [disabled]="importing()"
         >
