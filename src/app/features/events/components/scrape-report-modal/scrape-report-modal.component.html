@@ -35,11 +35,11 @@
                 Fontes
               </div>
               <div class="mt-1 flex items-baseline justify-center gap-2">
-                <span class="text-lg font-semibold leading-none tabular-nums text-[var(--foreground)]"
+                <span class="text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
                   >{{ summary().total }}</span
                 >
-                <span class="text-xs tabular-nums"
-                  ><span class="text-emerald-300">{{ summary().ok }} OK</span
+                <span class="text-xs font-mono tabular-nums"
+                  ><span class="text-teal-300">{{ summary().ok }} OK</span
                   >@if (summary().fail > 0) {
                     <span class="text-red-300"> · {{ summary().fail }} falha(s)</span>
                   }</span
@@ -55,7 +55,7 @@
                 Eventos válidos
               </div>
               <div class="mt-1 flex items-baseline justify-center gap-1.5">
-                <span class="text-lg font-semibold leading-none tabular-nums text-[var(--foreground)]"
+                <span class="text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
                   >{{ totalEventsCount() }}</span
                 >
                 <span class="text-xs text-[var(--color-text-secondary)]"
@@ -78,22 +78,22 @@
               <div class="mt-1 flex items-baseline justify-center gap-1.5">
                 @if (timelineMeta(); as meta) {
                   @if (meta.totalWall !== null) {
-                    <span class="text-lg font-semibold leading-none tabular-nums text-[var(--foreground)]"
+                    <span class="text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
                       >{{ meta.totalWall.toFixed(1) }}s</span
                     >
                     <span
-                      class="text-xs tabular-nums text-[var(--color-text-secondary)]"
+                      class="text-xs font-mono tabular-nums text-[var(--color-text-secondary)]"
                       title="Soma sequencial"
                       >{{ meta.totalFromScrapers.toFixed(1) }}s somados</span
                     >
                   } @else {
-                    <span class="text-lg font-semibold leading-none tabular-nums text-[var(--foreground)]"
+                    <span class="text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
                       >{{ summary().duration.toFixed(1) }}s</span
                     >
                     <span class="text-xs text-[var(--color-text-secondary)]">somados</span>
                   }
                 } @else {
-                  <span class="text-lg font-semibold leading-none tabular-nums text-[var(--foreground)]"
+                  <span class="text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
                     >{{ summary().duration.toFixed(1) }}s</span
                   >
                   <span class="text-xs text-[var(--color-text-secondary)]">somados</span>
@@ -268,14 +268,14 @@
                     type="button"
                     role="listitem"
                     class="group flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
-                    [class.border-emerald-800/50]="scraper.ok"
-                    [class.bg-emerald-950]="scraper.ok"
-                    [class.hover:bg-emerald-900]="hasDetail(scraper) && scraper.ok"
+                    [class.border-teal-800/50]="scraper.ok"
+                    [class.bg-teal-950]="scraper.ok"
+                    [class.hover:bg-teal-900]="hasDetail(scraper) && scraper.ok"
                     [class.border-red-900/60]="!scraper.ok"
                     [class.bg-red-950]="!scraper.ok"
                     [class.hover:bg-red-900]="hasDetail(scraper) && !scraper.ok"
                     [class.ring-2]="hasDetail(scraper) && selectedDetail() === scraper.nome"
-                    [class.ring-emerald-600/30]="
+                    [class.ring-teal-600/30]="
                       hasDetail(scraper) && selectedDetail() === scraper.nome && scraper.ok
                     "
                     [class.ring-red-600/30]="
@@ -298,23 +298,23 @@
                     <span class="flex min-w-0 items-center gap-2.5">
                       <span
                         class="h-2 w-2 shrink-0 rounded-full"
-                        [class.bg-emerald-400]="scraper.ok"
+                        [class.bg-teal-400]="scraper.ok"
                         [class.bg-red-400]="!scraper.ok"
                       ></span>
                       <span
                         class="min-w-0 break-words text-xs font-medium leading-tight"
-                        [class.text-emerald-100]="scraper.ok"
+                        [class.text-teal-100]="scraper.ok"
                         [class.text-red-100]="!scraper.ok"
                         >{{ scraper.nome }}</span
                       >
                     </span>
                     <span class="flex shrink-0 items-center gap-2">
                       <span
-                        class="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-bold leading-none tabular-nums"
-                        [class.bg-emerald-900]="scraper.ok"
-                        [class.text-emerald-100]="scraper.ok"
+                        class="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-bold leading-none font-mono tabular-nums"
+                        [class.bg-teal-900]="scraper.ok"
+                        [class.text-teal-100]="scraper.ok"
                         [class.border]="scraper.ok"
-                        [class.border-emerald-800/40]="scraper.ok"
+                        [class.border-teal-800/40]="scraper.ok"
                         [class.bg-red-900]="!scraper.ok"
                         [class.text-red-100]="!scraper.ok"
                         [class.border]="!scraper.ok"
@@ -326,7 +326,7 @@
                         <svg
                           class="h-3.5 w-3.5 shrink-0 opacity-60 transition-transform group-hover:opacity-100"
                           [class.rotate-180]="selectedDetail() === scraper.nome"
-                          [class.text-emerald-200]="scraper.ok"
+                          [class.text-teal-200]="scraper.ok"
                           [class.text-red-200]="!scraper.ok"
                           viewBox="0 0 24 24"
                           fill="none"
@@ -395,15 +395,15 @@
                     role="region"
                     [attr.aria-label]="'Detalhe de ' + sel.nome"
                     class="mt-3 rounded-lg border bg-[rgba(0,9,14,0.35)] p-3 text-xs leading-relaxed"
-                    [class.border-emerald-800/40]="sel.ok"
-                    [class.bg-emerald-950/30]="sel.ok"
+                    [class.border-teal-800/40]="sel.ok"
+                    [class.bg-teal-950/30]="sel.ok"
                     [class.border-red-800/40]="!sel.ok"
                     [class.bg-red-950/30]="!sel.ok"
                   >
                     <div class="mb-1.5 flex items-center justify-between gap-2">
                       <span
                         class="font-semibold tracking-wide"
-                        [class.text-emerald-200]="sel.ok"
+                        [class.text-teal-200]="sel.ok"
                         [class.text-red-200]="!sel.ok"
                       >
                         {{ sel.nome }} — {{ sel.ok ? "OK" : "FALHOU" }}
@@ -458,7 +458,7 @@
                   Timeline
                 </h4>
                 <span
-                  class="flex flex-wrap items-center gap-1.5 text-xs tabular-nums text-[var(--color-text-secondary)]"
+                  class="flex flex-wrap items-center gap-1.5 text-xs font-mono tabular-nums text-[var(--color-text-secondary)]"
                 >
                   @if (meta.startLabel && meta.endLabel) {
                     <span>{{ meta.startLabel }} → {{ meta.endLabel }}</span>
@@ -496,7 +496,7 @@
                       <div class="flex items-center gap-2">
                           <span
                             class="h-1.5 w-1.5 shrink-0 rounded-full"
-                            [class.bg-emerald-400]="bar.ok"
+                            [class.bg-teal-400]="bar.ok"
                             [class.bg-red-400]="!bar.ok"
                           ></span>
                         <span
@@ -517,7 +517,7 @@
                       >
                         <div
                           class="h-full rounded-full transition-all"
-                          [class.bg-emerald-600]="bar.ok && !bar.isBottleneck"
+                          [class.bg-teal-600]="bar.ok && !bar.isBottleneck"
                           [class.bg-amber-500]="bar.isBottleneck && bar.ok"
                           [class.bg-red-600]="!bar.ok"
                           [style.width.%]="bar.width"
@@ -525,10 +525,10 @@
                       </div>
                     </div>
                     <span
-                      class="shrink-0 rounded-full border px-2 py-1 text-[11px] font-semibold tabular-nums leading-none"
-                      [class.border-emerald-800/50]="bar.ok"
-                      [class.bg-emerald-950]="bar.ok"
-                      [class.text-emerald-100]="bar.ok"
+                      class="shrink-0 rounded-full border px-2 py-1 text-[11px] font-semibold font-mono tabular-nums leading-none"
+                      [class.border-teal-800/50]="bar.ok"
+                      [class.bg-teal-950]="bar.ok"
+                      [class.text-teal-100]="bar.ok"
                       [class.border-red-800/50]="!bar.ok"
                       [class.bg-red-950]="!bar.ok"
                       [class.text-red-100]="!bar.ok"
@@ -974,7 +974,7 @@
                             <span class="inline-flex items-center gap-2">
                               <span
                                 class="h-1.5 w-1.5 shrink-0 rounded-full"
-                                [class.bg-emerald-400]="csv.ok"
+                                [class.bg-teal-400]="csv.ok"
                                 [class.bg-amber-400]="!csv.ok"
                               ></span>
                               <span
@@ -984,12 +984,12 @@
                             </span>
                           </td>
                           <td
-                            class="px-2 py-2.5 text-right tabular-nums text-[13px] font-semibold"
+                            class="px-2 py-2.5 text-right font-mono tabular-nums text-[13px] font-semibold"
                           >
                             {{ csv.total }}
                           </td>
                           <td
-                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                            class="px-2 py-2.5 text-right font-mono tabular-nums text-[13px]"
                             [class.text-amber-200]="csv.duplicados > 0"
                             [class.font-semibold]="csv.duplicados > 0"
                             [class.text-[var(--color-text-secondary)]]="
@@ -999,7 +999,7 @@
                             {{ csv.duplicados }}
                           </td>
                           <td
-                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                            class="px-2 py-2.5 text-right font-mono tabular-nums text-[13px]"
                             [class.text-amber-200]="csv.sem_preco > 0"
                             [class.font-semibold]="csv.sem_preco > 0"
                             [class.text-[var(--color-text-secondary)]]="
@@ -1009,7 +1009,7 @@
                             {{ csv.sem_preco }}
                           </td>
                           <td
-                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                            class="px-2 py-2.5 text-right font-mono tabular-nums text-[13px]"
                             [class.text-amber-200]="csv.eventos_passados > 0"
                             [class.font-semibold]="csv.eventos_passados > 0"
                             [class.text-[var(--color-text-secondary)]]="
@@ -1019,7 +1019,7 @@
                             {{ csv.eventos_passados }}
                           </td>
                           <td
-                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                            class="px-2 py-2.5 text-right font-mono tabular-nums text-[13px]"
                             [class.text-amber-200]="csv.sem_imagem > 0"
                             [class.font-semibold]="csv.sem_imagem > 0"
                             [class.text-[var(--color-text-secondary)]]="
@@ -1043,7 +1043,7 @@
                         <span class="flex min-w-0 items-center gap-2">
                           <span
                             class="h-2 w-2 shrink-0 rounded-full"
-                            [class.bg-emerald-400]="csv.ok"
+                            [class.bg-teal-400]="csv.ok"
                             [class.bg-amber-400]="!csv.ok"
                           ></span>
                           <span class="truncate text-[13px] font-semibold leading-none"
@@ -1051,7 +1051,7 @@
                           >
                         </span>
                         <span
-                          class="shrink-0 rounded-full border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.28)] px-2 py-1 text-[11px] font-bold tabular-nums leading-none"
+                          class="shrink-0 rounded-full border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.28)] px-2 py-1 text-[11px] font-bold font-mono tabular-nums leading-none"
                           >{{ csv.total }} total</span
                         >
                       </div>
@@ -1065,7 +1065,7 @@
                             Duplicados
                           </div>
                           <div
-                            class="mt-1 text-[13px] font-semibold tabular-nums"
+                            class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
                             [class.text-amber-200]="csv.duplicados > 0"
                             [class.text-[var(--color-text-secondary)]]="csv.duplicados === 0"
                           >
@@ -1081,7 +1081,7 @@
                             Sem preço
                           </div>
                           <div
-                            class="mt-1 text-[13px] font-semibold tabular-nums"
+                            class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
                             [class.text-amber-200]="csv.sem_preco > 0"
                             [class.text-[var(--color-text-secondary)]]="csv.sem_preco === 0"
                           >
@@ -1097,7 +1097,7 @@
                             Passados
                           </div>
                           <div
-                            class="mt-1 text-[13px] font-semibold tabular-nums"
+                            class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
                             [class.text-amber-200]="csv.eventos_passados > 0"
                             [class.text-[var(--color-text-secondary)]]="csv.eventos_passados === 0"
                           >
@@ -1113,7 +1113,7 @@
                             Sem imagem
                           </div>
                           <div
-                            class="mt-1 text-[13px] font-semibold tabular-nums"
+                            class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
                             [class.text-amber-200]="csv.sem_imagem > 0"
                             [class.text-[var(--color-text-secondary)]]="csv.sem_imagem === 0"
                           >
@@ -1171,15 +1171,15 @@
             <div class="mt-4 grid grid-cols-3 gap-2">
               <div class="rounded-lg bg-black/20 px-3 py-2.5 text-center">
                 <div class="text-[10px] font-semibold uppercase tracking-[0.08em] text-teal-200/60">Novos</div>
-                <div class="mt-1 text-lg font-semibold leading-none tabular-nums text-white">{{ result.novos }}</div>
+                <div class="mt-1 text-lg font-semibold leading-none font-mono tabular-nums text-white">{{ result.novos }}</div>
               </div>
               <div class="rounded-lg bg-black/20 px-3 py-2.5 text-center">
                 <div class="text-[10px] font-semibold uppercase tracking-[0.08em] text-teal-200/60">Atualizados</div>
-                <div class="mt-1 text-lg font-semibold leading-none tabular-nums text-white">{{ result.atualizados }}</div>
+                <div class="mt-1 text-lg font-semibold leading-none font-mono tabular-nums text-white">{{ result.atualizados }}</div>
               </div>
               <div class="rounded-lg bg-black/20 px-3 py-2.5 text-center">
                 <div class="text-[10px] font-semibold uppercase tracking-[0.08em] text-teal-200/60">Total</div>
-                <div class="mt-1 text-lg font-semibold leading-none tabular-nums text-white">{{ result.total }}</div>
+                <div class="mt-1 text-lg font-semibold leading-none font-mono tabular-nums text-white">{{ result.total }}</div>
               </div>
             </div>
           </div>
@@ -1196,7 +1196,7 @@
                 aria-hidden="true"
               ></span>
               <p class="m-0 text-sm font-medium text-[var(--foreground)]">Salvando eventos...</p>
-              <span class="ml-auto text-xs tabular-nums text-[var(--color-text-secondary)]">aguarde</span>
+              <span class="ml-auto text-xs font-mono tabular-nums text-[var(--color-text-secondary)]">aguarde</span>
             </div>
             <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-[rgba(142,202,230,0.14)]">
               <div class="h-full w-2/3 animate-pulse rounded-full bg-[var(--brand-teal-500)]"></div>
