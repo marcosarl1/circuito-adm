@@ -179,7 +179,7 @@
                   <input
                     type="search"
                     placeholder="Buscar fonte..."
-                    class="h-8 w-full rounded-full border border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.35)] py-1 pl-8 pr-8 text-xs text-[var(--foreground)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--brand-teal-500)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal-500)]/30"
+                    class="h-11 min-h-[44px] w-full rounded-full border border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.35)] py-2 pl-8 pr-10 text-xs text-[var(--foreground)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--brand-teal-500)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal-500)]/30"
                     [value]="scraperQuery()"
                     (input)="scraperQuery.set($any($event.target).value)"
                     aria-label="Buscar fonte"
@@ -187,7 +187,7 @@
                   @if (scraperQuery()) {
                     <button
                       type="button"
-                      class="absolute right-1 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-[var(--color-text-secondary)] hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)]"
+                      class="absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-[var(--color-text-secondary)] hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)]"
                       (click)="scraperQuery.set('')"
                       aria-label="Limpar busca"
                     >
@@ -372,7 +372,7 @@
                 ) {
                   <button
                     type="button"
-                    class="col-span-full inline-flex w-fit justify-self-center items-center gap-1 rounded-sm px-1 py-1 text-xs font-medium text-[var(--brand-teal-500)] underline decoration-[rgba(142,202,230,0.35)] underline-offset-2 transition-colors hover:text-[var(--brand-teal-600)] hover:decoration-[var(--brand-teal-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                    class="col-span-full inline-flex w-fit min-h-[44px] justify-self-center items-center gap-1 rounded-sm px-3 py-2.5 text-xs font-medium text-[var(--brand-teal-500)] underline decoration-[rgba(142,202,230,0.35)] underline-offset-2 transition-colors hover:text-[var(--brand-teal-600)] hover:decoration-[var(--brand-teal-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                     (click)="toggleExpanded()"
                   >
                     @if (expanded()) {
@@ -614,7 +614,7 @@
                   role="switch"
                   [attr.aria-checked]="onlyAlerts()"
                   (click)="toggleOnlyAlerts()"
-                  class="inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                  class="inline-flex items-center gap-2 rounded-full border px-3 py-2 min-h-[44px] text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                   [class.border-amber-700/50]="onlyAlerts()"
                   [class.bg-amber-950]="onlyAlerts()"
                   [class.text-amber-100]="onlyAlerts()"
@@ -663,7 +663,7 @@
                   <input
                     type="search"
                     placeholder="Filtrar por fonte..."
-                    class="h-8 w-full rounded-full border border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.35)] py-1 pl-8 pr-8 text-xs text-[var(--foreground)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--brand-teal-500)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal-500)]/30"
+                    class="h-11 min-h-[44px] w-full rounded-full border border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.35)] py-2 pl-8 pr-10 text-xs text-[var(--foreground)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--brand-teal-500)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal-500)]/30"
                     [value]="csvQuery()"
                     (input)="csvQuery.set($any($event.target).value)"
                     aria-label="Filtrar CSV por fonte"
@@ -671,7 +671,7 @@
                   @if (csvQuery()) {
                     <button
                       type="button"
-                      class="absolute right-1 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-[var(--color-text-secondary)] hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)]"
+                      class="absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-[var(--color-text-secondary)] hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)]"
                       (click)="csvQuery.set('')"
                       aria-label="Limpar filtro"
                     >
@@ -786,7 +786,7 @@
                         >
                           <button
                             type="button"
-                            class="inline-flex items-center gap-1 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            class="inline-flex items-center gap-1 rounded-full px-3 py-2 min-h-[44px] text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                             [class.bg-[rgba(142,202,230,0.14)]]="
                               sortBy() === 'fonte'
                             "
@@ -852,7 +852,7 @@
                         >
                           <button
                             type="button"
-                            class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[44px] text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                             [class.bg-[rgba(142,202,230,0.14)]]="
                               sortBy() === 'total'
                             "
@@ -918,7 +918,7 @@
                         >
                           <button
                             type="button"
-                            class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[44px] text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                             [class.bg-[rgba(142,202,230,0.14)]]="
                               sortBy() === 'duplicados'
                             "
@@ -984,7 +984,7 @@
                         >
                           <button
                             type="button"
-                            class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[44px] text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                             [class.bg-[rgba(142,202,230,0.14)]]="
                               sortBy() === 'sem_preco'
                             "
@@ -1050,7 +1050,7 @@
                         >
                           <button
                             type="button"
-                            class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[44px] text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                             [class.bg-[rgba(142,202,230,0.14)]]="
                               sortBy() === 'passados'
                             "
@@ -1116,7 +1116,7 @@
                         >
                           <button
                             type="button"
-                            class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 -my-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[44px] text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                             [class.bg-[rgba(142,202,230,0.14)]]="
                               sortBy() === 'sem_imagem'
                             "
@@ -1503,7 +1503,7 @@
         <button
           type="button"
           data-autofocus
-          class="btn btn-secondary max-md:w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+          class="btn btn-secondary max-md:w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
           (click)="close.emit()"
           [disabled]="importing()"
         >
@@ -1511,7 +1511,7 @@
         </button>
         <button
           type="button"
-          class="btn btn-primary max-md:w-full"
+          class="btn btn-primary max-md:w-full min-h-[44px]"
           (click)="import.emit()"
           [disabled]="
             importing() || !report() || !hasCsvs() || totalEventsCount() === 0
