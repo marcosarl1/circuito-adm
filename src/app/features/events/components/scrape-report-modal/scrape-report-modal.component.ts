@@ -11,6 +11,7 @@ import {
   signal,
 } from '@angular/core';
 import { A11yModule, InteractivityChecker } from '@angular/cdk/a11y';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import {
   ScrapeCsvSummary,
   ScrapeImportResult,
@@ -28,7 +29,7 @@ type SortKey =
 
 @Component({
   selector: 'app-scrape-report-modal',
-  imports: [A11yModule],
+  imports: [A11yModule, IconComponent],
   templateUrl: './scrape-report-modal.component.html',
 })
 export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {

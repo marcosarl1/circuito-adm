@@ -33,17 +33,25 @@
             class="grid place-items-center rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] px-2 py-2 md:px-3 md:py-2.5 text-center"
           >
             <div
-              class="flex items-center justify-center gap-1 text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
+              class="flex items-center justify-center gap-1 text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.08em] leading-none text-[var(--color-text-secondary)]"
             >
-              <svg class="h-3.5 w-3.5 shrink-0 lg:hidden" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,40H40A16,16,0,0,0,24,56V88a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,32H40V56H216ZM40,104H216v16H40Zm0,32H216v16H40Zm0,32H216v24H40Z"></path></svg>
+              <app-icon
+                name="heroCircleStack"
+                size="16"
+                klass="shrink-0 lg:hidden relative top-[1px]"
+                aria-hidden="true"
+              ></app-icon>
               <span>Fontes</span>
             </div>
-            <div class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-2">
+            <div
+              class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-2"
+            >
               <span
                 class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
                 >{{ summary().total }}</span
               >
-              <span class="max-w-[80px] truncate text-[10px] md:max-w-none md:text-xs font-mono tabular-nums"
+              <span
+                class="max-w-[80px] truncate text-[10px] md:max-w-none md:text-xs font-mono tabular-nums"
                 ><span class="text-teal-300">{{ summary().ok }} OK</span>
                 @if (summary().fail > 0) {
                   <span class="text-red-300">
@@ -57,12 +65,21 @@
             class="grid place-items-center rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] px-2 py-2 md:px-3 md:py-2.5 text-center"
           >
             <div
-              class="flex items-center justify-center gap-1 text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
+              class="flex items-center justify-center gap-1 text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.08em] leading-none text-[var(--color-text-secondary)]"
             >
-              <svg class="h-3.5 w-3.5 shrink-0 lg:hidden" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm44.48-100.48-48-48a8,8,0,0,0-11.32,0l-24,24a8,8,0,0,0,11.32,11.32L112,114.34l42.34-42.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
-              <span class="hidden lg:inline whitespace-nowrap">Eventos válidos</span><span class="lg:hidden whitespace-nowrap">Eventos</span>
+              <app-icon
+                name="heroCheckCircle"
+                size="16"
+                klass="shrink-0 lg:hidden relative top-[1px]"
+                aria-hidden="true"
+              ></app-icon>
+              <span class="hidden lg:inline whitespace-nowrap"
+                >Eventos válidos</span
+              ><span class="lg:hidden whitespace-nowrap">Eventos</span>
             </div>
-            <div class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-1.5">
+            <div
+              class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-1.5"
+            >
               <span
                 class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
                 >{{ totalEventsCount() }}</span
@@ -80,12 +97,19 @@
             class="grid place-items-center rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] px-2 py-2 md:px-3 md:py-2.5 text-center"
           >
             <div
-              class="flex items-center justify-center gap-1 text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
+              class="flex items-center justify-center gap-1 text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.08em] leading-none text-[var(--color-text-secondary)]"
             >
-              <svg class="h-3.5 w-3.5 shrink-0 lg:hidden" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,144,128Z"></path></svg>
+              <app-icon
+                name="heroClock"
+                size="16"
+                klass="shrink-0 lg:hidden relative top-[1px]"
+                aria-hidden="true"
+              ></app-icon>
               <span>Tempo real</span>
             </div>
-            <div class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-1.5">
+            <div
+              class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-1.5"
+            >
               @if (timelineMeta(); as meta) {
                 @if (meta.totalWall !== null) {
                   <span
@@ -122,7 +146,9 @@
     </div>
 
     <!-- body -->
-    <div class="flex-1 overflow-auto bg-[var(--card)] max-md:flex-none max-md:overflow-visible">
+    <div
+      class="flex-1 overflow-auto bg-[var(--card)] max-md:flex-none max-md:overflow-visible"
+    >
       <div class="grid gap-4 p-6 max-md:p-4">
         @if (!report()) {
           <div class="grid place-items-center gap-3 py-10">
@@ -364,7 +390,10 @@
                       }
                     </span>
                   </button>
-                  @if (selectedDetail() === scraper.nome && selectedScraper(); as selMobile) {
+                  @if (
+                    selectedDetail() === scraper.nome && selectedScraper();
+                    as selMobile
+                  ) {
                     <div
                       role="region"
                       [attr.aria-label]="'Detalhe de ' + selMobile.nome"
@@ -374,13 +403,16 @@
                       [class.border-red-800/40]="!selMobile.ok"
                       [class.bg-red-950/30]="!selMobile.ok"
                     >
-                      <div class="mb-1.5 flex items-center justify-between gap-2">
+                      <div
+                        class="mb-1.5 flex items-center justify-between gap-2"
+                      >
                         <span
                           class="font-semibold tracking-wide"
                           [class.text-teal-200]="selMobile.ok"
                           [class.text-red-200]="!selMobile.ok"
                         >
-                          {{ selMobile.nome }} — {{ selMobile.ok ? "OK" : "FALHOU" }}
+                          {{ selMobile.nome }} —
+                          {{ selMobile.ok ? "OK" : "FALHOU" }}
                         </span>
                         <button
                           type="button"
@@ -393,13 +425,27 @@
                         </button>
                       </div>
                       @if (selMobile.detail) {
-                        <p class="m-0 whitespace-pre-wrap break-words text-[var(--color-text-secondary)]">{{ selMobile.detail }}</p>
+                        <p
+                          class="m-0 whitespace-pre-wrap break-words text-[var(--color-text-secondary)]"
+                        >
+                          {{ selMobile.detail }}
+                        </p>
                       }
                       @if (selMobile.stderr) {
-                        <pre class="mt-2 max-h-[160px] overflow-auto whitespace-pre-wrap break-words rounded-md bg-[rgba(0,0,0,0.28)] p-2.5 font-mono text-[11px] leading-4 text-red-200/90">{{ selMobile.stderr }}</pre>
+                        <pre
+                          class="mt-2 max-h-[160px] overflow-auto whitespace-pre-wrap break-words rounded-md bg-[rgba(0,0,0,0.28)] p-2.5 font-mono text-[11px] leading-4 text-red-200/90"
+                          >{{ selMobile.stderr }}</pre>
                       }
                       @if (!selMobile.detail && !selMobile.stderr) {
-                        <p class="m-0 whitespace-pre-wrap break-words text-[var(--color-text-secondary)]">Nenhum detalhe adicional para <strong class="font-semibold text-[var(--foreground)]">{{ selMobile.nome }}</strong>.</p>
+                        <p
+                          class="m-0 whitespace-pre-wrap break-words text-[var(--color-text-secondary)]"
+                        >
+                          Nenhum detalhe adicional para
+                          <strong
+                            class="font-semibold text-[var(--foreground)]"
+                            >{{ selMobile.nome }}</strong
+                          >.
+                        </p>
                       }
                     </div>
                   }
@@ -599,7 +645,9 @@
                       [class.border-red-800/50]="!bar.ok"
                       [class.text-red-100]="!bar.ok"
                     >
-                      <span class="relative top-0.5">{{ bar.duration_s }}s</span>
+                      <span class="relative top-0.5"
+                        >{{ bar.duration_s }}s</span
+                      >
                     </span>
                   </div>
                 }
@@ -1304,7 +1352,9 @@
                           >{{ csv.total }} total</span
                         >
                       </div>
-                      <div class="mt-3 grid grid-cols-2 gap-2 max-[360px]:grid-cols-1 max-[360px]:gap-1.5">
+                      <div
+                        class="mt-3 grid grid-cols-2 gap-2 max-[360px]:grid-cols-1 max-[360px]:gap-1.5"
+                      >
                         <div
                           class="rounded-md border border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.18)] px-2.5 py-2"
                         >
@@ -1542,15 +1592,21 @@
         <button
           type="button"
           data-autofocus
-          class="btn btn-secondary max-md:w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+          class="btn btn-secondary max-md:w-full min-h-[36px] md:min-h-[44px] inline-flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
           (click)="close.emit()"
           [disabled]="importing()"
         >
+          <app-icon
+            name="heroXMark"
+            size="16"
+            klass="shrink-0 relative top-[3px]"
+            aria-hidden="true"
+          ></app-icon>
           Fechar
         </button>
         <button
           type="button"
-          class="btn btn-primary max-md:w-full min-h-[44px]"
+          class="btn btn-primary max-md:w-full min-h-[36px] md:min-h-[44px] inline-flex items-center justify-center gap-1.5"
           (click)="import.emit()"
           [disabled]="
             importing() || !report() || !hasCsvs() || totalEventsCount() === 0
@@ -1563,7 +1619,14 @@
             ></span>
             Salvando...
           } @else {
-            Confirmar importação
+            <app-icon
+              name="heroArrowDownTray"
+              size="16"
+              klass="shrink-0 relative top-[3px]"
+              aria-hidden="true"
+            ></app-icon>
+            <span class="hidden md:inline">Confirmar importação</span
+            ><span class="md:hidden">Confirmar</span>
           }
         </button>
       </div>
