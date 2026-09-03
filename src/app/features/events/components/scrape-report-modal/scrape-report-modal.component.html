@@ -270,23 +270,30 @@
                     class="group flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
                     [class.border-emerald-800/50]="scraper.ok"
                     [class.bg-emerald-950]="scraper.ok"
-                    [class.hover:bg-emerald-900]="scraper.ok"
+                    [class.hover:bg-emerald-900]="hasDetail(scraper) && scraper.ok"
                     [class.border-red-900/60]="!scraper.ok"
                     [class.bg-red-950]="!scraper.ok"
-                    [class.hover:bg-red-900]="!scraper.ok"
-                    [class.ring-2]="selectedDetail() === scraper.nome"
+                    [class.hover:bg-red-900]="hasDetail(scraper) && !scraper.ok"
+                    [class.ring-2]="hasDetail(scraper) && selectedDetail() === scraper.nome"
                     [class.ring-emerald-600/30]="
-                      selectedDetail() === scraper.nome && scraper.ok
+                      hasDetail(scraper) && selectedDetail() === scraper.nome && scraper.ok
                     "
                     [class.ring-red-600/30]="
-                      selectedDetail() === scraper.nome && !scraper.ok
+                      hasDetail(scraper) && selectedDetail() === scraper.nome && !scraper.ok
                     "
-                    (click)="toggleDetail(scraper.nome)"
-                    [attr.aria-expanded]="selectedDetail() === scraper.nome"
+                    [class.cursor-pointer]="hasDetail(scraper)"
+                    [class.cursor-default]="!hasDetail(scraper)"
+                    [class.opacity-80]="!hasDetail(scraper)"
+                    [class.hover:opacity-100]="!hasDetail(scraper)"
+                    (click)="hasDetail(scraper) && toggleDetail(scraper.nome)"
+                    [attr.aria-expanded]="hasDetail(scraper) ? (selectedDetail() === scraper.nome) : null"
                     [attr.aria-controls]="
                       hasDetail(scraper) ? 'scraper-detail-panel' : null
                     "
-                    [attr.title]="scraper.nome"
+                    [attr.aria-disabled]="!hasDetail(scraper)"
+                    [attr.title]="
+                      hasDetail(scraper) ? scraper.nome + ' · clique para detalhes' : scraper.nome
+                    "
                   >
                     <span class="flex min-w-0 items-center gap-2.5">
                       <span
