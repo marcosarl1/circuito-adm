@@ -30,7 +30,9 @@
     >
       @if (errorMessage()) {
         <div
-          class="flex items-start gap-2 rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-600"
+          #errorAlert
+          tabindex="-1"
+          class="flex items-start gap-2 rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/30"
           role="alert"
         >
           <svg
@@ -61,6 +63,7 @@
           >Usuário</label
         >
         <input
+          #usernameInput
           id="username"
           name="username"
           type="text"
@@ -69,8 +72,8 @@
           [ngModel]="username()"
           (ngModelChange)="onUsernameChange($event)"
           autocomplete="username"
-          autofocus
           [disabled]="loading()"
+          [attr.aria-busy]="loading() ? 'true' : null"
           inputmode="text"
           [attr.aria-invalid]="usernameError() ? 'true' : null"
           aria-describedby="username-error"
@@ -102,6 +105,7 @@
             (ngModelChange)="onPasswordChange($event)"
             autocomplete="current-password"
             [disabled]="loading()"
+            [attr.aria-busy]="loading() ? 'true' : null"
             [attr.aria-invalid]="passwordError() ? 'true' : null"
             aria-describedby="password-error"
           />

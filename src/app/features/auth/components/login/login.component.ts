@@ -1,4 +1,12 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -10,10 +18,13 @@ import { DestroyRef } from '@angular/core';
   imports: [FormsModule],
   templateUrl: './login.component.html',
 })
-export class LoginComponent {
+export class LoginComponent implements AfterViewInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+
+  private usernameInput = viewChild<ElementRef<HTMLInputElement>>('usernameInput');
+  private errorAlert = viewChild<ElementRef<HTMLElement>>('errorAlert');
 
   username = signal('');
   password = signal('');
@@ -28,6 +39,11 @@ export class LoginComponent {
   passwordError = computed(() =>
     this.submitted() && !this.password().trim() ? 'Senha é obrigatória' : '',
   );
+
+  ngAfterViewInit(): void {
+    // programmatic autofocus (more reliable than static `autofocus` attrs with Angular routing)
+    queueMicrotask(() => this.usernameInput()?.nativeElement.focus());
+  }
 
   togglePasswordVisibility(): void {
     if (this.loading()) return;
@@ -67,11 +83,13 @@ export class LoginComponent {
             this.router.navigate(['/events']);
           } else {
             this.errorMessage.set('Usuário ou senha incorretos.');
+            queueMicrotask(() => this.errorAlert()?.nativeElement.focus());
           }
         },
         error: () => {
           this.loading.set(false);
           this.errorMessage.set('Falha de conexão. Tente novamente.');
+          queueMicrotask(() => this.errorAlert()?.nativeElement.focus());
         },
       });
   }
