@@ -1,5 +1,5 @@
 <div
-  class="fixed inset-0 z-[210] grid place-items-center bg-[rgba(0,0,0,0.72)] p-4"
+  class="fixed inset-0 z-[210] grid place-items-center bg-[rgba(0,0,0,0.72)] p-4 backdrop-blur-[8px]"
   (click)="cancel.emit()"
 >
   <div
@@ -14,27 +14,41 @@
       <h3 id="scrape-cooldown-title" class="m-0">Coleta recente</h3>
     </div>
 
-    <div class="modal-body md:p-6">
-      <p id="scrape-cooldown-desc" class="m-0 text-sm">
-        @if (diasAtras === 0) {
-          A última rodada foi <strong>hoje</strong>, em
+    <div class="modal-body p-4 md:p-6">
+      <p id="scrape-cooldown-desc" class="m-0 text-sm leading-6">
+        @if (hasValidDate()) {
+          @if (diasAtras() === 0) {
+            A última rodada foi <strong>hoje</strong>, em
+          } @else {
+            A última rodada foi há
+            <strong>{{ diasAtras() }} {{ diasAtras() === 1 ? "dia" : "dias" }}</strong
+            >, em
+          }
+          <strong>{{ dataFormatada() }}</strong> às
+          <strong>{{ horaFormatada() }}</strong
+          >. Deseja rodar novamente?
         } @else {
-          A última rodada foi há
-          <strong>{{ diasAtras }} {{ diasAtras === 1 ? "dia" : "dias" }}</strong
-          >, em
+          A última rodada foi em <strong>data indisponível</strong>. Deseja rodar
+          novamente?
         }
-        <strong>{{ dataFormatada }}</strong> às
-        <strong>{{ horaFormatada }}</strong
-        >. Deseja rodar novamente?
       </p>
     </div>
     <div
       class="card-footer flex flex-wrap items-center justify-end gap-3 border-t border-[var(--color-border-light)] p-4"
     >
-      <button class="btn btn-secondary" (click)="cancel.emit()">
+      <button
+        type="button"
+        data-autofocus
+        class="btn btn-secondary min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+        (click)="cancel.emit()"
+      >
         Cancelar
       </button>
-      <button class="btn btn-primary" (click)="proceed.emit()">
+      <button
+        type="button"
+        class="btn btn-primary min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+        (click)="proceed.emit()"
+      >
         Rodar novamente
       </button>
     </div>
