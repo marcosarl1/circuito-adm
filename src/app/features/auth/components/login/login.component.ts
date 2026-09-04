@@ -30,7 +30,18 @@ export class LoginComponent {
   );
 
   togglePasswordVisibility(): void {
+    if (this.loading()) return;
     this.showPassword.update((value) => !value);
+  }
+
+  onUsernameChange(value: string): void {
+    this.username.set(value);
+    if (this.errorMessage()) this.errorMessage.set('');
+  }
+
+  onPasswordChange(value: string): void {
+    this.password.set(value);
+    if (this.errorMessage()) this.errorMessage.set('');
   }
 
   submit() {

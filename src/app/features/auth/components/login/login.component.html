@@ -67,9 +67,10 @@
           class="min-h-[44px] sm:min-h-[46px] w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3 text-sm sm:text-base focus:outline-none focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20"
           placeholder="Digite seu usuário"
           [ngModel]="username()"
-          (ngModelChange)="username.set($event)"
+          (ngModelChange)="onUsernameChange($event)"
           autocomplete="username"
           autofocus
+          [disabled]="loading()"
           inputmode="text"
           [attr.aria-invalid]="usernameError() ? 'true' : null"
           aria-describedby="username-error"
@@ -98,8 +99,9 @@
             class="min-h-[44px] sm:min-h-[46px] w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3 pr-12 text-sm sm:text-base focus:outline-none focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20"
             placeholder="Digite sua senha"
             [ngModel]="password()"
-            (ngModelChange)="password.set($event)"
+            (ngModelChange)="onPasswordChange($event)"
             autocomplete="current-password"
+            [disabled]="loading()"
             [attr.aria-invalid]="passwordError() ? 'true' : null"
             aria-describedby="password-error"
           />
@@ -107,6 +109,7 @@
             type="button"
             class="absolute right-0 top-0 grid h-[44px] w-[44px] sm:h-[46px] sm:w-[46px] place-items-center border-none bg-transparent text-[var(--color-text-secondary)] transition-colors duration-150 hover:text-[var(--foreground)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary-color)] rounded-r-md"
             (click)="togglePasswordVisibility()"
+            [disabled]="loading()"
             [title]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
             [attr.aria-label]="
               showPassword() ? 'Ocultar senha' : 'Mostrar senha'
