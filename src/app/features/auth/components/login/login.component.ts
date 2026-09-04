@@ -34,6 +34,7 @@ export class LoginComponent {
   }
 
   submit() {
+    if (this.loading()) return;
     this.submitted.set(true);
 
     const user = this.username().trim();

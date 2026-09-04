@@ -68,7 +68,6 @@
           placeholder="Digite seu usuário"
           [ngModel]="username()"
           (ngModelChange)="username.set($event)"
-          (keyup.enter)="submit()"
           autocomplete="username"
           autofocus
           inputmode="text"
@@ -100,7 +99,6 @@
             placeholder="Digite sua senha"
             [ngModel]="password()"
             (ngModelChange)="password.set($event)"
-            (keyup.enter)="submit()"
             autocomplete="current-password"
             [attr.aria-invalid]="passwordError() ? 'true' : null"
             aria-describedby="password-error"
