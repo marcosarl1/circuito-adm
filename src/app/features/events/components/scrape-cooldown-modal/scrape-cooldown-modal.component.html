@@ -1,5 +1,5 @@
 <div
-  class="fixed inset-0 z-[210] grid place-items-center bg-[rgba(0,0,0,0.72)] p-4 backdrop-blur-[8px]"
+  class="fixed inset-0 z-[210] grid place-items-center bg-[rgba(0,9,14,0.72)] p-4 backdrop-blur-[8px]"
   (click)="cancel.emit()"
 >
   <div
@@ -10,7 +10,7 @@
     aria-describedby="scrape-cooldown-desc"
     (click)="$event.stopPropagation()"
   >
-    <div class="card-header border-b border-[var(--color-border-light)]">
+    <div class="card-header border-b border-[rgba(142,202,230,0.18)]">
       <h3 id="scrape-cooldown-title" class="m-0">Coleta recente</h3>
     </div>
 
@@ -34,7 +34,7 @@
       </p>
     </div>
     <div
-      class="card-footer flex flex-wrap items-center justify-end gap-3 border-t border-[var(--color-border-light)] p-4"
+      class="card-footer flex flex-wrap items-center justify-end gap-3 border-t border-[rgba(142,202,230,0.18)] p-4"
     >
       <button
         type="button"
