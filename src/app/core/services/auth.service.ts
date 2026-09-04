@@ -1,7 +1,7 @@
 import { computed, inject, isDevMode, Service, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Service()
@@ -53,7 +53,10 @@ export class AuthService {
           this.isAuthenticatedSignal.set(res.success);
           return res.success;
         }),
-        catchError(() => of(false)),
+        catchError((err) => {
+          this.isAuthenticatedSignal.set(false);
+          return throwError(() => err);
+        }),
       );
   }
 

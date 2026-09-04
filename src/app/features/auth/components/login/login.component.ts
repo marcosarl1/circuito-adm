@@ -49,13 +49,19 @@ export class LoginComponent {
 
     this.authService.login(user, password)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((ok) => {
-        this.loading.set(false);
-        if (ok) {
-          this.router.navigate(['/events']);
-        } else {
-          this.errorMessage.set('Usuário ou senha incorretos.');
-        }
+      .subscribe({
+        next: (ok) => {
+          this.loading.set(false);
+          if (ok) {
+            this.router.navigate(['/events']);
+          } else {
+            this.errorMessage.set('Usuário ou senha incorretos.');
+          }
+        },
+        error: () => {
+          this.loading.set(false);
+          this.errorMessage.set('Falha de conexão. Tente novamente.');
+        },
       });
   }
 }
