@@ -34,19 +34,19 @@
       </p>
     </div>
     <div
-      class="card-footer flex flex-wrap items-center justify-end gap-3 border-t border-[rgba(142,202,230,0.18)] p-4"
+      class="card-footer flex flex-col-reverse gap-3 border-t border-[rgba(142,202,230,0.18)] p-4 sm:flex-row sm:justify-end"
     >
       <button
         type="button"
         data-autofocus
-        class="btn btn-secondary min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+        class="btn btn-secondary w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)] sm:w-auto"
         (click)="cancel.emit()"
       >
         Cancelar
       </button>
       <button
         type="button"
-        class="btn btn-primary min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+        class="btn btn-primary w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)] sm:w-auto"
         (click)="proceed.emit()"
       >
         Rodar novamente
