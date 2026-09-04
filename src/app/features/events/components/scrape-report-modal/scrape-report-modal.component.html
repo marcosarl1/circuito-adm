@@ -47,11 +47,11 @@
               class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-2"
             >
               <span
-                class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
+                class="text-[15px] md:text-lg font-semibold leading-none tabular-nums text-[var(--foreground)]"
                 >{{ summary().total }}</span
               >
               <span
-                class="max-w-[80px] truncate text-[10px] md:max-w-none md:text-xs font-mono tabular-nums"
+                class="max-w-[80px] truncate text-[10px] md:max-w-none md:text-xs tabular-nums"
                 ><span class="text-teal-300">{{ summary().ok }} OK</span>
                 @if (summary().fail > 0) {
                   <span class="text-red-300">
@@ -81,7 +81,7 @@
               class="mt-1 flex flex-col items-center justify-center gap-0.5 lg:flex-row lg:items-baseline lg:gap-1.5"
             >
               <span
-                class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
+                class="text-[15px] md:text-lg font-semibold leading-none tabular-nums text-[var(--foreground)]"
                 >{{ totalEventsCount() }}</span
               >
               <span class="text-xs text-[var(--color-text-secondary)]">
@@ -113,17 +113,17 @@
               @if (timelineMeta(); as meta) {
                 @if (meta.totalWall !== null) {
                   <span
-                    class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
+                    class="text-[15px] md:text-lg font-semibold leading-none tabular-nums text-[var(--foreground)]"
                     >{{ meta.totalWall.toFixed(1) }}s</span
                   >
                   <span
-                    class="max-w-[80px] truncate text-[10px] md:max-w-none md:text-xs font-mono tabular-nums text-[var(--color-text-secondary)]"
+                    class="max-w-[80px] truncate text-[10px] md:max-w-none md:text-xs tabular-nums text-[var(--color-text-secondary)]"
                     title="Soma sequencial"
                     >{{ meta.totalFromScrapers.toFixed(1) }}s somados</span
                   >
                 } @else {
                   <span
-                    class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
+                    class="text-[15px] md:text-lg font-semibold leading-none tabular-nums text-[var(--foreground)]"
                     >{{ summary().duration.toFixed(1) }}s</span
                   >
                   <span class="text-xs text-[var(--color-text-secondary)]"
@@ -132,7 +132,7 @@
                 }
               } @else {
                 <span
-                  class="text-[15px] md:text-lg font-semibold leading-none font-mono tabular-nums text-[var(--foreground)]"
+                  class="text-[15px] md:text-lg font-semibold leading-none tabular-nums text-[var(--foreground)]"
                   >{{ summary().duration.toFixed(1) }}s</span
                 >
                 <span class="text-xs text-[var(--color-text-secondary)]"
@@ -361,15 +361,13 @@
                     </span>
                     <span class="flex shrink-0 items-center gap-2">
                       <span
-                        class="inline-flex self-center items-center justify-center rounded-full border px-2 py-0.5 text-[11px] font-bold font-mono tabular-nums leading-[1.2]"
+                        class="inline-flex items-center justify-center rounded-full border px-2.5 text-[11px] font-bold tabular-nums leading-none h-[22px]"
                         [class.border-teal-800/40]="scraper.ok"
                         [class.text-teal-100]="scraper.ok"
                         [class.border-red-900/40]="!scraper.ok"
                         [class.text-red-100]="!scraper.ok"
                       >
-                        <span class="relative top-0.5">
-                          {{ scraper.duration_s }}s
-                        </span>
+                        {{ scraper.duration_s }}s
                       </span>
                       @if (hasDetail(scraper)) {
                         <svg
@@ -433,7 +431,7 @@
                       }
                       @if (selMobile.stderr) {
                         <pre
-                          class="mt-2 max-h-[160px] overflow-auto whitespace-pre-wrap break-words rounded-md bg-[rgba(0,0,0,0.28)] p-2.5 font-mono text-[11px] leading-4 text-red-200/90"
+                          class="mt-2 max-h-[160px] overflow-auto whitespace-pre-wrap break-words rounded-md bg-[rgba(0,0,0,0.28)] p-2.5 text-[11px] leading-4 text-red-200/90"
                           >{{ selMobile.stderr }}</pre>
                       }
                       @if (!selMobile.detail && !selMobile.stderr) {
@@ -535,7 +533,7 @@
                     }
                     @if (sel.stderr) {
                       <pre
-                        class="mt-2 max-h-[160px] overflow-auto whitespace-pre-wrap break-words rounded-md bg-[rgba(0,0,0,0.28)] p-2.5 font-mono text-[11px] leading-4 text-red-200/90"
+                        class="mt-2 max-h-[160px] overflow-auto whitespace-pre-wrap break-words rounded-md bg-[rgba(0,0,0,0.28)] p-2.5 text-[11px] leading-4 text-red-200/90"
                         >{{ sel.stderr }}</pre>
                     }
                   </div>
@@ -568,7 +566,7 @@
                   Timeline
                 </h4>
                 <span
-                  class="flex flex-wrap items-center gap-1.5 text-xs font-mono tabular-nums text-[var(--color-text-secondary)]"
+                  class="flex flex-wrap items-center gap-1.5 text-xs tabular-nums text-[var(--color-text-secondary)]"
                 >
                   @if (meta.startLabel && meta.endLabel) {
                     <span>{{ meta.startLabel }} → {{ meta.endLabel }}</span>
@@ -604,30 +602,30 @@
               >
                 @for (bar of timelineBars(); track bar.nome) {
                   <div
-                    class="flex flex-wrap items-center gap-2 md:gap-3 border-b border-[rgba(142,202,230,0.06)] px-3 py-2.5 last:border-b-0 hover:bg-[rgba(142,202,230,0.04)]"
+                    class="flex flex-col gap-1.5 border-b border-[rgba(142,202,230,0.06)] px-3 py-2.5 last:border-b-0 hover:bg-[rgba(142,202,230,0.04)]"
                   >
-                    <div class="min-w-0 flex-1">
-                      <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="h-1.5 w-1.5 shrink-0 rounded-full"
+                        [class.bg-teal-400]="bar.ok"
+                        [class.bg-red-400]="!bar.ok"
+                      ></span>
+                      <span
+                        class="truncate text-xs font-medium text-[var(--foreground)]"
+                        >{{ bar.nome }}</span
+                      >
+                      @if (bar.isBottleneck) {
                         <span
-                          class="h-1.5 w-1.5 shrink-0 rounded-full"
-                          [class.bg-teal-400]="bar.ok"
-                          [class.bg-red-400]="!bar.ok"
-                        ></span>
-                        <span
-                          class="truncate text-xs font-medium text-[var(--foreground)]"
-                          >{{ bar.nome }}</span
+                          class="inline-flex shrink-0 items-center rounded-full border border-amber-800/40 bg-amber-950 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide leading-none text-amber-100"
+                          title="Fonte com maior duração — determina o tempo total"
                         >
-                        @if (bar.isBottleneck) {
-                          <span
-                            class="inline-flex shrink-0 items-center rounded-full border border-amber-800/40 bg-amber-950 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-100"
-                            title="Fonte com maior duração — determina o tempo total"
-                          >
-                            + lento
-                          </span>
-                        }
-                      </div>
+                          + lento
+                        </span>
+                      }
+                    </div>
+                    <div class="flex items-center gap-2 md:gap-3">
                       <div
-                        class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-[rgba(142,202,230,0.14)]"
+                        class="h-1.5 flex-1 overflow-hidden rounded-full bg-[rgba(142,202,230,0.14)]"
                       >
                         <div
                           class="h-full rounded-full transition-all"
@@ -637,18 +635,16 @@
                           [style.width.%]="bar.width"
                         ></div>
                       </div>
-                    </div>
-                    <span
-                      class="inline-flex shrink-0 items-center justify-center rounded-full border bg-transparent px-2 py-1 text-[11px] font-semibold font-mono tabular-nums leading-[1.2]"
-                      [class.border-teal-800/50]="bar.ok"
-                      [class.text-teal-100]="bar.ok"
-                      [class.border-red-800/50]="!bar.ok"
-                      [class.text-red-100]="!bar.ok"
-                    >
-                      <span class="relative top-0.5"
-                        >{{ bar.duration_s }}s</span
+                      <span
+                        class="inline-flex shrink-0 items-center justify-center rounded-full border bg-transparent px-2.5 text-[11px] font-semibold tabular-nums leading-none h-[22px]"
+                        [class.border-teal-800/50]="bar.ok"
+                        [class.text-teal-100]="bar.ok"
+                        [class.border-red-800/50]="!bar.ok"
+                        [class.text-red-100]="!bar.ok"
                       >
-                    </span>
+                        {{ bar.duration_s }}s
+                      </span>
+                    </div>
                   </div>
                 }
               </div>
@@ -1278,12 +1274,12 @@
                             </span>
                           </td>
                           <td
-                            class="px-2 py-2.5 text-right font-mono tabular-nums text-[13px] font-semibold"
+                            class="px-2 py-2.5 text-right tabular-nums text-[13px] font-semibold"
                           >
                             {{ csv.total }}
                           </td>
                           <td
-                            class="px-2 py-2.5 text-right font-mono tabular-nums text-[13px]"
+                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
                             [class.text-amber-200]="csv.duplicados > 0"
                             [class.font-semibold]="csv.duplicados > 0"
                             [class.text-[var(--color-text-secondary)]]="
@@ -1293,7 +1289,7 @@
                             {{ csv.duplicados }}
                           </td>
                           <td
-                            class="px-2 py-2.5 text-right font-mono tabular-nums text-[13px]"
+                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
                             [class.text-amber-200]="csv.sem_preco > 0"
                             [class.font-semibold]="csv.sem_preco > 0"
                             [class.text-[var(--color-text-secondary)]]="
@@ -1303,7 +1299,7 @@
                             {{ csv.sem_preco }}
                           </td>
                           <td
-                            class="px-2 py-2.5 text-right font-mono tabular-nums text-[13px]"
+                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
                             [class.text-amber-200]="csv.eventos_passados > 0"
                             [class.font-semibold]="csv.eventos_passados > 0"
                             [class.text-[var(--color-text-secondary)]]="
@@ -1313,7 +1309,7 @@
                             {{ csv.eventos_passados }}
                           </td>
                           <td
-                            class="px-2 py-2.5 text-right font-mono tabular-nums text-[13px]"
+                            class="px-2 py-2.5 text-right tabular-nums text-[13px]"
                             [class.text-amber-200]="csv.sem_imagem > 0"
                             [class.font-semibold]="csv.sem_imagem > 0"
                             [class.text-[var(--color-text-secondary)]]="
@@ -1348,7 +1344,7 @@
                           >
                         </span>
                         <span
-                          class="shrink-0 rounded-full border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.28)] px-2 py-1 text-[11px] font-bold font-mono tabular-nums leading-none"
+                          class="shrink-0 rounded-full border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.28)] px-2 py-1 text-[11px] font-bold tabular-nums leading-none"
                           >{{ csv.total }} total</span
                         >
                       </div>
@@ -1364,7 +1360,7 @@
                             Duplicados
                           </div>
                           <div
-                            class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
+                            class="mt-1 text-[13px] font-semibold tabular-nums"
                             [class.text-amber-200]="csv.duplicados > 0"
                             [class.text-[var(--color-text-secondary)]]="
                               csv.duplicados === 0
@@ -1382,7 +1378,7 @@
                             Sem preço
                           </div>
                           <div
-                            class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
+                            class="mt-1 text-[13px] font-semibold tabular-nums"
                             [class.text-amber-200]="csv.sem_preco > 0"
                             [class.text-[var(--color-text-secondary)]]="
                               csv.sem_preco === 0
@@ -1400,7 +1396,7 @@
                             Passados
                           </div>
                           <div
-                            class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
+                            class="mt-1 text-[13px] font-semibold tabular-nums"
                             [class.text-amber-200]="csv.eventos_passados > 0"
                             [class.text-[var(--color-text-secondary)]]="
                               csv.eventos_passados === 0
@@ -1418,7 +1414,7 @@
                             Sem imagem
                           </div>
                           <div
-                            class="mt-1 text-[13px] font-semibold font-mono tabular-nums"
+                            class="mt-1 text-[13px] font-semibold tabular-nums"
                             [class.text-amber-200]="csv.sem_imagem > 0"
                             [class.text-[var(--color-text-secondary)]]="
                               csv.sem_imagem === 0
@@ -1491,7 +1487,7 @@
                   Novos
                 </div>
                 <div
-                  class="mt-1 flex items-center justify-center text-lg font-semibold leading-none font-mono tabular-nums text-white"
+                  class="mt-1 flex items-center justify-center text-lg font-semibold leading-none tabular-nums text-white"
                 >
                   {{ result.novos }}
                 </div>
@@ -1503,7 +1499,7 @@
                   Atualizados
                 </div>
                 <div
-                  class="mt-1 flex items-center justify-center text-lg font-semibold leading-none font-mono tabular-nums text-white"
+                  class="mt-1 flex items-center justify-center text-lg font-semibold leading-none tabular-nums text-white"
                 >
                   {{ result.atualizados }}
                 </div>
@@ -1515,7 +1511,7 @@
                   Total
                 </div>
                 <div
-                  class="mt-1 flex items-center justify-center text-lg font-semibold leading-none font-mono tabular-nums text-white"
+                  class="mt-1 flex items-center justify-center text-lg font-semibold leading-none tabular-nums text-white"
                 >
                   {{ result.total }}
                 </div>
@@ -1538,7 +1534,7 @@
                 Salvando eventos...
               </p>
               <span
-                class="ml-auto text-xs font-mono tabular-nums text-[var(--color-text-secondary)]"
+                class="ml-auto text-xs tabular-nums text-[var(--color-text-secondary)]"
                 >aguarde</span
               >
             </div>
