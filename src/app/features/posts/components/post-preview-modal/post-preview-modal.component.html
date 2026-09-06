@@ -4,20 +4,26 @@
 >
   <div
     class="flex max-h-[calc(100vh-48px)] w-full max-w-[820px] flex-col overflow-hidden rounded-xl border border-[rgba(142,202,230,0.18)] bg-[var(--card)] shadow-[var(--shadow-lg)]"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="post-preview-title"
     (click)="$event.stopPropagation()"
   >
     <div
       class="flex items-start justify-between gap-4 border-b border-[rgba(142,202,230,0.18)] bg-[var(--card)] p-4"
     >
       <div>
-        <h3 class="m-0 text-lg">Pré-visualização</h3>
+        <h3 id="post-preview-title" class="m-0 text-lg">Pré-visualização</h3>
         <p class="mb-0 mt-1 text-sm text-[var(--color-text-secondary)]">
           Como o post aparecerá no blog
         </p>
       </div>
       <button
-        class="grid h-9 w-9 place-items-center rounded-md border border-[rgba(142,202,230,0.22)] bg-transparent text-[var(--color-text-secondary)] transition-colors duration-150 hover:bg-[rgba(2,48,71,0.4)] hover:text-[var(--foreground)]"
+        data-autofocus
+        class="grid h-9 w-9 place-items-center rounded-md border border-[rgba(142,202,230,0.22)] bg-transparent text-[var(--color-text-secondary)] transition-colors duration-150 hover:bg-[rgba(2,48,71,0.4)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
         (click)="close.emit()"
+        type="button"
+        aria-label="Fechar pré-visualização"
         title="Fechar"
       >
         <svg
@@ -79,8 +85,8 @@
           {{ formData().descricao || "Descrição do post aparece aqui." }}
         </p>
         <article class="grid gap-4 leading-8 text-gray-900">
-          @if (getParagraphs().length > 0) {
-            @for (p of getParagraphs(); track p) {
+          @if (paragraphs().length > 0) {
+            @for (p of paragraphs(); track $index) {
               <p class="m-0 text-base">{{ p }}</p>
             }
           } @else {
