@@ -43,6 +43,7 @@
           type="file"
           accept="image/*"
           class="hidden"
+          [disabled]="loading()"
           (change)="imageSelected.emit($event)"
         />
         <p class="m-0 text-xs text-[var(--color-text-secondary)]">
@@ -71,8 +72,12 @@
           [ngModel]="formData().titulo"
           (ngModelChange)="onTitleChange($event)"
           placeholder="Título do post"
-          class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3"
+          class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 disabled:opacity-60 disabled:cursor-not-allowed"
+          [disabled]="loading()"
+          [attr.aria-invalid]="tituloError() ? 'true' : null"
+          aria-describedby="titulo-error"
         />
+        <div id="titulo-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ tituloError() }}</div>
       </div>
 
       <div class="flex flex-col gap-2">
@@ -93,8 +98,12 @@
           [ngModel]="formData().slug"
           (ngModelChange)="updateField('slug', $event)"
           placeholder="meu-post"
-          class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3"
+          class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 disabled:opacity-60 disabled:cursor-not-allowed"
+          [disabled]="loading()"
+          [attr.aria-invalid]="slugError() ? 'true' : null"
+          aria-describedby="slug-error"
         />
+        <div id="slug-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ slugError() }}</div>
       </div>
     </section>
 
@@ -121,8 +130,12 @@
           [ngModel]="formData().descricao"
           (ngModelChange)="updateField('descricao', $event)"
           placeholder="Descrição curta, usada como resumo do post"
-          class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"
+          class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2 disabled:opacity-60 disabled:cursor-not-allowed"
+          [disabled]="loading()"
+          [attr.aria-invalid]="descricaoError() ? 'true' : null"
+          aria-describedby="descricao-error"
         ></textarea>
+        <div id="descricao-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ descricaoError() }}</div>
       </div>
 
       <div class="flex flex-col gap-2">
@@ -137,8 +150,12 @@
           [ngModel]="formData().conteudoText"
           (ngModelChange)="updateField('conteudoText', $event)"
           placeholder="Um parágrafo por linha"
-          class="min-h-[140px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"
+          class="min-h-[140px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2 disabled:opacity-60 disabled:cursor-not-allowed"
+          [disabled]="loading()"
+          [attr.aria-invalid]="conteudoError() ? 'true' : null"
+          aria-describedby="conteudo-error"
         ></textarea>
+        <div id="conteudo-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ conteudoError() }}</div>
         <p class="m-0 text-xs text-[var(--color-text-secondary)]">
           Cada linha vira um parágrafo separado no post publicado
         </p>
@@ -156,7 +173,8 @@
           [ngModel]="formData().imagensText"
           (ngModelChange)="updateField('imagensText', $event)"
           placeholder="Uma URL por linha"
-          class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2"
+          class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2 disabled:opacity-60 disabled:cursor-not-allowed"
+          [disabled]="loading()"
         ></textarea>
         <p class="m-0 text-xs text-[var(--color-text-secondary)]">
           Opcional — imagens exibidas ao longo do texto
@@ -188,8 +206,12 @@
             [ngModel]="formData().autor"
             (ngModelChange)="updateField('autor', $event)"
             placeholder="Equipe Circuito"
-            class="min-h-[38px] w-full rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.6)] px-3 text-sm"
+            class="min-h-[38px] w-full rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.6)] px-3 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+            [disabled]="loading()"
+            [attr.aria-invalid]="autorError() ? 'true' : null"
+            aria-describedby="autor-error"
           />
+          <div id="autor-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ autorError() }}</div>
         </div>
         <div class="flex flex-col gap-1.5">
           <label
@@ -204,8 +226,12 @@
             autocomplete="off"
             [ngModel]="formData().data"
             (ngModelChange)="updateField('data', $event)"
-            class="min-h-[38px] w-full rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.6)] px-3 text-sm"
+            class="min-h-[38px] w-full rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.6)] px-3 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+            [disabled]="loading()"
+            [attr.aria-invalid]="dataError() ? 'true' : null"
+            aria-describedby="data-error"
           />
+          <div id="data-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ dataError() }}</div>
         </div>
       </div>
     </section>
@@ -218,14 +244,16 @@
       <button
         class="btn btn-secondary btn-sm min-h-10 flex-1 sm:min-h-8 sm:flex-none sm:order-2"
         type="button"
-        (click)="reset.emit()"
+        (click)="handleReset()"
+        [disabled]="loading()"
       >
         Limpar
       </button>
       <button
         class="btn btn-primary btn-sm min-h-10 flex-1 sm:min-h-8 sm:flex-none sm:order-3"
-        (click)="publish.emit()"
+        (click)="handlePublish()"
         [disabled]="loading()"
+        [attr.aria-busy]="loading()"
       >
         {{ loading() ? "Publicando..." : "Publicar" }}
       </button>
