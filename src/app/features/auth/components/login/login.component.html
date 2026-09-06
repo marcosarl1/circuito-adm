@@ -7,14 +7,27 @@
     <div
       class="grid justify-items-center border-b border-[rgba(142,202,230,0.14)] bg-[rgba(2,48,71,0.18)] px-4 py-4 sm:px-6 sm:pb-4 sm:pt-6 text-center"
     >
-      <img
-        class="mb-2 h-16 w-16 sm:h-24 sm:w-24 md:h-32 md:w-32 object-contain"
-        src="/icoBluOra.png"
-        alt="Circuito Admin"
-        width="144"
-        height="144"
-        loading="eager"
-      />
+      @if (!logoError()) {
+        <img
+          class="mb-2 h-16 w-16 sm:h-24 sm:w-24 md:h-32 md:w-32 object-contain"
+          ngSrc="/icoBluOra.png"
+          alt="Circuito Admin"
+          width="128"
+          height="128"
+          priority
+          (error)="logoError.set(true)"
+        />
+      } @else {
+        <div
+          class="mb-2 grid h-16 w-16 place-items-center rounded-full bg-[rgba(2,48,71,0.35)] text-[var(--brand-sky-200)] sm:h-24 sm:w-24 md:h-32 md:w-32"
+          aria-hidden="true"
+        >
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 8v5l3 2" />
+          </svg>
+        </div>
+      }
       <h1
         class="m-0 text-lg sm:text-xl md:text-2xl font-bold tracking-[-0.01em]"
       >

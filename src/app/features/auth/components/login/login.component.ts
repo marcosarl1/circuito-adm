@@ -7,6 +7,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -15,7 +16,7 @@ import { DestroyRef } from '@angular/core';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],
+  imports: [FormsModule, NgOptimizedImage],
   templateUrl: './login.component.html',
 })
 export class LoginComponent implements AfterViewInit {
@@ -34,6 +35,8 @@ export class LoginComponent implements AfterViewInit {
   submitted = signal(false);
   usernameTouched = signal(false);
   passwordTouched = signal(false);
+
+  logoError = signal(false);
 
   usernameError = computed(() => {
     const empty = !this.username().trim();
