@@ -101,10 +101,11 @@
             class="mb-2 flex min-h-[52px] items-center gap-3 rounded-lg border border-transparent px-4 py-3 text-[var(--foreground)] no-underline transition-colors duration-150 hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
           >
             <span
-              class="grid h-8 w-8 place-items-center rounded-md bg-[rgba(2,48,71,0.88)] text-[0.72rem] font-bold text-[var(--primary)]"
+              class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[rgba(2,48,71,0.88)] text-[var(--primary)] leading-none"
               aria-hidden="true"
-              >{{ item.icon }}</span
             >
+              <app-icon [name]="item.icon" size="18" strokeWidth="1.8" klass="flex items-center justify-center leading-none text-[var(--primary)]"></app-icon>
+            </span>
             <span class="flex-1">{{ item.label }}</span>
           </a>
         </li>
