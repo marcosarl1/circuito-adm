@@ -1,46 +1,46 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { IconComponent } from '../icon/icon.component';
+import { SidebarStateService } from './sidebar-state.service';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive, IconComponent],
+  imports: [RouterLink, RouterLinkActive, IconComponent, NgClass],
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent {
   private authService = inject(AuthService);
+  sidebarState = inject(SidebarStateService);
 
   menuItems = [
     { label: 'Eventos', route: '/events', icon: 'heroCalendarDays' },
     { label: 'Postagens', route: '/posts', icon: 'heroNewspaper' },
   ];
 
-  // Mobile drawer (overlay)
-  isOpen = signal(false);
-
-  // Desktop rail (64px collapsed -> 220px expanded)
-  isCollapsed = signal(true);
-  isHovered = signal(false);
-
-  // Rail está expandida se não colapsada OU hover (para preview)
-  isRailExpanded = computed(() => !this.isCollapsed() || this.isHovered());
+  // expose signals for template (proxy to service)
+  isOpen = this.sidebarState.isOpen;
+  isCollapsed = this.sidebarState.isCollapsed;
+  isHovered = this.sidebarState.isHovered;
+  isRailExpanded = this.sidebarState.isRailExpanded;
+  isDrawerExpanded = this.sidebarState.isDrawerExpanded;
 
   toggle() {
-    this.isOpen.update((value) => !value);
+    this.sidebarState.toggle();
   }
 
   close() {
-    this.isOpen.set(false);
+    this.sidebarState.close();
   }
 
   toggleRail() {
-    this.isCollapsed.update((v) => !v);
+    this.sidebarState.toggleRail();
   }
 
   setHovered(value: boolean) {
-    this.isHovered.set(value);
+    this.sidebarState.setHovered(value);
   }
 
   logout() {

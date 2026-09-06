@@ -8,6 +8,8 @@ import {
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
+import { SidebarStateService } from '../../shared/components/sidebar/sidebar-state.service';
+import { NgClass } from '@angular/common';
 
 import { InactivityWarningModalComponent } from '../../shared/components/inactivity-warning-modal/inactivity-warning-modal.component';
 import { InactivityService } from '../../core/services/inactivity.service';
@@ -23,6 +25,7 @@ import { ToastComponent } from '../../shared/components/toast/toast.component';
     SidebarComponent,
     InactivityWarningModalComponent,
     ToastComponent,
+    NgClass,
   ],
   templateUrl: './main-layout.component.html',
 })
@@ -31,6 +34,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
   private loadingService = inject(LoadingService);
+  sidebarState = inject(SidebarStateService);
 
   loading = this.loadingService.loading;
   showWarning = signal(false);
