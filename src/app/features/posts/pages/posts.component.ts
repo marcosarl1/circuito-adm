@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnDestroy, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PostsService } from '../services/posts.service';
 import { PostFormCardComponent } from '../components/post-form-card/post-form-card.component';
@@ -11,11 +11,14 @@ import { ToastService } from '../../../shared/services/toast.service';
   imports: [PostFormCardComponent],
   templateUrl: './posts.component.html',
 })
-export class PostsComponent {
+export class PostsComponent implements OnDestroy {
   private destroyRef = inject(DestroyRef);
   private postsService = inject(PostsService);
   private loadingService = inject(LoadingService);
   private toastService = inject(ToastService);
+
+  private readonly MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+  private readonly ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
 
   loading = this.loadingService.loading;
   imagePreview = signal('');
@@ -25,19 +28,40 @@ export class PostsComponent {
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
-    this.formData.update((f) => ({ ...f, imagem: file }));
-    this.selectedImageName.set(file?.name ?? '');
+
+    // revoke previous blob url to avoid memory leak
+    const prev = this.imagePreview();
+    if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
 
     if (!file) {
+      this.formData.update((f) => ({ ...f, imagem: null }));
+      this.selectedImageName.set('');
+      this.imagePreview.set('');
+      input.value = '';
+      return;
+    }
+
+    if (!this.ALLOWED_TYPES.includes(file.type)) {
+      this.toastService.error('Formato inválido. Use JPG, PNG ou WebP.');
+      input.value = '';
+      this.formData.update((f) => ({ ...f, imagem: null }));
+      this.selectedImageName.set('');
       this.imagePreview.set('');
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.imagePreview.set(String(reader.result ?? ''));
-    };
-    reader.readAsDataURL(file);
+    if (file.size > this.MAX_IMAGE_SIZE) {
+      this.toastService.error('Imagem muito grande. Máximo 5MB.');
+      input.value = '';
+      this.formData.update((f) => ({ ...f, imagem: null }));
+      this.selectedImageName.set('');
+      this.imagePreview.set('');
+      return;
+    }
+
+    this.formData.update((f) => ({ ...f, imagem: file }));
+    this.selectedImageName.set(file.name);
+    this.imagePreview.set(URL.createObjectURL(file));
   }
 
   publishPost() {
@@ -72,9 +96,12 @@ export class PostsComponent {
   }
 
   resetForm() {
+    const prev = this.imagePreview();
+    if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
     this.formData.set(this.createEmptyForm());
     this.imagePreview.set('');
     this.selectedImageName.set('');
+    // file input DOM value is cleared by child via effect; also clear here if ref available
   }
 
   onTitleChange(titulo: string) {
@@ -123,8 +150,13 @@ export class PostsComponent {
       .replace(/\s+/g, '-');
   }
 
+  ngOnDestroy(): void {
+    const prev = this.imagePreview();
+    if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+  }
+
   private createEmptyForm(): PostFormState {
-    const today = new Date().toLocaleDateString('sv-SE');
+    const today = new Date().toISOString().slice(0, 10);
     return {
       imagem: null,
       slug: '',

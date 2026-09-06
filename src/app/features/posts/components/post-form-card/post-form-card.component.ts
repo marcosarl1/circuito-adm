@@ -1,4 +1,15 @@
-import { Component, computed, effect, inject, model, output, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  model,
+  output,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PostPreviewModalComponent } from '../post-preview-modal/post-preview-modal.component';
 import { PostFormState } from '../../../../shared/models/post.model';
@@ -25,6 +36,8 @@ export class PostFormCardComponent {
   showPreview = signal(false);
   submitted = signal(false);
 
+  private fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
+
   constructor() {
     // auto-clear validation after parent resets form to empty (publish success or Limpar)
     effect(() => {
@@ -32,6 +45,14 @@ export class PostFormCardComponent {
       const isEmpty = !f.titulo && !f.slug && !f.descricao && !f.conteudoText;
       if (isEmpty && this.submitted()) {
         this.submitted.set(false);
+      }
+    });
+
+    // clear native file input when imagem becomes null (reset/publish success/validation fail)
+    effect(() => {
+      if (!this.formData().imagem) {
+        const el = this.fileInput()?.nativeElement;
+        if (el) el.value = '';
       }
     });
   }
