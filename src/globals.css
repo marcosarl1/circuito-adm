@@ -235,6 +235,46 @@ textarea::placeholder {
   color: rgba(186, 230, 245, 0.58);
 }
 
+.form-input {
+  width: 100%;
+  min-height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(142, 202, 230, 0.16);
+  background: rgba(0, 9, 14, 0.62);
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.form-input::placeholder {
+  color: rgba(186, 230, 245, 0.58);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--brand-teal-500);
+  box-shadow: 0 0 0 2px rgba(33, 158, 188, 0.2);
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-input[aria-invalid='true'] {
+  border-color: var(--destructive);
+}
+
+@media (min-width: 640px) {
+  .form-input {
+    min-height: 46px;
+    font-size: 1rem;
+  }
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

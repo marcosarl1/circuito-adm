@@ -32,7 +32,7 @@
         <div
           #errorAlert
           tabindex="-1"
-          class="flex items-start gap-2 rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/30"
+          class="flex items-start gap-2 rounded-lg border border-[rgba(248,113,113,0.28)] bg-[rgba(153,27,27,0.2)] p-3 text-sm text-[#fecaca] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--destructive)]/30"
           role="alert"
         >
           <svg
@@ -67,7 +67,7 @@
           id="username"
           name="username"
           type="text"
-          class="min-h-[44px] sm:min-h-[46px] w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3 text-sm sm:text-base focus:outline-none focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20"
+          class="form-input"
           placeholder="Digite seu usuário"
           [ngModel]="username()"
           (ngModelChange)="onUsernameChange($event)"
@@ -77,10 +77,11 @@
           inputmode="text"
           [attr.aria-invalid]="usernameError() ? 'true' : null"
           aria-describedby="username-error"
+          (blur)="usernameTouched.set(true)"
         />
         <div
           id="username-error"
-          class="min-h-[1.25rem] text-xs text-red-600"
+          class="min-h-[1.25rem] text-xs text-[#fca5a5]"
           role="status"
           aria-live="polite"
         >
@@ -99,7 +100,7 @@
             id="password"
             name="password"
             [type]="showPassword() ? 'text' : 'password'"
-            class="min-h-[44px] sm:min-h-[46px] w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3 pr-12 text-sm sm:text-base focus:outline-none focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20"
+            class="form-input pr-12"
             placeholder="Digite sua senha"
             [ngModel]="password()"
             (ngModelChange)="onPasswordChange($event)"
@@ -108,10 +109,11 @@
             [attr.aria-busy]="loading() ? 'true' : null"
             [attr.aria-invalid]="passwordError() ? 'true' : null"
             aria-describedby="password-error"
+            (blur)="passwordTouched.set(true)"
           />
           <button
             type="button"
-            class="absolute right-0 top-0 grid h-[44px] w-[44px] sm:h-[46px] sm:w-[46px] place-items-center border-none bg-transparent text-[var(--color-text-secondary)] transition-colors duration-150 hover:text-[var(--foreground)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary-color)] rounded-r-md"
+            class="absolute right-0 top-0 grid h-[44px] w-[44px] sm:h-[46px] sm:w-[46px] place-items-center border-none bg-transparent text-[var(--color-text-secondary)] transition-colors duration-150 hover:text-[var(--foreground)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--brand-teal-500)] rounded-r-md"
             (click)="togglePasswordVisibility()"
             [disabled]="loading()"
             [title]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
@@ -163,7 +165,7 @@
         </div>
         <div
           id="password-error"
-          class="min-h-[1.25rem] text-xs text-red-600"
+          class="min-h-[1.25rem] text-xs text-[#fca5a5]"
           role="status"
           aria-live="polite"
         >

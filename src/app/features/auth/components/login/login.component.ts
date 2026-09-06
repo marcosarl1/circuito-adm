@@ -32,13 +32,19 @@ export class LoginComponent implements AfterViewInit {
   loading = signal(false);
   errorMessage = signal('');
   submitted = signal(false);
+  usernameTouched = signal(false);
+  passwordTouched = signal(false);
 
-  usernameError = computed(() =>
-    this.submitted() && !this.username().trim() ? 'Usuário é obrigatório' : '',
-  );
-  passwordError = computed(() =>
-    this.submitted() && !this.password().trim() ? 'Senha é obrigatória' : '',
-  );
+  usernameError = computed(() => {
+    const empty = !this.username().trim();
+    if (!empty) return '';
+    return this.submitted() || this.usernameTouched() ? 'Usuário é obrigatório' : '';
+  });
+  passwordError = computed(() => {
+    const empty = !this.password().trim();
+    if (!empty) return '';
+    return this.submitted() || this.passwordTouched() ? 'Senha é obrigatória' : '';
+  });
 
   ngAfterViewInit(): void {
     // programmatic autofocus (more reliable than static `autofocus` attrs with Angular routing)
