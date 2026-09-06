@@ -71,11 +71,7 @@
           {{ formData().titulo || "Título do post" }}
         </h1>
         <div class="mb-6 flex items-center gap-2 text-sm text-gray-500">
-          <span>{{
-            formData().data
-              ? (formData().data | date: "dd 'de' MMMM 'de' yyyy" : "")
-              : "Data"
-          }}</span>
+          <span>{{ formattedDate() || "Data" }}</span>
           <span>·</span>
           <span>{{ formData().autor || "Autor" }}</span>
         </div>

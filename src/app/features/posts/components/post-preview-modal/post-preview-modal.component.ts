@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+
 import {
   AfterViewInit,
   Component,
@@ -15,7 +15,7 @@ import { PostFormState } from '../../../../shared/models/post.model';
 
 @Component({
   selector: 'app-post-preview-modal',
-  imports: [DatePipe],
+  imports: [],
   templateUrl: './post-preview-modal.component.html',
 })
 export class PostPreviewModalComponent implements AfterViewInit, OnDestroy {
@@ -35,6 +35,18 @@ export class PostPreviewModalComponent implements AfterViewInit, OnDestroy {
       .split('\n')
       .map((p: string) => p.trim())
       .filter(Boolean);
+  });
+
+  formattedDate = computed<string>(() => {
+    const raw = this.formData().data; // yyyy-MM-dd
+    if (!raw) return '';
+    const d = new Date(raw + 'T12:00:00');
+    if (Number.isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
   });
 
   // keep method for backward compat if template still calls it
