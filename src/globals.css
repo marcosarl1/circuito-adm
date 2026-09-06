@@ -60,6 +60,14 @@
   --sidebar-border: var(--brand-navy-500);
   --sidebar-ring: var(--brand-teal-500);
 
+  --sidebar-rail: 64px;
+  --sidebar-rail-expanded: 220px;
+  --sidebar-width-legacy: 260px;
+  --header-h: 56px;
+  --sidebar-bg: var(--brand-navy-100);
+  --sidebar-border-subtle: rgba(142, 202, 230, 0.12);
+  --sidebar-border-strong: rgba(142, 202, 230, 0.18);
+
   --color-bg: var(--background);
   --color-bg-secondary: var(--brand-navy-200);
   --color-bg-tertiary: var(--brand-navy-500);
@@ -264,7 +272,7 @@ textarea::placeholder {
   cursor: not-allowed;
 }
 
-.form-input[aria-invalid='true'] {
+.form-input[aria-invalid="true"] {
   border-color: var(--destructive);
 }
 
