@@ -25,6 +25,7 @@ export class HeaderComponent {
   }
 
   private resolveBreadcrumb(url: string): string {
+    if (url.startsWith('/dashboard')) return 'Dashboard';
     if (url.startsWith('/posts')) return 'Postagens';
     if (url.startsWith('/events')) return 'Eventos';
     return 'Dashboard';

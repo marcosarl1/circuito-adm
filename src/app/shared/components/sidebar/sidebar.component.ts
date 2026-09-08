@@ -16,6 +16,7 @@ export class SidebarComponent {
   sidebarState = inject(SidebarStateService);
 
   menuItems = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'heroChartBar' },
     { label: 'Eventos', route: '/events', icon: 'heroCalendarDays' },
     { label: 'Postagens', route: '/posts', icon: 'heroNewspaper' },
   ];

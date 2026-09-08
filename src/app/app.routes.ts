@@ -18,6 +18,13 @@ export const routes: Routes = [
     canMatch: [authGuard],
     children: [
       {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/pages/dashboard.component').then(
+            (m) => m.DashboardComponent,
+          ),
+      },
+      {
         path: 'events',
         loadComponent: () =>
           import('./features/events/pages/events.component').then(
@@ -33,7 +40,7 @@ export const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'events',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
       },
     ],
