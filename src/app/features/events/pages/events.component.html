@@ -1,12 +1,12 @@
-<section
-  class="mb-6 grid gap-4 rounded-xl border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.92)] p-6 shadow-[var(--shadow-sm)] md:grid-cols-[minmax(200px,1fr)_minmax(240px,1fr)] md:items-center"
->
-  <div>
-    <h2 class="m-0 text-2xl font-normal">
-      <span class="font-bold text-[var(--primary)]">Eventos</span>
-    </h2>
-  </div>
-  <div>
+<div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div class="relative w-full sm:w-[260px] sm:shrink-0">
+    <app-icon
+      name="heroMagnifyingGlass"
+      size="16"
+      strokeWidth="1.8"
+      klass="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]"
+      aria-hidden="true"
+    ></app-icon>
     <input
       type="text"
       name="event-search"
@@ -14,35 +14,38 @@
       [ngModel]="searchTerm()"
       (ngModelChange)="onSearchChange($event)"
       autocomplete="off"
-      class="min-h-11 w-full rounded-md border border-[rgba(142,202,230,0.22)] px-3"
+      class="h-10 w-full rounded-full border border-[var(--sidebar-border-subtle)] bg-[rgba(0,9,14,0.35)] pl-9 pr-3 text-sm placeholder:text-[var(--muted-foreground)] focus:border-[var(--brand-teal-500)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
     />
   </div>
-  <div
-    class="flex w-full flex-row justify-end gap-3 max-md:flex-col md:col-span-2"
-  >
+  <div class="flex w-full flex-col gap-2 sm:ml-auto sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
     <button
-      class="btn btn-primary whitespace-nowrap"
+      class="btn btn-primary inline-flex items-center justify-center gap-2 w-full whitespace-nowrap sm:w-auto"
       (click)="openCreateForm()"
       [disabled]="loading()"
     >
+      <app-icon name="heroPlus" size="16" strokeWidth="2"></app-icon>
       Novo evento
     </button>
-    <button
-      class="btn btn-secondary whitespace-nowrap"
-      (click)="runScrapers()"
-      [disabled]="loading() || scrapeRunning()"
-    >
-      {{ scrapeRunning() ? "Coletando..." : "Rodar scrapers" }}
-    </button>
-    <button
-      class="btn btn-secondary whitespace-nowrap"
-      (click)="syncBucket()"
-      [disabled]="loading()"
-    >
-      Sincronizar
-    </button>
+    <div class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:gap-2">
+      <button
+        class="btn btn-ghost inline-flex items-center justify-center gap-1.5 whitespace-nowrap"
+        (click)="runScrapers()"
+        [disabled]="loading() || scrapeRunning()"
+      >
+        <app-icon name="heroArrowPath" size="16" strokeWidth="1.8"></app-icon>
+        {{ scrapeRunning() ? "Coletando..." : "Rodar scrapers" }}
+      </button>
+      <button
+        class="btn btn-ghost inline-flex items-center justify-center gap-1.5 whitespace-nowrap"
+        (click)="syncBucket()"
+        [disabled]="loading()"
+      >
+        <app-icon name="heroCloudArrowUp" size="16" strokeWidth="1.8"></app-icon>
+        Sincronizar
+      </button>
+    </div>
   </div>
-</section>
+</div>
 
 @if (showForm()) {
   <app-event-form-modal

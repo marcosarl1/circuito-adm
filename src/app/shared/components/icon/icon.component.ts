@@ -2,13 +2,17 @@ import { Component, Input } from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   heroArrowDownTray,
+  heroArrowPath,
   heroArrowRightStartOnRectangle,
   heroBars3,
   heroCalendarDays,
   heroCheckCircle,
   heroCircleStack,
   heroClock,
+  heroCloudArrowUp,
+  heroMagnifyingGlass,
   heroNewspaper,
+  heroPlus,
   heroXMark,
 } from '@ng-icons/heroicons/outline';
 
@@ -27,6 +31,10 @@ import {
       heroNewspaper,
       heroArrowRightStartOnRectangle,
       heroBars3,
+      heroMagnifyingGlass,
+      heroPlus,
+      heroArrowPath,
+      heroCloudArrowUp,
     }),
   ],
   template: `<ng-icon [name]="name" [size]="size" [color]="color" [strokeWidth]="strokeWidth" [class]="klass" style="display:flex;align-items:center;justify-content:center;line-height:0"></ng-icon>`,

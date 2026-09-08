@@ -26,6 +26,7 @@ import { EventCardSkeletonComponent } from '../components/event-card-skeleton/ev
 import { ConfirmModalService } from '../../../shared/services/confirm-modal.service';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { ToastService } from '../../../shared/services/toast.service';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-events',
@@ -37,6 +38,7 @@ import { ToastService } from '../../../shared/services/toast.service';
     ConfirmModalComponent,
     ScrapeReportModalComponent,
     ScrapeCooldownModalComponent,
+    IconComponent,
   ],
   templateUrl: './events.component.html',
 })
