@@ -5,12 +5,14 @@
     [ngClass]="sidebarState.isRailExpanded() ? 'md:ml-[var(--sidebar-rail-expanded)]' : 'md:ml-[var(--sidebar-rail)]'"
   >
     <!-- Tailwind scan keep: md:ml-[64px] md:ml-[220px] -->
-    <app-header></app-header>
-    <main class="flex-1 overflow-y-auto pb-8 pt-6 md:pt-6">
+    <main class="flex-1 overflow-y-auto pb-8">
+      <app-header></app-header>
+      <div class="pt-6">
       <div class="container">
         <router-outlet></router-outlet>
       </div>
       <app-toast></app-toast>
+      </div>
     </main>
   </div>
 </div>

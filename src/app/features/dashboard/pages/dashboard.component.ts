@@ -1,10 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { DashboardService } from '../services/dashboard.service';
 import { Event } from '../../../shared/models/event.model';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  imports: [IconComponent],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {
@@ -13,6 +15,23 @@ export class DashboardComponent {
   loading = signal(true);
   events = signal<Event[]>([]);
   stats = computed(() => this.dashboardService.getStats(this.events()));
+
+  // Por Mês paginação — 6 por página, mais recente primeiro
+  porMesPage = signal(0);
+  porMesPageSize = 6;
+  porMesSorted = computed(() => [...this.stats().porMes].reverse());
+  porMesTotalPages = computed(() => Math.max(1, Math.ceil(this.porMesSorted().length / this.porMesPageSize)));
+  porMesVisible = computed(() => {
+    const start = this.porMesPage() * this.porMesPageSize;
+    return this.porMesSorted().slice(start, start + this.porMesPageSize);
+  });
+
+  prevPorMes() {
+    if (this.porMesPage() > 0) this.porMesPage.update((p) => p - 1);
+  }
+  nextPorMes() {
+    if (this.porMesPage() < this.porMesTotalPages() - 1) this.porMesPage.update((p) => p + 1);
+  }
 
   proximosEventos = computed(() => {
     const now = new Date();

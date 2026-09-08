@@ -46,14 +46,14 @@ export class EventsService {
       : {};
   }
 
-  getEvents(search = '', page = 1): Observable<EventPage> {
+  getEvents(search = '', page = 1, size = this.pageSize): Observable<EventPage> {
     const query = search?.trim() || '';
 
-    const key = query ? `q:${query}:${page}` : `p:${page}`;
+    const key = query ? `q:${query}:${page}:s:${size}` : `p:${page}:s:${size}`;
     const cached = this.eventsCache.get(key);
     if (cached) return of(cached);
 
-    let params = new HttpParams().set('page', page).set('size', this.pageSize);
+    let params = new HttpParams().set('page', page).set('size', size);
     if (query) {
       params = params.set('q', query);
     }
@@ -69,9 +69,9 @@ export class EventsService {
   }
 
   /** SWR: tenta devolver stale de localStorage para render imediato */
-  getStale(search = '', page = 1): EventPage | null {
+  getStale(search = '', page = 1, size = this.pageSize): EventPage | null {
     const query = search?.trim() || '';
-    const key = query ? `q:${query}:${page}` : `p:${page}`;
+    const key = query ? `q:${query}:${page}:s:${size}` : `p:${page}:s:${size}`;
     // memória primeiro
     const mem = this.eventsCache.get(key);
     if (mem) return mem;

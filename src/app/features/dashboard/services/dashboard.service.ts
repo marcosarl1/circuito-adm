@@ -52,14 +52,21 @@ export class DashboardService {
   private eventsService = inject(EventsService);
 
   getAllEvents(): Observable<Event[]> {
-    // 242 / 100 = 3 páginas
-    return this.eventsService.getEvents('', 1).pipe(
+    const size = 100;
+    return this.eventsService.getEvents('', 1, size).pipe(
       switchMap((first) => {
         if (first.total_pages <= 1) return of(first.eventos);
         const pages = Array.from({ length: first.total_pages - 1 }, (_, i) => i + 2);
-        const rest$ = pages.map((p) => this.eventsService.getEvents('', p));
+        const rest$ = pages.map((p) => this.eventsService.getEvents('', p, size));
         if (rest$.length === 0) return of(first.eventos);
-        return forkJoin(rest$).pipe(map((pages) => [first.eventos, ...pages.flatMap((pg) => pg.eventos)].flat()));
+        return forkJoin(rest$).pipe(
+          map((pages) => {
+            const all = [first.eventos, ...pages.flatMap((pg) => pg.eventos)].flat();
+            const byId = new Map<string, Event>();
+            for (const e of all) byId.set(e._id, e);
+            return [...byId.values()];
+          }),
+        );
       }),
     );
   }
@@ -83,6 +90,7 @@ export class DashboardService {
     const porMes = new Map<string, number>();
     const porEstado = new Map<string, number>();
     const porOrg = new Map<string, number>();
+    const orgDisplay = new Map<string, string>();
 
     for (const e of events) {
       const d = parseDataRealizacao(e.data_realizacao);
@@ -104,8 +112,10 @@ export class DashboardService {
       const est = (e.estado || '—').toUpperCase();
       porEstado.set(est, (porEstado.get(est) ?? 0) + 1);
 
-      const org = (e.organizador || '—').trim();
-      porOrg.set(org, (porOrg.get(org) ?? 0) + 1);
+      const orgRaw = (e.organizador || '—').trim();
+      const orgKey = orgRaw.toLowerCase();
+      if (!orgDisplay.has(orgKey)) orgDisplay.set(orgKey, orgRaw);
+      porOrg.set(orgKey, (porOrg.get(orgKey) ?? 0) + 1);
     }
 
     return {
@@ -126,7 +136,7 @@ export class DashboardService {
       porOrganizador: [...porOrg.entries()]
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5)
-        .map(([organizador, count]) => ({ organizador, count })),
+        .map(([key, count]) => ({ organizador: orgDisplay.get(key) ?? key, count })),
     };
   }
 }

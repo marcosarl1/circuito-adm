@@ -89,7 +89,7 @@ export class LoginComponent implements AfterViewInit {
         next: (ok) => {
           this.loading.set(false);
           if (ok) {
-            this.router.navigate(['/events']);
+            this.router.navigate(['/dashboard']);
           } else {
             this.errorMessage.set('Usuário ou senha incorretos.');
             queueMicrotask(() => this.errorAlert()?.nativeElement.focus());
