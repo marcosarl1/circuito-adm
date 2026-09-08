@@ -9,6 +9,7 @@ import {
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
 import { SidebarStateService } from '../../shared/components/sidebar/sidebar-state.service';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 import { NgClass } from '@angular/common';
 
 import { InactivityWarningModalComponent } from '../../shared/components/inactivity-warning-modal/inactivity-warning-modal.component';
@@ -23,6 +24,7 @@ import { ToastComponent } from '../../shared/components/toast/toast.component';
   imports: [
     RouterOutlet,
     SidebarComponent,
+    HeaderComponent,
     InactivityWarningModalComponent,
     ToastComponent,
     NgClass,
