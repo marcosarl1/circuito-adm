@@ -21,7 +21,7 @@
 }
 
 <aside
-  class="fixed left-0 top-0 z-50 flex h-dvh w-[280px] flex-col overflow-hidden border-r border-[var(--sidebar-border-subtle)] bg-[var(--sidebar-bg)] py-3 text-[var(--foreground)] transition-all duration-200 ease-out md:translate-x-0"
+  class="fixed left-0 top-0 z-50 flex h-dvh w-[280px] flex-col overflow-hidden border-r border-[var(--sidebar-border-subtle)] bg-[var(--sidebar-bg)] text-[var(--foreground)] transition-all duration-200 ease-out md:translate-x-0"
   [ngClass]="isRailExpanded() ? 'md:w-[var(--sidebar-rail-expanded)]' : 'md:w-[var(--sidebar-rail)]'"
   [class.-translate-x-full]="!isOpen()"
   [class.translate-x-0]="isOpen()"
@@ -33,7 +33,7 @@
 >
   <!-- Tailwind scan keep: md:w-[64px] md:w-[220px] -->
   <!-- Top: logo + collapse toggle (desktop) -->
-  <div class="flex h-14 shrink-0 items-center gap-3 border-b border-[var(--sidebar-border-subtle)] px-3 pb-3">
+  <div class="flex h-14 shrink-0 items-center gap-3 border-b border-[var(--sidebar-border-subtle)] px-3">
     <img class="h-9 w-9 shrink-0 object-contain" src="/icoBluOra.png" alt="" />
     <div
       class="min-w-0 flex-1 overflow-hidden transition-all duration-200 ease-out"

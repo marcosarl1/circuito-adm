@@ -13,6 +13,7 @@ import {
   heroMagnifyingGlass,
   heroNewspaper,
   heroPlus,
+  heroUserCircle,
   heroXMark,
 } from '@ng-icons/heroicons/outline';
 
@@ -35,6 +36,7 @@ import {
       heroPlus,
       heroArrowPath,
       heroCloudArrowUp,
+      heroUserCircle,
     }),
   ],
   template: `<ng-icon [name]="name" [size]="size" [color]="color" [strokeWidth]="strokeWidth" [class]="klass" style="display:flex;align-items:center;justify-content:center;line-height:0"></ng-icon>`,

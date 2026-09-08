@@ -19,7 +19,9 @@ export class HeaderComponent {
         filter((e): e is NavigationEnd => e instanceof NavigationEnd),
         takeUntilDestroyed(),
       )
-      .subscribe((e) => this.breadcrumb.set(this.resolveBreadcrumb(e.urlAfterRedirects)));
+      .subscribe((e) =>
+        this.breadcrumb.set(this.resolveBreadcrumb(e.urlAfterRedirects)),
+      );
   }
 
   private resolveBreadcrumb(url: string): string {
