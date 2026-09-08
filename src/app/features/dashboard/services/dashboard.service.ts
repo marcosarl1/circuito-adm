@@ -15,6 +15,7 @@ export interface DashboardStats {
   porMes: { label: string; count: number }[];
   porEstado: { estado: string; count: number }[];
   porOrganizador: { organizador: string; count: number }[];
+  porFonte: { fonte: string; count: number }[];
 }
 
 const MESES_PT: Record<string, number> = {
@@ -91,6 +92,8 @@ export class DashboardService {
     const porEstado = new Map<string, number>();
     const porOrg = new Map<string, number>();
     const orgDisplay = new Map<string, string>();
+    const porFonte = new Map<string, number>();
+    const fonteDisplay = new Map<string, string>();
 
     for (const e of events) {
       const d = parseDataRealizacao(e.data_realizacao);
@@ -116,6 +119,11 @@ export class DashboardService {
       const orgKey = orgRaw.toLowerCase();
       if (!orgDisplay.has(orgKey)) orgDisplay.set(orgKey, orgRaw);
       porOrg.set(orgKey, (porOrg.get(orgKey) ?? 0) + 1);
+
+      const fonteRaw = (e.site_coleta || '—').trim();
+      const fonteKey = fonteRaw.toLowerCase();
+      if (!fonteDisplay.has(fonteKey)) fonteDisplay.set(fonteKey, fonteRaw);
+      porFonte.set(fonteKey, (porFonte.get(fonteKey) ?? 0) + 1);
     }
 
     return {
@@ -137,6 +145,9 @@ export class DashboardService {
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5)
         .map(([key, count]) => ({ organizador: orgDisplay.get(key) ?? key, count })),
+      porFonte: [...porFonte.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .map(([key, count]) => ({ fonte: fonteDisplay.get(key) ?? key, count })),
     };
   }
 }

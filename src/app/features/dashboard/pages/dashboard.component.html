@@ -112,92 +112,104 @@
     </div>
     <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
       <h3 class="text-sm font-semibold text-[var(--foreground)]">Por estado</h3>
-      <div class="mt-4 space-y-2.5">
-        @for (item of stats().porEstado; track item.estado) {
+      <div class="mt-4 space-y-2.5 flex-1">
+        @for (item of porEstadoVisible(); track item.estado) {
           <div class="flex items-center gap-3">
-            <span
-              class="w-10 shrink-0 text-xs font-medium text-[var(--muted-foreground)]"
-              >{{ item.estado }}</span
-            >
-            <div
-              class="h-2 flex-1 overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]"
-            >
-              <div
-                class="h-full rounded-full bg-[var(--brand-teal-500)] transition-all duration-500"
-                [style.width.%]="(item.count / stats().total) * 100"
-              ></div>
+            <span class="w-10 shrink-0 text-xs font-medium text-[var(--muted-foreground)]">{{ item.estado }}</span>
+            <div class="h-2 flex-1 overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]">
+              <div class="h-full rounded-full bg-[var(--brand-teal-500)] transition-all duration-500" [style.width.%]="(item.count / stats().total) * 100"></div>
             </div>
-            <span
-              class="w-6 text-right text-xs font-semibold text-[var(--foreground)]"
-              >{{ item.count }}</span
-            >
+            <span class="w-6 text-right text-xs font-semibold text-[var(--foreground)]">{{ item.count }}</span>
           </div>
         }
       </div>
+      @if (porEstadoTotalPages() > 1) {
+        <div class="mt-3 flex items-center justify-end gap-1">
+          <button type="button" class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]" (click)="prevPorEstado()" [disabled]="porEstadoPage() === 0" aria-label="Página anterior"><app-icon name="heroChevronLeft" size="14" strokeWidth="2"></app-icon></button>
+          <button type="button" class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]" (click)="nextPorEstado()" [disabled]="porEstadoPage() === porEstadoTotalPages() - 1" aria-label="Próxima página"><app-icon name="heroChevronRight" size="14" strokeWidth="2"></app-icon></button>
+        </div>
+      }
     </div>
   </div>
 
   <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
     <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
-      <h3 class="text-sm font-semibold text-[var(--foreground)]">
-        Top organizadores
-      </h3>
-      <div class="mt-4 space-y-2.5">
-        @for (item of stats().porOrganizador; track item.organizador) {
-          <div class="flex items-center gap-3">
-            <span
-              class="flex-1 truncate text-xs text-[var(--muted-foreground)]"
-              >{{ item.organizador }}</span
-            >
-            <div
-              class="h-2 w-24 shrink-0 overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]"
-            >
-              <div
-                class="h-full rounded-full bg-[var(--brand-amber-500)] transition-all duration-500"
-                [style.width.%]="
-                  (item.count / stats().porOrganizador[0].count) * 100
-                "
-              ></div>
+      <div class="flex items-center justify-between gap-2">
+        <h3 class="text-sm font-semibold text-[var(--foreground)]">Top Fontes</h3>
+        <span class="text-xs text-[var(--muted-foreground)]">{{ porFonteSorted().length }} fontes</span>
+      </div>
+      <div class="mt-4 flex flex-1 flex-col items-center gap-4 py-2">
+        <div class="relative h-52 w-52 shrink-0 drop-shadow-[0_8px_20px_rgba(0,0,0,0.45)]">
+          <svg viewBox="0 0 100 100" class="h-52 w-52 overflow-visible" role="img" aria-label="Top fontes distribuição">
+            @for (slice of pieSlices(); track slice.fonte) {
+              <path
+                [attr.d]="slice.path"
+                [attr.fill]="slice.color"
+                stroke="rgba(0,9,14,0.95)"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+                class="cursor-pointer transition-all duration-200 ease-out hover:brightness-110"
+                [style.opacity]="fonteHover() === slice.fonte || fonteHover() === null ? '1' : '0.35'"
+                [style.transform]="fonteHover() === slice.fonte ? 'scale(1.06)' : 'scale(1)'"
+                style="transform-origin: 50px 50px;"
+                (mouseenter)="fonteHover.set(slice.fonte)"
+                (mouseleave)="fonteHover.set(null)"
+              />
+            }
+            <circle cx="50" cy="50" r="18" fill="var(--card)" stroke="rgba(142,202,230,0.14)" stroke-width="1.5" />
+          </svg>
+          <div class="pointer-events-none absolute inset-0 grid place-items-center">
+            <div class="text-center leading-none">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Total</p>
+              <p class="text-base font-bold text-[var(--foreground)]">{{ porFonteTotal() }}</p>
             </div>
-            <span
-              class="w-6 text-right text-xs font-semibold text-[var(--foreground)]"
-              >{{ item.count }}</span
-            >
           </div>
-        }
+          @if (fonteHover(); as hovered) {
+            @for (slice of pieSlices(); track slice.fonte) {
+              @if (slice.fonte === hovered) {
+                <div class="pointer-events-none absolute left-1/2 -top-1 -translate-x-1/2 whitespace-nowrap rounded-md border border-[var(--sidebar-border-subtle)] bg-[rgba(0,9,14,0.92)] px-2.5 py-1 text-xs font-medium shadow-[0_4px_12px_rgba(0,0,0,0.4)]" [style.color]="slice.color">
+                  {{ slice.fonte }} • {{ slice.count }} ({{ slice.percent.toFixed(0) }}%)
+                </div>
+              }
+            }
+          }
+        </div>
+        <div class="flex w-full justify-center gap-2">
+          @for (item of pieSlices().slice(0, 3); track item.fonte) {
+            <div
+              class="flex items-center gap-1.5 rounded-full border border-[var(--sidebar-border-subtle)] bg-[rgba(0,9,14,0.22)] px-2.5 py-1 transition-all cursor-pointer" [class.bg-[var(--sidebar-accent)]]="fonteHover() === item.fonte"
+              (mouseenter)="fonteHover.set(item.fonte)" (mouseleave)="fonteHover.set(null)"
+            >
+              <span class="h-2.5 w-2.5 shrink-0 rounded-full" [style.background]="item.color"></span>
+              <span class="max-w-[90px] truncate text-xs font-medium" [class.text-[var(--foreground)]]="fonteHover() === item.fonte" [class.text-[var(--muted-foreground)]]="fonteHover() !== item.fonte">{{ item.fonte }}</span>
+              <span class="text-xs font-bold text-[var(--foreground)]">{{ item.count }}</span>
+            </div>
+          }
+        </div>
       </div>
     </div>
     <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
-      <h3 class="text-sm font-semibold text-[var(--foreground)]">
-        Próximos 30 dias ({{ stats().proximos30d }})
-      </h3>
+      <h3 class="text-sm font-semibold text-[var(--foreground)]">Próximos 30 dias ({{ stats().proximos30d }})</h3>
       @if (proximosEventos().length === 0) {
-        <p class="mt-3 text-sm text-[var(--muted-foreground)]">
-          Nenhum evento nos próximos 30 dias.
-        </p>
+        <p class="mt-3 text-sm text-[var(--muted-foreground)]">Nenhum evento nos próximos 30 dias.</p>
       } @else {
-        <ul class="mt-3 space-y-2">
-          @for (ev of proximosEventos(); track ev._id) {
-            <li
-              class="flex items-center justify-between gap-3 rounded-md border border-[rgba(142,202,230,0.12)] bg-[rgba(0,9,14,0.22)] px-3 py-2"
-            >
+        <ul class="mt-3 space-y-2 flex-1">
+          @for (ev of proximosVisible(); track ev._id) {
+            <li class="flex items-center justify-between gap-3 rounded-md border border-[rgba(142,202,230,0.12)] bg-[rgba(0,9,14,0.22)] px-3 py-2">
               <div class="min-w-0">
-                <p
-                  class="truncate text-sm font-medium text-[var(--foreground)]"
-                >
-                  {{ ev.nome_evento }}
-                </p>
-                <p class="truncate text-xs text-[var(--muted-foreground)]">
-                  {{ ev.data_realizacao }} • {{ ev.cidade }}/{{ ev.estado }}
-                </p>
+                <p class="truncate text-sm font-medium text-[var(--foreground)]">{{ ev.nome_evento }}</p>
+                <p class="truncate text-xs text-[var(--muted-foreground)]">{{ ev.data_realizacao }} • {{ ev.cidade }}/{{ ev.estado }}</p>
               </div>
-              <span
-                class="shrink-0 text-xs font-medium text-[var(--brand-sky-500)]"
-                >{{ ev.organizador }}</span
-              >
+              <span class="shrink-0 text-xs font-medium text-[var(--brand-sky-500)]">{{ ev.organizador }}</span>
             </li>
           }
         </ul>
+        @if (proximosTotalPages() > 1) {
+          <div class="mt-3 flex items-center justify-end gap-1">
+            <button type="button" class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]" (click)="prevProximos()" [disabled]="proximosPage() === 0" aria-label="Página anterior"><app-icon name="heroChevronLeft" size="14" strokeWidth="2"></app-icon></button>
+            <button type="button" class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]" (click)="nextProximos()" [disabled]="proximosPage() === proximosTotalPages() - 1" aria-label="Próxima página"><app-icon name="heroChevronRight" size="14" strokeWidth="2"></app-icon></button>
+          </div>
+        }
       }
     </div>
   </div>
