@@ -1,108 +1,127 @@
 @if (loading()) {
-  <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-8">
-    @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+  <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    @for (i of [1, 2, 3, 4]; track i) {
       <div class="card p-4">
         <div
-          class="h-3 w-16 animate-pulse rounded bg-[rgba(142,202,230,0.12)]"
+          class="h-3 w-20 animate-pulse rounded bg-[rgba(142,202,230,0.12)]"
         ></div>
         <div
-          class="mt-2 h-5 w-10 animate-pulse rounded bg-[rgba(142,202,230,0.08)]"
+          class="mt-3 h-7 w-12 animate-pulse rounded bg-[rgba(142,202,230,0.08)]"
+        ></div>
+        <div
+          class="mt-3 h-4 w-24 animate-pulse rounded bg-[rgba(142,202,230,0.06)]"
         ></div>
       </div>
     }
   </div>
-} @else {
-  <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-8">
-    <div class="card p-4">
-      <p
-        class="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]"
-      >
-        Total
-      </p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--foreground)]">
-        {{ stats().total }}
-      </p>
-    </div>
-    <div class="card p-4">
-      <p
-        class="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]"
-      >
-        Ativos
-      </p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--brand-teal-500)]">
-        {{ stats().ativos }}
-      </p>
-    </div>
-    <div class="card p-4">
-      <p
-        class="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]"
-      >
-        Próx. 30d
-      </p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--brand-sky-500)]">
-        {{ stats().proximos30d }}
-      </p>
-    </div>
-    <div class="card p-4">
-      <p
-        class="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]"
-      >
-        Passados
-      </p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--muted-foreground)]">
-        {{ stats().passados }}
-      </p>
-    </div>
-    <div class="card p-4">
-      <p
-        class="text-xs font-semibold uppercase tracking-wide text-[var(--brand-amber-500)]"
-      >
-        Sem preço
-      </p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--brand-amber-500)]">
-        {{ stats().semPreco }}
-      </p>
-    </div>
-    <div class="card p-4">
-      <p
-        class="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]"
-      >
-        Patrocinados
-      </p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--primary)]">
-        {{ stats().patrocinados }}
-      </p>
-    </div>
-    <div class="card p-4">
-      <p
-        class="text-xs font-semibold uppercase tracking-wide text-[var(--brand-amber-500)]"
-      >
-        Valor Médio
-      </p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--brand-amber-500)]">
-        R$ {{ stats().valorMedio.toFixed(2).replace(".", ",") }}
-      </p>
-    </div>
-    <div class="card p-4">
-      <p
-        class="text-xs font-semibold uppercase tracking-wide text-[var(--primary)]"
-      >
-        Lote 1
-      </p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--primary)]">
-        {{ stats().lote1Count }}
-      </p>
-      <p class="text-[11px] text-[var(--muted-foreground)]">em promoção</p>
-    </div>
+  <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <div
+      class="card p-4 lg:col-span-2 h-[320px] animate-pulse bg-[rgba(142,202,230,0.04)]"
+    ></div>
+    <div
+      class="card p-4 h-[320px] animate-pulse bg-[rgba(142,202,230,0.04)]"
+    ></div>
   </div>
-
-  <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-    <div class="card flex flex-col p-4 lg:min-h-[320px]">
-      <div class="flex items-baseline justify-between gap-2">
-        <h3 class="text-sm font-semibold text-[var(--foreground)]">Eventos</h3>
-        <span class="text-xs text-[var(--muted-foreground)]">Últimos 6 meses</span>
+} @else {
+  <section aria-labelledby="zona-sumario">
+    <h2 id="zona-sumario" class="sr-only">Sumário de Negócio</h2>
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <!-- Total de Eventos -->
+      <div class="card p-4">
+        <p
+          class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+        >
+          Total de Eventos
+        </p>
+        <p
+          class="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]"
+        >
+          {{ stats().total }}
+        </p>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          <span
+            class="inline-flex items-center rounded-full border border-[var(--sidebar-border-subtle)] px-2 py-0.5 text-xs font-medium text-[var(--muted-foreground)]"
+            >{{ stats().passados }} passados</span
+          >
+        </div>
       </div>
-      <div class="mt-3 flex flex-1 items-center justify-center">
+      <div class="card p-4">
+        <p
+          class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+        >
+          Eventos Ativos
+        </p>
+        <p
+          class="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]"
+        >
+          {{ stats().ativos }}
+        </p>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          <span
+            class="inline-flex items-center rounded-full border border-[rgba(6,214,160,0.18)] bg-[rgba(6,214,160,0.08)] px-2 py-0.5 text-xs font-medium text-[#06d6a0]"
+            >{{ stats().patrocinados }} patrocinados</span
+          >
+        </div>
+      </div>
+      <div class="card p-4">
+        <p
+          class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+        >
+          Próximos 30 dias
+        </p>
+        <p
+          class="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]"
+        >
+          {{ stats().proximos30d }}
+        </p>
+        <p class="mt-3 text-xs text-[var(--muted-foreground)]">
+          {{ stats().proximos90d }} nos próximos 90 dias
+        </p>
+      </div>
+      <div class="card p-4">
+        <p
+          class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+        >
+          Ticket Médio
+        </p>
+        <p
+          class="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]"
+        >
+          R$ {{ stats().valorMedio.toFixed(2).replace(".", ",") }}
+        </p>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          <span
+            class="inline-flex items-center rounded-full border border-[var(--sidebar-border-subtle)] px-2 py-0.5 text-xs font-medium text-[var(--muted-foreground)]"
+            >{{ stats().lote1Count }} em Lote 1</span
+          >
+          @if (stats().semPreco > 0) {
+            <span
+              class="inline-flex items-center rounded-full border border-[rgba(251,191,3,0.2)] bg-[rgba(251,191,3,0.08)] px-2 py-0.5 text-xs font-medium text-[#ffb703]"
+              >{{ stats().semPreco }} sem preço</span
+            >
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3"
+    aria-labelledby="zona-tendencias"
+  >
+    <h2 id="zona-tendencias" class="sr-only">Visão Geral e Tendências</h2>
+    <div class="card flex flex-col p-4 lg:col-span-2 lg:min-h-[360px]">
+      <div class="flex items-baseline justify-between gap-2">
+        <h3
+          class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+        >
+          Evolução de Eventos
+        </h3>
+        <span class="text-xs text-[var(--muted-foreground)]"
+          >Últimos 6 meses</span
+        >
+      </div>
+      <div class="mt-4 flex flex-1 items-center justify-center">
         <apx-chart
           [series]="eventosColumnOptions().series!"
           [chart]="eventosColumnOptions().chart!"
@@ -119,24 +138,40 @@
           class="w-full"
         ></apx-chart>
         <table class="sr-only">
-          <caption>Eventos últimos 6 meses</caption>
-          <thead><tr><th>Mês</th><th>Eventos</th></tr></thead>
+          <caption>
+            Eventos últimos 6 meses
+          </caption>
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Eventos</th>
+            </tr>
+          </thead>
           <tbody>
             @for (item of porMesSorted().slice(0, 6); track item.label) {
-              <tr><td>{{ item.label }}</td><td>{{ item.count }}</td></tr>
+              <tr>
+                <td>{{ item.label }}</td>
+                <td>{{ item.count }}</td>
+              </tr>
             }
           </tbody>
         </table>
       </div>
     </div>
-    <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
-      <div class="flex justify-center">
+
+    <div class="card flex flex-col p-4 lg:col-span-1 lg:min-h-[360px]">
+      <div class="flex items-center justify-between gap-2">
+        <h3
+          class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+        >
+          Localização
+        </h3>
         <div
-          class="flex items-center gap-1 rounded-full border border-[var(--sidebar-border-subtle)] bg-[rgba(0,9,14,0.22)] p-1"
+          class="flex items-center gap-1 rounded-full border border-[var(--sidebar-border-subtle)] p-1"
         >
           <button
             type="button"
-            class="rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors"
+            class="rounded-full px-3 py-1 text-xs font-medium transition-colors"
             [class.bg-[var(--primary)]]="localView() === 'estado'"
             [class.text-white]="localView() === 'estado'"
             [class.text-[var(--muted-foreground)]]="localView() !== 'estado'"
@@ -146,7 +181,7 @@
           </button>
           <button
             type="button"
-            class="rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors"
+            class="rounded-full px-3 py-1 text-xs font-medium transition-colors"
             [class.bg-[var(--primary)]]="localView() === 'cidade'"
             [class.text-white]="localView() === 'cidade'"
             [class.text-[var(--muted-foreground)]]="localView() !== 'cidade'"
@@ -161,19 +196,19 @@
           @for (item of porEstadoVisible(); track item.estado) {
             <div class="flex items-center gap-3">
               <span
-                class="w-10 shrink-0 text-sm font-medium text-[var(--muted-foreground)]"
+                class="w-10 shrink-0 text-sm font-medium uppercase tracking-wider text-[var(--muted-foreground)]"
                 >{{ item.estado }}</span
               >
               <div
-                class="h-2.5 flex-1 overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]"
+                class="h-2 flex-1 overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]"
               >
                 <div
-                  class="h-full rounded-full bg-[var(--brand-teal-500)] transition-all duration-500"
+                  class="h-full rounded-full bg-[var(--foreground)] transition-all duration-500"
                   [style.width.%]="(item.count / porEstadoMax()) * 100"
                 ></div>
               </div>
               <span
-                class="w-6 text-right text-xs font-semibold text-[var(--foreground)]"
+                class="w-6 text-right text-sm font-semibold text-[var(--foreground)]"
                 >{{ item.count }}</span
               >
             </div>
@@ -183,7 +218,7 @@
           <div class="mt-3 flex items-center justify-end gap-1">
             <button
               type="button"
-              class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+              class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30"
               (click)="prevPorEstado()"
               [disabled]="porEstadoPage() === 0"
               aria-label="Página anterior"
@@ -196,7 +231,7 @@
             </button>
             <button
               type="button"
-              class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+              class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30"
               (click)="nextPorEstado()"
               [disabled]="porEstadoPage() === porEstadoTotalPages() - 1"
               aria-label="Próxima página"
@@ -218,10 +253,10 @@
                 >{{ item.cidade }}</span
               >
               <div
-                class="h-2.5 flex-1 overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]"
+                class="h-2 flex-1 overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]"
               >
                 <div
-                  class="h-full rounded-full bg-[var(--brand-teal-500)] transition-all duration-500"
+                  class="h-full rounded-full bg-[var(--foreground)] transition-all duration-500"
                   [style.width.%]="(item.count / porCidadeMax()) * 100"
                 ></div>
               </div>
@@ -236,7 +271,7 @@
           <div class="mt-3 flex items-center justify-end gap-1">
             <button
               type="button"
-              class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+              class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)]"
               (click)="prevPorCidade()"
               [disabled]="porCidadePage() === 0"
               aria-label="Página anterior"
@@ -249,7 +284,7 @@
             </button>
             <button
               type="button"
-              class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+              class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)]"
               (click)="nextPorCidade()"
               [disabled]="porCidadePage() === porCidadeTotalPages() - 1"
               aria-label="Próxima página"
@@ -264,14 +299,21 @@
         }
       }
     </div>
-  </div>
+  </section>
 
-  <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-    <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
-      <h3 class="text-sm font-semibold text-[var(--foreground)]">
+  <section
+    class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3"
+    aria-labelledby="zona-operacional"
+  >
+    <h2 id="zona-operacional" class="sr-only">Métrica Operacional e Ações</h2>
+
+    <div class="card flex flex-col p-4 lg:min-h-[320px]">
+      <h3
+        class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+      >
         Distâncias Populares
       </h3>
-      <div class="mt-2 flex flex-1 items-center justify-center">
+      <div class="mt-3 flex flex-1 items-center justify-center">
         <apx-chart
           [series]="distanciasChartOptions().series!"
           [chart]="distanciasChartOptions().chart!"
@@ -309,82 +351,162 @@
         </table>
       </div>
     </div>
-    <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
+
+    <div class="card flex flex-col p-4 lg:min-h-[320px]">
       <div class="flex items-center justify-between gap-2">
-        <h3 class="text-sm font-semibold text-[var(--foreground)]">
-          Top Fontes
-        </h3>
-        <span class="text-xs text-[var(--muted-foreground)]"
-          >{{ porFonteSorted().length }} fontes</span
+        <h3
+          class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
         >
-      </div>
-      <div class="mt-4 flex flex-1 flex-col items-center gap-3 py-2">
-        <apx-chart
-          [series]="chartOptions().series!"
-          [labels]="chartOptions().labels!"
-          [colors]="chartOptions().colors!"
-          [chart]="chartOptions().chart!"
-          [plotOptions]="chartOptions().plotOptions!"
-          [dataLabels]="chartOptions().dataLabels!"
-          [legend]="chartOptions().legend!"
-          [stroke]="chartOptions().stroke!"
-          [tooltip]="chartOptions().tooltip!"
-          [responsive]="chartOptions().responsive!"
-          class="w-full max-w-[280px]"
-        ></apx-chart>
-        <table class="sr-only">
-          <caption>
-            Top fontes distribuição
-          </caption>
-          <thead>
-            <tr>
-              <th>Fonte</th>
-              <th>Eventos</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (item of porFonteSorted(); track item.fonte) {
-              <tr>
-                <td>{{ item.fonte }}</td>
-                <td>{{ item.count }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-        <div class="flex w-full justify-center gap-2">
-          @for (item of porFonteSorted().slice(0, 3); track item.fonte) {
-            <div
-              class="flex items-center gap-1.5 rounded-full border border-[var(--sidebar-border-subtle)] bg-[rgba(0,9,14,0.22)] px-2.5 py-1"
-            >
-              <span
-                class="h-2.5 w-2.5 shrink-0 rounded-full"
-                [style.background]="PIE_COLORS[$index % PIE_COLORS.length]"
-              ></span>
-              <span
-                class="max-w-[90px] truncate text-xs font-medium text-[var(--muted-foreground)]"
-                >{{ item.fonte }}</span
-              >
-              <span class="text-xs font-bold text-[var(--foreground)]">{{
-                item.count
-              }}</span>
-            </div>
+          @if (operacionalView() === "fontes") {
+            Top Fontes
+          } @else {
+            Status Inscrições
           }
+        </h3>
+        <div
+          class="flex items-center gap-1 rounded-full border border-[var(--sidebar-border-subtle)] p-1"
+        >
+          <button
+            type="button"
+            class="rounded-full px-3 py-1 text-xs font-medium transition-colors"
+            [class.bg-[var(--primary)]]="operacionalView() === 'fontes'"
+            [class.text-white]="operacionalView() === 'fontes'"
+            [class.text-[var(--muted-foreground)]]="
+              operacionalView() !== 'fontes'
+            "
+            (click)="setOperacionalView('fontes')"
+          >
+            Fontes
+          </button>
+          <button
+            type="button"
+            class="rounded-full px-3 py-1 text-xs font-medium transition-colors"
+            [class.bg-[var(--primary)]]="operacionalView() === 'inscricoes'"
+            [class.text-white]="operacionalView() === 'inscricoes'"
+            [class.text-[var(--muted-foreground)]]="
+              operacionalView() !== 'inscricoes'
+            "
+            (click)="setOperacionalView('inscricoes')"
+          >
+            Inscrições
+          </button>
         </div>
       </div>
+
+      @if (operacionalView() === "fontes") {
+        <div class="mt-4 flex flex-1 flex-col items-center gap-3">
+          <apx-chart
+            [series]="chartOptions().series!"
+            [labels]="chartOptions().labels!"
+            [colors]="chartOptions().colors!"
+            [chart]="chartOptions().chart!"
+            [plotOptions]="chartOptions().plotOptions!"
+            [dataLabels]="chartOptions().dataLabels!"
+            [legend]="chartOptions().legend!"
+            [stroke]="chartOptions().stroke!"
+            [tooltip]="chartOptions().tooltip!"
+            [responsive]="chartOptions().responsive!"
+            class="w-full max-w-[280px]"
+          ></apx-chart>
+          <div class="flex w-full justify-center gap-2">
+            @for (item of porFonteSorted().slice(0, 3); track item.fonte) {
+              <div
+                class="flex items-center gap-1.5 rounded-full border border-[var(--sidebar-border-subtle)] px-2.5 py-1"
+              >
+                <span
+                  class="h-2.5 w-2.5 shrink-0 rounded-full"
+                  [style.background]="PIE_COLORS[$index % PIE_COLORS.length]"
+                ></span>
+                <span
+                  class="max-w-[90px] truncate text-xs font-medium text-[var(--muted-foreground)]"
+                  >{{ item.fonte }}</span
+                >
+                <span class="text-xs font-semibold text-[var(--foreground)]">{{
+                  item.count
+                }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        @if (statusInscricoesTotal() === 0) {
+          <p class="mt-6 text-center text-sm text-[var(--muted-foreground)]">
+            Nenhum evento para classificar.
+          </p>
+        } @else {
+          <div class="mt-4 flex flex-1 flex-col items-center gap-3">
+            <apx-chart
+              [series]="statusDonutOptions().series!"
+              [labels]="statusDonutOptions().labels!"
+              [colors]="statusDonutOptions().colors!"
+              [chart]="statusDonutOptions().chart!"
+              [plotOptions]="statusDonutOptions().plotOptions!"
+              [dataLabels]="statusDonutOptions().dataLabels!"
+              [legend]="statusDonutOptions().legend!"
+              [stroke]="statusDonutOptions().stroke!"
+              [tooltip]="statusDonutOptions().tooltip!"
+              [responsive]="statusDonutOptions().responsive!"
+              class="w-full max-w-[260px]"
+            ></apx-chart>
+            <div class="flex w-full flex-col gap-1.5">
+              <div
+                class="flex items-center justify-between rounded-md border border-[var(--sidebar-border-subtle)] px-3 py-2"
+              >
+                <span
+                  class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"
+                  ><span class="h-2.5 w-2.5 rounded-full bg-[#06d6a0]"></span>
+                  Abertas</span
+                >
+                <span class="text-xs font-semibold text-[var(--foreground)]">{{
+                  stats().statusInscricoes.abertas
+                }}</span>
+              </div>
+              <div
+                class="flex items-center justify-between rounded-md border border-[var(--sidebar-border-subtle)] px-3 py-2"
+              >
+                <span
+                  class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"
+                  ><span class="h-2.5 w-2.5 rounded-full bg-[#ffb703]"></span>
+                  Em breve</span
+                >
+                <span class="text-xs font-semibold text-[var(--foreground)]">{{
+                  stats().statusInscricoes.emBreve
+                }}</span>
+              </div>
+              <div
+                class="flex items-center justify-between rounded-md border border-[var(--sidebar-border-subtle)] px-3 py-2"
+              >
+                <span
+                  class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"
+                  ><span class="h-2.5 w-2.5 rounded-full bg-[#475569]"></span>
+                  Encerradas</span
+                >
+                <span class="text-xs font-semibold text-[var(--foreground)]">{{
+                  stats().statusInscricoes.encerradas
+                }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      }
     </div>
-    <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
-      <h3 class="text-sm font-semibold text-[var(--foreground)]">
-        Próximos 30 dias ({{ stats().proximos30d }})
+
+    <!-- Col 3: Próximos Eventos -->
+    <div class="card flex flex-col p-4 lg:min-h-[320px]">
+      <h3
+        class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+      >
+        Próximos 30 dias — {{ stats().proximos30d }}
       </h3>
       @if (proximosEventos().length === 0) {
-        <p class="mt-3 text-sm text-[var(--muted-foreground)]">
+        <p class="mt-4 text-sm text-[var(--muted-foreground)]">
           Nenhum evento nos próximos 30 dias.
         </p>
       } @else {
-        <ul class="mt-3 space-y-2 flex-1">
+        <ul class="mt-4 space-y-2 flex-1">
           @for (ev of proximosEventos().slice(0, 5); track ev._id) {
             <li
-              class="flex items-center justify-between gap-3 rounded-md border border-[rgba(142,202,230,0.12)] bg-[rgba(0,9,14,0.22)] px-3 py-2"
+              class="flex items-center justify-between gap-3 rounded-md border border-[var(--sidebar-border-subtle)] px-3 py-2"
             >
               <div class="min-w-0">
                 <p
@@ -397,7 +519,7 @@
                 </p>
               </div>
               <span
-                class="shrink-0 text-xs font-medium text-[var(--brand-sky-500)]"
+                class="shrink-0 text-xs font-medium text-[var(--muted-foreground)]"
                 >{{ ev.organizador }}</span
               >
             </li>
@@ -406,64 +528,266 @@
         @if (stats().proximos30d > 5) {
           <a
             routerLink="/events"
-            class="mt-3 inline-flex self-end text-xs font-medium text-[var(--brand-teal-500)] hover:text-[var(--brand-sky-500)] hover:underline"
+            class="mt-3 inline-flex self-end text-xs font-medium text-[var(--primary)] hover:underline"
             >Ver todos</a
           >
         }
       }
     </div>
-  </div>
+  </section>
 
-  <!-- Status de Abertura das Inscrições -->
-  <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-    <div class="card flex flex-col p-4 lg:min-h-[260px] lg:flex lg:flex-col">
-      <div class="flex items-center justify-between gap-2">
-        <h3 class="text-sm font-semibold text-[var(--foreground)]">Status das Inscrições</h3>
-        <span class="text-xs text-[var(--muted-foreground)]">{{ statusInscricoesTotal() }} eventos</span>
+  <section
+    class="card mt-4 flex flex-col p-4 sm:p-5"
+    aria-labelledby="zona-saude"
+  >
+    <div
+      class="flex items-center justify-between border-b border-[var(--sidebar-border-subtle)] pb-3.5"
+    >
+      <div>
+        <h2
+          id="zona-saude"
+          class="text-sm font-semibold text-[var(--foreground)]"
+        >
+          Saúde do Sistema & Qualidade
+        </h2>
+        <p class="mt-0.5 text-xs text-[var(--muted-foreground)]">
+          Monitoramento de automações e pendências de cadastro
+        </p>
       </div>
-      @if (statusInscricoesTotal() === 0) {
-        <p class="mt-6 text-center text-sm text-[var(--muted-foreground)]">Nenhum evento para classificar.</p>
-      } @else {
-        <div class="mt-4 flex flex-1 flex-col items-center gap-3">
-          <apx-chart
-            [series]="statusDonutOptions().series!"
-            [labels]="statusDonutOptions().labels!"
-            [colors]="statusDonutOptions().colors!"
-            [chart]="statusDonutOptions().chart!"
-            [plotOptions]="statusDonutOptions().plotOptions!"
-            [dataLabels]="statusDonutOptions().dataLabels!"
-            [legend]="statusDonutOptions().legend!"
-            [stroke]="statusDonutOptions().stroke!"
-            [tooltip]="statusDonutOptions().tooltip!"
-            [responsive]="statusDonutOptions().responsive!"
-            class="w-full max-w-[260px]"
-          ></apx-chart>
-          <table class="sr-only">
-            <caption>Status das inscrições</caption>
-            <thead><tr><th>Status</th><th>Eventos</th></tr></thead>
-            <tbody>
-              <tr><td>Abertas</td><td>{{ stats().statusInscricoes.abertas }}</td></tr>
-              <tr><td>Em breve</td><td>{{ stats().statusInscricoes.emBreve }}</td></tr>
-              <tr><td>Encerradas</td><td>{{ stats().statusInscricoes.encerradas }}</td></tr>
-            </tbody>
-          </table>
-          <div class="flex w-full flex-col gap-1.5">
-            <div class="flex items-center justify-between rounded-md border border-[rgba(6,214,160,0.14)] bg-[rgba(6,214,160,0.06)] px-3 py-2">
-              <span class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"><span class="h-2.5 w-2.5 rounded-full bg-[#06d6a0]"></span> Abertas</span>
-              <span class="text-sm font-bold text-[var(--foreground)]">{{ stats().statusInscricoes.abertas }}</span>
-            </div>
-            <div class="flex items-center justify-between rounded-md border border-[rgba(251,191,3,0.14)] bg-[rgba(251,191,3,0.06)] px-3 py-2">
-              <span class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"><span class="h-2.5 w-2.5 rounded-full bg-[#ffb703]"></span> Em breve (≤7d)</span>
-              <span class="text-sm font-bold text-[var(--foreground)]">{{ stats().statusInscricoes.emBreve }}</span>
-            </div>
-            <div class="flex items-center justify-between rounded-md border border-[var(--sidebar-border-subtle)] bg-[rgba(0,9,14,0.22)] px-3 py-2">
-              <span class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"><span class="h-2.5 w-2.5 rounded-full bg-[#475569]"></span> Encerradas</span>
-              <span class="text-sm font-bold text-[var(--foreground)]">{{ stats().statusInscricoes.encerradas }}</span>
-            </div>
-          </div>
-          <p class="text-center text-[11px] leading-snug text-[var(--muted-foreground)]">Abertas: &gt;7 dias até a prova · Em breve: ≤7 dias · Encerradas: já realizadas ou sem data</p>
-        </div>
-      }
+
+      <div
+        class="flex items-center gap-1.5 rounded-full border border-[var(--sidebar-border-subtle)] bg-[rgba(142,202,230,0.04)] px-3 py-1"
+      >
+        <span class="text-xs font-bold text-[var(--foreground)]">{{
+          scraperStatus().length
+        }}</span>
+        <span class="text-xs text-[var(--muted-foreground)]">fontes</span>
+      </div>
     </div>
-  </div>
+
+    @if (scraperStatus().length === 0) {
+      <div class="flex flex-1 items-center justify-center py-10">
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Nenhum scraper ativo no momento.
+        </p>
+      </div>
+    } @else {
+      <div class="divide-y divide-[var(--sidebar-border-subtle)]">
+        @for (s of scraperStatus(); track s.fonte) {
+          <div class="py-3.5">
+            <button
+              type="button"
+              class="group flex w-full items-center justify-between gap-4 text-left focus:outline-none"
+              (click)="toggleScraper(s.fonte)"
+              [attr.aria-expanded]="isScraperOpen(s.fonte)"
+            >
+              <div class="flex items-center gap-3 min-w-0">
+                <span
+                  class="relative flex h-2.5 w-2.5 shrink-0 items-center justify-center"
+                >
+                  @if (s.status === "ok") {
+                    <span
+                      class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#06d6a0] opacity-40"
+                    ></span>
+                  }
+                  <span
+                    class="relative inline-flex h-2.5 w-2.5 rounded-full"
+                    [class.bg-[#06d6a0]]="s.status === 'ok'"
+                    [class.bg-[#ffb703]]="s.status === 'atrasado'"
+                  ></span>
+                </span>
+                <div class="min-w-0">
+                  <p
+                    class="truncate text-sm font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]"
+                  >
+                    {{ s.display }}
+                  </p>
+                  <p class="truncate text-xs text-[var(--muted-foreground)]">
+                    Atualizado {{ s.relativo }} • {{ s.count }} eventos
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex shrink-0 items-center gap-2.5">
+                @if (s.totalPendencias > 0) {
+                  <span
+                    class="inline-flex items-center justify-center rounded-md bg-[rgba(251,191,3,0.12)] px-2.5 py-1 text-xs font-semibold text-[#ffb703]"
+                  >
+                    {{ s.totalPendencias }} pendências
+                  </span>
+                } @else {
+                  <span
+                    class="inline-flex items-center justify-center rounded-md bg-[rgba(6,214,160,0.12)] px-2.5 py-1 text-xs font-semibold text-[#06d6a0]"
+                  >
+                    Tudo OK
+                  </span>
+                }
+                <app-icon
+                  [name]="
+                    isScraperOpen(s.fonte) ? 'heroChevronUp' : 'heroChevronDown'
+                  "
+                  size="16"
+                  class="text-[var(--muted-foreground)] transition-transform duration-200"
+                ></app-icon>
+              </div>
+            </button>
+
+            @if (isScraperOpen(s.fonte)) {
+              <div
+                class="mt-3.5 rounded-xl border border-[rgba(142,202,230,0.1)] bg-[rgba(142,202,230,0.02)] p-4"
+              >
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <h3
+                      class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+                    >
+                      Detalhes da Coleta
+                    </h3>
+                    <div class="mt-3 space-y-2 text-xs">
+                      <div class="flex items-center gap-2">
+                        <span class="text-[var(--muted-foreground)]"
+                          >Última execução:</span
+                        ><span class="font-medium text-[var(--foreground)]">{{
+                          s.dataSync
+                        }}</span>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[var(--muted-foreground)]"
+                          >Idade dos dados:</span
+                        ><span
+                          class="font-semibold"
+                          [class.text-[#06d6a0]]="s.status === 'ok'"
+                          [class.text-[#ffb703]]="s.status === 'atrasado'"
+                          >{{ s.diffD }} dias</span
+                        >
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[var(--muted-foreground)]"
+                          >Eventos lidos:</span
+                        ><span class="font-medium text-[var(--foreground)]"
+                          >{{ s.count }} registros</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3
+                      class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+                    >
+                      Qualidade dos Dados
+                    </h3>
+                    <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                      <!-- Link -->
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-[var(--sidebar-border-subtle)] bg-[var(--card)] px-3 py-2"
+                        [class.border-[rgba(248,113,113,0.2)]]="s.semLink > 0"
+                        [class.bg-[rgba(248,113,113,0.06)]]="s.semLink > 0"
+                      >
+                        <span
+                          [class.text-[#f87171]]="s.semLink > 0"
+                          [class.text-[var(--muted-foreground)]]="
+                            s.semLink === 0
+                          "
+                          >Sem Link</span
+                        >
+                        <span
+                          class="font-bold"
+                          [class.text-[#f87171]]="s.semLink > 0"
+                          [class.text-[var(--foreground)]]="s.semLink === 0"
+                          >{{ s.semLink }}</span
+                        >
+                      </div>
+
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-[var(--sidebar-border-subtle)] bg-[var(--card)] px-3 py-2"
+                        [class.border-[rgba(248,113,113,0.2)]]="
+                          s.semRegulamento > 0
+                        "
+                        [class.bg-[rgba(248,113,113,0.06)]]="
+                          s.semRegulamento > 0
+                        "
+                      >
+                        <span
+                          [class.text-[#f87171]]="s.semRegulamento > 0"
+                          [class.text-[var(--muted-foreground)]]="
+                            s.semRegulamento === 0
+                          "
+                          >Regulamento</span
+                        >
+                        <span
+                          class="font-bold"
+                          [class.text-[#f87171]]="s.semRegulamento > 0"
+                          [class.text-[var(--foreground)]]="
+                            s.semRegulamento === 0
+                          "
+                          >{{ s.semRegulamento }}</span
+                        >
+                      </div>
+
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-[var(--sidebar-border-subtle)] bg-[var(--card)] px-3 py-2"
+                        [class.border-[rgba(248,113,113,0.2)]]="s.semImagem > 0"
+                        [class.bg-[rgba(248,113,113,0.06)]]="s.semImagem > 0"
+                      >
+                        <span
+                          [class.text-[#f87171]]="s.semImagem > 0"
+                          [class.text-[var(--muted-foreground)]]="
+                            s.semImagem === 0
+                          "
+                          >Sem Imagem</span
+                        >
+                        <span
+                          class="font-bold"
+                          [class.text-[#f87171]]="s.semImagem > 0"
+                          [class.text-[var(--foreground)]]="s.semImagem === 0"
+                          >{{ s.semImagem }}</span
+                        >
+                      </div>
+
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-[var(--sidebar-border-subtle)] bg-[var(--card)] px-3 py-2"
+                        [class.border-[rgba(248,113,113,0.2)]]="s.semPreco > 0"
+                        [class.bg-[rgba(248,113,113,0.06)]]="s.semPreco > 0"
+                      >
+                        <span
+                          [class.text-[#f87171]]="s.semPreco > 0"
+                          [class.text-[var(--muted-foreground)]]="
+                            s.semPreco === 0
+                          "
+                          >Sem Preço</span
+                        >
+                        <span
+                          class="font-bold"
+                          [class.text-[#f87171]]="s.semPreco > 0"
+                          [class.text-[var(--foreground)]]="s.semPreco === 0"
+                          >{{ s.semPreco }}</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="mt-4 flex justify-end border-t border-[rgba(142,202,230,0.08)] pt-3"
+                >
+                  <a
+                    routerLink="/events"
+                    class="inline-flex items-center gap-1 text-xs font-semibold text-[var(--brand-amber-500)] hover:underline"
+                  >
+                    Filtrar eventos desta fonte
+                    <app-icon
+                      name="heroChevronRight"
+                      size="12"
+                      strokeWidth="2"
+                    ></app-icon>
+                  </a>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </section>
 }

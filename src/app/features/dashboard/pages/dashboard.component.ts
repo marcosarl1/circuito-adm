@@ -83,6 +83,83 @@ export class DashboardComponent {
     return (s?.abertas ?? 0) + (s?.emBreve ?? 0) + (s?.encerradas ?? 0);
   });
 
+  // ZONA 3: toggle unificado Fontes ↔ Inscrições
+  operacionalView = signal<'fontes' | 'inscricoes'>('fontes');
+  setOperacionalView(v: 'fontes' | 'inscricoes') { this.operacionalView.set(v); }
+
+  // ZONA 4: accordion Saúde do Sistema (pendências + scrapers) — ambos abertos por padrão para visibilidade
+  saudeAccordion = signal<Set<string>>(new Set(['pendencias', 'scrapers']));
+  toggleSaude(key: string) {
+    const s = new Set(this.saudeAccordion());
+    if (s.has(key)) s.delete(key); else s.add(key);
+    this.saudeAccordion.set(s);
+  }
+  isSaudeOpen(key: string) { return this.saudeAccordion().has(key); }
+
+  // cada scraper é um accordion que revela saúde detalhada
+  scraperOpen = signal<Set<string>>(new Set());
+  toggleScraper(fonte: string) {
+    const s = new Set(this.scraperOpen());
+    if (s.has(fonte)) s.delete(fonte); else s.add(fonte);
+    this.scraperOpen.set(s);
+  }
+  isScraperOpen(fonte: string) { return this.scraperOpen().has(fonte); }
+
+  // ── Task 4: Alertas e Ações Rápidas ──
+  pendencias = computed(() => [
+    { key: 'link', label: 'Sem link de inscrição', count: this.stats().semLink ?? 0 },
+    { key: 'regulamento', label: 'Sem regulamento', count: this.stats().semRegulamento ?? 0 },
+    { key: 'imagem', label: 'Sem imagem', count: this.stats().semImagem ?? 0 },
+    { key: 'preco', label: 'Sem preço', count: this.stats().semPreco ?? 0 },
+  ]);
+  totalPendencias = computed(() => this.pendencias().reduce((s, p) => s + p.count, 0));
+
+  scraperStatus = computed(() => {
+    const IGNORADAS = ['manual', 'ticketsports'];
+    const map = new Map<string, { fonte: string; display: string; maxMs: number; count: number; semLink: number; semRegulamento: number; semImagem: number; semPreco: number }>();
+    for (const e of this.events()) {
+      const raw = (e.site_coleta || '').trim();
+      const key = raw.toLowerCase();
+      if (!raw || raw === '—' || IGNORADAS.some((ig) => key.includes(ig))) continue;
+      const ms = e.data_coleta ? new Date(e.data_coleta).getTime() : 0;
+      const prev = map.get(key);
+      const semLink = !(e as unknown as { url_inscricao?: string }).url_inscricao ? 1 : 0;
+      const linkEdital = (e as unknown as { link_edital?: string }).link_edital;
+      const semRegulamento = !linkEdital || linkEdital === 'edital não encontrado' ? 1 : 0;
+      const semImagem = !e.url_imagem ? 1 : 0;
+      const semPreco = !e.precos_entries || e.precos_entries.length === 0 ? 1 : 0;
+      if (!prev) {
+        map.set(key, { fonte: key, display: raw, maxMs: isNaN(ms) ? 0 : ms, count: 1, semLink, semRegulamento, semImagem, semPreco });
+      } else {
+        prev.count += 1;
+        prev.semLink += semLink;
+        prev.semRegulamento += semRegulamento;
+        prev.semImagem += semImagem;
+        prev.semPreco += semPreco;
+        if (!isNaN(ms) && ms > prev.maxMs) prev.maxMs = ms;
+      }
+    }
+    const now = Date.now();
+    return [...map.values()]
+      .sort((a, b) => b.maxMs - a.maxMs)
+      .map((v) => {
+        const diffMs = now - v.maxMs;
+        const diffH = Math.floor(diffMs / 3600000);
+        const diffD = Math.floor(diffH / 24);
+        let relativo = '—';
+        let status: 'ok' | 'atrasado' = 'ok';
+        const dataSync = v.maxMs ? new Date(v.maxMs).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+        if (!v.maxMs) { relativo = 'sem dados'; status = 'atrasado'; }
+        else if (diffH < 1) { relativo = 'há poucos minutos'; status = 'ok'; }
+        else if (diffH < 24) { relativo = `há ${diffH}h`; status = 'ok'; }
+        else if (diffD === 1) { relativo = 'há 1 dia'; status = 'ok'; }
+        else if (diffD < 15) { relativo = `há ${diffD} dias`; status = 'ok'; }
+        else { relativo = `há ${diffD} dias`; status = 'atrasado'; }
+        const totalPendencias = v.semLink + v.semRegulamento + v.semImagem + v.semPreco;
+        return { ...v, relativo, status, dataSync, diffD, totalPendencias };
+      });
+  });
+
   statusDonutOptions = computed<ApexOptions>(() => {
     const s = this.stats().statusInscricoes;
     const abertas = s?.abertas ?? 0;
