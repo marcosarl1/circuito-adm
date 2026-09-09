@@ -1,7 +1,9 @@
-import { inject, Injectable } from '@angular/core';
-import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { inject, Injectable, isDevMode } from '@angular/core';
+import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { EventsService } from '../../events/services/events.service';
 import { Event } from '../../../shared/models/event.model';
+import { environment } from '../../../../environments/environment';
 
 export interface DashboardStats {
   total: number;
@@ -34,10 +36,20 @@ const MESES_PT: Record<string, number> = {
   dezembro: 12,
 };
 
-function parseDataRealizacao(raw: string): Date | null {
+function parseDataRealizacao(raw: string, datasISO?: string[] | Date[]): Date | null {
+  // Prefer ISO datas_realizacao from backend (datas_realizacao[0]) if available
+  if (datasISO && datasISO.length > 0) {
+    const iso = datasISO[0];
+    const d = new Date(iso as string);
+    if (!isNaN(d.getTime())) return d;
+  }
+  // Fallback strict pt-BR "12 de Junho de 2027" with ISO fallback
+  if (!raw) return null;
+  // Try ISO first (YYYY-MM-DD)
+  const isoTry = new Date(raw);
+  if (!isNaN(isoTry.getTime()) && raw.includes('-')) return isoTry;
   try {
-    const parts = raw.toLowerCase().split(' ');
-    // "12 de Junho de 2027"
+    const parts = raw.toLowerCase().trim().split(/\s+/);
     const dia = parseInt(parts[0], 10);
     const mes = MESES_PT[parts[2]];
     const ano = parseInt(parts[4], 10);
@@ -51,6 +63,21 @@ function parseDataRealizacao(raw: string): Date | null {
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private eventsService = inject(EventsService);
+  private http = inject(HttpClient);
+
+  private get baseUrl(): string {
+    return isDevMode() ? `${environment.apiUrl}api/v1` : '/api/events-proxy';
+  }
+
+  getDashboardStats(): Observable<DashboardStats> {
+    const url = `${this.baseUrl}/dashboard/stats`;
+    const headers = isDevMode() && environment.apiKey ? { headers: new HttpHeaders({ 'x-api-key': environment.apiKey }) } : undefined;
+    const opts: { headers?: HttpHeaders } = headers ? { headers: headers.headers } : {};
+    // @ts-ignore - HttpClient overload typing for dynamic headers
+    return this.http.get<DashboardStats>(url, opts).pipe(
+      catchError(() => this.getAllEvents().pipe(map((events) => this.getStats(events)))),
+    );
+  }
 
   getAllEvents(): Observable<Event[]> {
     const size = 100;
@@ -96,7 +123,7 @@ export class DashboardService {
     const fonteDisplay = new Map<string, string>();
 
     for (const e of events) {
-      const d = parseDataRealizacao(e.data_realizacao);
+      const d = parseDataRealizacao(e.data_realizacao, (e as unknown as { datas_realizacao?: string[] }).datas_realizacao);
       if (d) {
         if (d >= now) {
           ativos++;

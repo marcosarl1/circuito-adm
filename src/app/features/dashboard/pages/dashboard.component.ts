@@ -2,11 +2,14 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DashboardService } from '../services/dashboard.service';
 import { Event } from '../../../shared/models/event.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import type { ApexOptions } from 'ng-apexcharts';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [IconComponent],
+  imports: [IconComponent, NgApexchartsModule, RouterLink],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {
@@ -53,7 +56,24 @@ export class DashboardComponent {
   porFonteTotal = computed(() => this.porFonteSorted().reduce((s, f) => s + f.count, 0));
   fonteHover = signal<string | null>(null);
 
-  private readonly PIE_COLORS = ['#fb8500', '#219ebc', '#ffb703', '#8ecae6', '#f72585', '#06d6a0'];
+  // Bar scaling: max instead of total for perceptible differences
+  porMesMax = computed(() => Math.max(1, ...this.stats().porMes.map((m) => m.count)));
+  porEstadoMax = computed(() => Math.max(1, ...this.stats().porEstado.map((e) => e.count)));
+
+  readonly PIE_COLORS = ['#fb8500', '#219ebc', '#ffb703', '#8ecae6', '#f72585', '#06d6a0'];
+
+  chartOptions = computed<ApexOptions>(() => ({
+    series: this.porFonteSorted().map((f) => f.count),
+    labels: this.porFonteSorted().map((f) => f.fonte),
+    colors: this.PIE_COLORS,
+    chart: { type: 'donut', height: 220, background: 'transparent', toolbar: { show: false } },
+    plotOptions: { pie: { donut: { size: '58%', labels: { show: true, total: { show: true, label: 'Total', color: '#ffffff', fontSize: '12px', fontWeight: 600, formatter: () => String(this.porFonteTotal()) }, value: { color: '#ffffff', fontSize: '16px', fontWeight: 700 } } } } },
+    dataLabels: { enabled: false },
+    legend: { show: false },
+    stroke: { show: true, width: 2, colors: ['#00090e'] },
+    tooltip: { theme: 'dark', y: { formatter: (val: number) => `${val} eventos` } },
+    responsive: [{ breakpoint: 480, options: { chart: { height: 200 } } }],
+  }));
 
   pieSlices = computed(() => {
     const data = this.porFonteSorted();
@@ -86,9 +106,16 @@ export class DashboardComponent {
     const MESES: Record<string, number> = {
       janeiro: 1, fevereiro: 2, marco: 3, março: 3, abril: 4, maio: 5, junho: 6, julho: 7, agosto: 8, setembro: 9, outubro: 10, novembro: 11, dezembro: 12,
     };
-    const parse = (raw: string): Date | null => {
+    const parse = (raw: string, datasISO?: unknown): Date | null => {
+      if (datasISO && Array.isArray(datasISO) && datasISO.length > 0) {
+        const d = new Date(datasISO[0] as string);
+        if (!isNaN(d.getTime())) return d;
+      }
+      if (!raw) return null;
+      const iso = new Date(raw);
+      if (!isNaN(iso.getTime()) && raw.includes('-')) return iso;
       try {
-        const p = raw.toLowerCase().split(' ');
+        const p = raw.toLowerCase().trim().split(/\s+/);
         const d = parseInt(p[0], 10);
         const m = MESES[p[2]];
         const y = parseInt(p[4], 10);
@@ -97,7 +124,7 @@ export class DashboardComponent {
       } catch { return null; }
     };
     return this.events()
-      .map((e) => ({ e, d: parse(e.data_realizacao) }))
+      .map((e) => ({ e, d: parse(e.data_realizacao, (e as unknown as { datas_realizacao?: unknown }).datas_realizacao) }))
       .filter((x): x is { e: Event; d: Date } => !!x.d && x.d >= now && x.d <= in30)
       .sort((a, b) => a.d.getTime() - b.d.getTime())
       .slice(0, 5)
