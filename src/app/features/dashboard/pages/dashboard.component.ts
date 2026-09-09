@@ -73,8 +73,25 @@ export class DashboardComponent {
   // Bar scaling: max instead of total for perceptible differences
   porMesMax = computed(() => Math.max(1, ...this.stats().porMes.map((m) => m.count)));
   porEstadoMax = computed(() => Math.max(1, ...this.stats().porEstado.map((e) => e.count)));
+  porDistanciaMax = computed(() => Math.max(1, ...this.stats().porDistancia.map((d) => d.count)));
 
   readonly PIE_COLORS = ['#fb8500', '#219ebc', '#ffb703', '#8ecae6', '#f72585', '#06d6a0'];
+
+  distanciasChartOptions = computed<ApexOptions>(() => {
+    const data = [...this.stats().porDistancia].sort((a, b) => b.count - a.count).slice(0, 6);
+    return {
+      series: [{ name: 'Eventos', data: data.map((d) => d.count) }],
+      chart: { type: 'bar', height: 220, background: 'transparent', toolbar: { show: false }, fontFamily: 'inherit' },
+      plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '55%', distributed: true } },
+      colors: this.PIE_COLORS,
+      dataLabels: { enabled: false },
+      xaxis: { categories: data.map((d) => d.distancia), labels: { style: { colors: '#bae6f5', fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+      yaxis: { labels: { style: { colors: '#bae6f5', fontSize: '11px' } } },
+      grid: { borderColor: 'rgba(142,202,230,0.08)', xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } } },
+      tooltip: { theme: 'dark', y: { formatter: (val: number) => `${val} eventos` } },
+      legend: { show: false },
+    };
+  });
 
   chartOptions = computed<ApexOptions>(() => ({
     series: this.porFonteSorted().map((f) => f.count),

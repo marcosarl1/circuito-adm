@@ -190,8 +190,24 @@ export class DashboardService {
       porCidade.set(cidKey, (porCidade.get(cidKey) ?? 0) + 1);
 
       for (const dstr of (e.distancias || [])) {
-        const norm = String(dstr).trim().toUpperCase();
-        if (norm) porDistancia.set(norm, (porDistancia.get(norm) ?? 0) + 1);
+        const raw = String(dstr).trim();
+        if (!raw) continue;
+        // Extrai todas as distâncias base (5KM, 10KM, 21K...) e soma cada uma
+        // Ex: "5KM (CORRIDA)" -> 5KM, "5KM E 10KM (CORRIDA)" -> 5KM + 10KM
+        const matches = raw.toUpperCase().match(/\d+(?:[.,]\d+)?\s*K\s*M?/g);
+        if (matches && matches.length > 0) {
+          for (const m of matches) {
+            let norm = m.replace(/\s+/g, '').toUpperCase(); // 5 KM -> 5KM
+            if (!norm.endsWith('M') && norm.endsWith('K')) norm += 'M'; // 5K -> 5KM
+            // Normaliza 5.0KM -> 5KM, 5,5KM -> 5.5KM
+            norm = norm.replace(',', '.');
+            porDistancia.set(norm, (porDistancia.get(norm) ?? 0) + 1);
+          }
+        } else {
+          // Fallback: usa string inteira normalizada se não achou padrão
+          const norm = raw.toUpperCase().trim();
+          porDistancia.set(norm, (porDistancia.get(norm) ?? 0) + 1);
+        }
       }
 
       const orgRaw = (e.organizador || '—').trim();

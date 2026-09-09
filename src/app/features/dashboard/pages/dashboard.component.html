@@ -1,9 +1,13 @@
 @if (loading()) {
   <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-8">
-    @for (i of [1,2,3,4,5,6,7,8]; track i) {
+    @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
       <div class="card p-4">
-        <div class="h-3 w-16 animate-pulse rounded bg-[rgba(142,202,230,0.12)]"></div>
-        <div class="mt-2 h-5 w-10 animate-pulse rounded bg-[rgba(142,202,230,0.08)]"></div>
+        <div
+          class="h-3 w-16 animate-pulse rounded bg-[rgba(142,202,230,0.12)]"
+        ></div>
+        <div
+          class="mt-2 h-5 w-10 animate-pulse rounded bg-[rgba(142,202,230,0.08)]"
+        ></div>
       </div>
     }
   </div>
@@ -60,16 +64,34 @@
       </p>
     </div>
     <div class="card p-4">
-      <p class="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Patrocinados</p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--primary)]">{{ stats().patrocinados }}</p>
+      <p
+        class="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]"
+      >
+        Patrocinados
+      </p>
+      <p class="mt-1.5 text-2xl font-bold text-[var(--primary)]">
+        {{ stats().patrocinados }}
+      </p>
     </div>
     <div class="card p-4">
-      <p class="text-xs font-semibold uppercase tracking-wide text-[var(--brand-amber-500)]">Valor Médio</p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--brand-amber-500)]">R$ {{ stats().valorMedio.toFixed(2).replace('.', ',') }}</p>
+      <p
+        class="text-xs font-semibold uppercase tracking-wide text-[var(--brand-amber-500)]"
+      >
+        Valor Médio
+      </p>
+      <p class="mt-1.5 text-2xl font-bold text-[var(--brand-amber-500)]">
+        R$ {{ stats().valorMedio.toFixed(2).replace(".", ",") }}
+      </p>
     </div>
     <div class="card p-4">
-      <p class="text-xs font-semibold uppercase tracking-wide text-[var(--primary)]">Lote 1</p>
-      <p class="mt-1.5 text-2xl font-bold text-[var(--primary)]">{{ stats().lote1Count }}</p>
+      <p
+        class="text-xs font-semibold uppercase tracking-wide text-[var(--primary)]"
+      >
+        Lote 1
+      </p>
+      <p class="mt-1.5 text-2xl font-bold text-[var(--primary)]">
+        {{ stats().lote1Count }}
+      </p>
       <p class="text-[11px] text-[var(--muted-foreground)]">em promoção</p>
     </div>
   </div>
@@ -240,7 +262,32 @@
     </div>
   </div>
 
-  <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+  <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
+      <h3 class="text-sm font-semibold text-[var(--foreground)]">Distâncias Populares</h3>
+      <div class="mt-2 flex-1">
+        <apx-chart
+          [series]="distanciasChartOptions().series!"
+          [chart]="distanciasChartOptions().chart!"
+          [plotOptions]="distanciasChartOptions().plotOptions!"
+          [colors]="distanciasChartOptions().colors!"
+          [dataLabels]="distanciasChartOptions().dataLabels!"
+          [xaxis]="distanciasChartOptions().xaxis!"
+          [yaxis]="distanciasChartOptions().yaxis!"
+          [grid]="distanciasChartOptions().grid!"
+          [tooltip]="distanciasChartOptions().tooltip!"
+          [legend]="distanciasChartOptions().legend!"
+        ></apx-chart>
+        <table class="sr-only"><caption>Distâncias populares</caption><thead><tr><th>Distância</th><th>Eventos</th></tr></thead><tbody>@for (item of stats().porDistancia.slice(0, 5); track item.distancia) { <tr><td>{{ item.distancia }}</td><td>{{ item.count }}</td></tr> }</tbody></table>
+      </div>
+      @if (stats().porDistancia.length > 5) {
+        <a
+          routerLink="/events"
+          class="mt-3 inline-flex self-end text-xs font-medium text-[var(--brand-teal-500)] hover:underline"
+          >Ver todos →</a
+        >
+      }
+    </div>
     <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
       <div class="flex items-center justify-between gap-2">
         <h3 class="text-sm font-semibold text-[var(--foreground)]">
