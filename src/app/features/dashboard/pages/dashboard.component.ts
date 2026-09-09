@@ -77,6 +77,58 @@ export class DashboardComponent {
 
   readonly PIE_COLORS = ['#fb8500', '#219ebc', '#ffb703', '#8ecae6', '#f72585', '#06d6a0'];
 
+  eventosColumnOptions = computed<ApexOptions>(() => {
+    const raw = this.stats().porMes;
+    const map = new Map(raw.map((r) => [r.label, r.count]));
+    const now = new Date();
+    const last6: { key: string; short: string }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const shortRaw = d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
+      const short = shortRaw.charAt(0).toUpperCase() + shortRaw.slice(1);
+      last6.push({ key, short });
+    }
+    const categories = last6.map((m) => m.short);
+    const values = last6.map((m) => map.get(m.key) ?? 0);
+    const hasData = values.some((v) => v > 0);
+    return {
+      series: [{ name: 'Eventos', data: values }],
+      chart: {
+        type: 'bar',
+        height: 260,
+        background: 'transparent',
+        toolbar: { show: false },
+        fontFamily: 'inherit',
+        animations: { enabled: true, easing: 'easeinout', speed: 400 },
+      },
+      plotOptions: { bar: { borderRadius: 4, columnWidth: '42%', distributed: false, borderRadiusApplication: 'end' } },
+      colors: ['#fb8500'],
+      dataLabels: { enabled: false },
+      xaxis: {
+        categories,
+        labels: { style: { colors: '#bae6f5', fontSize: '11px', fontWeight: 500 }, rotate: 0, trim: false },
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+      },
+      yaxis: {
+        min: 0,
+        forceNiceScale: true,
+        decimalsInFloat: 0,
+        labels: { style: { colors: '#bae6f5', fontSize: '11px' }, formatter: (v: number) => String(Math.round(v)) },
+      },
+      grid: { borderColor: 'rgba(142,202,230,0.08)', yaxis: { lines: { show: true } }, xaxis: { lines: { show: false } }, padding: { left: 8, right: 8 } },
+      tooltip: {
+        theme: 'dark',
+        x: { show: true },
+        y: { formatter: (val: number) => `${val} evento${val === 1 ? '' : 's'}` },
+      },
+      legend: { show: false },
+      noData: { text: hasData ? '' : 'Sem eventos nos últimos 6 meses', style: { color: '#8ecae6', fontSize: '12px' } },
+      states: { hover: { filter: { type: 'lighten', value: 0.08 } } },
+    };
+  });
+
   distanciasChartOptions = computed<ApexOptions>(() => {
     const data = [...this.stats().porDistancia].sort((a, b) => b.count - a.count).slice(0, 6);
     return {
