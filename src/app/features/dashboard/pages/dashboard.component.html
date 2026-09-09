@@ -264,8 +264,10 @@
 
   <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
     <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
-      <h3 class="text-sm font-semibold text-[var(--foreground)]">Distâncias Populares</h3>
-      <div class="mt-2 flex-1">
+      <h3 class="text-sm font-semibold text-[var(--foreground)]">
+        Distâncias Populares
+      </h3>
+      <div class="mt-2 flex flex-1 items-center justify-center">
         <apx-chart
           [series]="distanciasChartOptions().series!"
           [chart]="distanciasChartOptions().chart!"
@@ -277,16 +279,31 @@
           [grid]="distanciasChartOptions().grid!"
           [tooltip]="distanciasChartOptions().tooltip!"
           [legend]="distanciasChartOptions().legend!"
+          class="w-full"
         ></apx-chart>
-        <table class="sr-only"><caption>Distâncias populares</caption><thead><tr><th>Distância</th><th>Eventos</th></tr></thead><tbody>@for (item of stats().porDistancia.slice(0, 5); track item.distancia) { <tr><td>{{ item.distancia }}</td><td>{{ item.count }}</td></tr> }</tbody></table>
+        <table class="sr-only">
+          <caption>
+            Distâncias populares
+          </caption>
+          <thead>
+            <tr>
+              <th>Distância</th>
+              <th>Eventos</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (
+              item of stats().porDistancia.slice(0, 5);
+              track item.distancia
+            ) {
+              <tr>
+                <td>{{ item.distancia }}</td>
+                <td>{{ item.count }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
-      @if (stats().porDistancia.length > 5) {
-        <a
-          routerLink="/events"
-          class="mt-3 inline-flex self-end text-xs font-medium text-[var(--brand-teal-500)] hover:underline"
-          >Ver todos →</a
-        >
-      }
     </div>
     <div class="card p-4 lg:min-h-[260px] lg:flex lg:flex-col">
       <div class="flex items-center justify-between gap-2">

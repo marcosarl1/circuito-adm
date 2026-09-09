@@ -81,7 +81,7 @@ export class DashboardComponent {
     const data = [...this.stats().porDistancia].sort((a, b) => b.count - a.count).slice(0, 6);
     return {
       series: [{ name: 'Eventos', data: data.map((d) => d.count) }],
-      chart: { type: 'bar', height: 220, background: 'transparent', toolbar: { show: false }, fontFamily: 'inherit' },
+      chart: { type: 'bar', height: 280, background: 'transparent', toolbar: { show: false }, fontFamily: 'inherit' },
       plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '55%', distributed: true } },
       colors: this.PIE_COLORS,
       dataLabels: { enabled: false },
