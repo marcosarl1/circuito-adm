@@ -183,7 +183,10 @@ export class DashboardService {
 
       const cidRaw = (e.cidade || '—').trim();
       const cidKey = cidRaw.toLowerCase();
-      if (!cidadeDisplay.has(cidKey)) cidadeDisplay.set(cidKey, cidRaw);
+      if (!cidadeDisplay.has(cidKey)) {
+        const normalized = cidRaw.toLowerCase().split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        cidadeDisplay.set(cidKey, normalized);
+      }
       porCidade.set(cidKey, (porCidade.get(cidKey) ?? 0) + 1);
 
       for (const dstr of (e.distancias || [])) {
@@ -219,9 +222,9 @@ export class DashboardService {
       lote1Count,
       porMes: [...porMes.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([label,count])=>({label,count})),
       porEstado: [...porEstado.entries()].sort((a,b)=>b[1]-a[1]).map(([estado,count])=>({estado,count})),
-      porCidade: [...porCidade.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,c])=>({cidade: cidadeDisplay.get(k) ?? k, count:c})),
-      porDistancia: [...porDistancia.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,c])=>({distancia:k,count:c})),
-      porOrganizador: [...porOrg.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,c])=>({organizador: orgDisplay.get(k) ?? k, count:c})),
+      porCidade: [...porCidade.entries()].sort((a,b)=>b[1]-a[1]).map(([k,c])=>({cidade: cidadeDisplay.get(k) ?? k, count:c})),
+      porDistancia: [...porDistancia.entries()].sort((a,b)=>b[1]-a[1]).map(([k,c])=>({distancia:k,count:c})),
+      porOrganizador: [...porOrg.entries()].sort((a,b)=>b[1]-a[1]).map(([k,c])=>({organizador: orgDisplay.get(k) ?? k, count:c})),
       porFonte: [...porFonte.entries()].sort((a,b)=>b[1]-a[1]).map(([k,c])=>({fonte: fonteDisplay.get(k) ?? k, count:c})),
       densidade: [...densidadePorDia.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([data,count])=>({data,count})),
       choques,

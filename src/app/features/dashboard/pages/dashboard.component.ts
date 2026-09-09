@@ -41,6 +41,20 @@ export class DashboardComponent {
   prevPorEstado() { if (this.porEstadoPage() > 0) this.porEstadoPage.update((p) => p - 1); }
   nextPorEstado() { if (this.porEstadoPage() < this.porEstadoTotalPages() - 1) this.porEstadoPage.update((p) => p + 1); }
 
+  // Toggle Estados ↔ Cidades dentro do mesmo card
+  localView = signal<'estado' | 'cidade'>('estado');
+  toggleLocalView(v: 'estado' | 'cidade') { this.localView.set(v); this.porEstadoPage.set(0); this.porCidadePage.set(0); }
+  porCidadePage = signal(0);
+  porCidadePageSize = 6;
+  porCidadeTotalPages = computed(() => Math.max(1, Math.ceil(this.stats().porCidade.length / this.porCidadePageSize)));
+  porCidadeVisible = computed(() => {
+    const s = this.porCidadePage() * this.porCidadePageSize;
+    return this.stats().porCidade.slice(s, s + this.porCidadePageSize);
+  });
+  prevPorCidade() { if (this.porCidadePage() > 0) this.porCidadePage.update((p) => p - 1); }
+  nextPorCidade() { if (this.porCidadePage() < this.porCidadeTotalPages() - 1) this.porCidadePage.update((p) => p + 1); }
+  porCidadeMax = computed(() => Math.max(1, ...this.stats().porCidade.map((c) => c.count)));
+
   proximosPage = signal(0);
   proximosPageSize = 6;
   proximosTotalPages = computed(() => Math.max(1, Math.ceil(this.proximosEventos().length / this.proximosPageSize)));
