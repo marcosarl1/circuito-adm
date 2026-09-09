@@ -170,7 +170,7 @@ export class DashboardComponent {
       series: [abertas, emBreve, encerradas],
       labels: ['Abertas', 'Em breve', 'Encerradas'],
       colors: ['#06d6a0', '#ffb703', '#475569'],
-      chart: { type: 'donut', height: 220, background: 'transparent', toolbar: { show: false } },
+      chart: { type: 'donut', height: 190, background: 'transparent', toolbar: { show: false } },
       plotOptions: {
         pie: {
           donut: {
