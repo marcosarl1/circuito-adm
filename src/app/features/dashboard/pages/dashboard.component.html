@@ -413,4 +413,57 @@
       }
     </div>
   </div>
+
+  <!-- Status de Abertura das Inscrições -->
+  <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <div class="card flex flex-col p-4 lg:min-h-[260px] lg:flex lg:flex-col">
+      <div class="flex items-center justify-between gap-2">
+        <h3 class="text-sm font-semibold text-[var(--foreground)]">Status das Inscrições</h3>
+        <span class="text-xs text-[var(--muted-foreground)]">{{ statusInscricoesTotal() }} eventos</span>
+      </div>
+      @if (statusInscricoesTotal() === 0) {
+        <p class="mt-6 text-center text-sm text-[var(--muted-foreground)]">Nenhum evento para classificar.</p>
+      } @else {
+        <div class="mt-4 flex flex-1 flex-col items-center gap-3">
+          <apx-chart
+            [series]="statusDonutOptions().series!"
+            [labels]="statusDonutOptions().labels!"
+            [colors]="statusDonutOptions().colors!"
+            [chart]="statusDonutOptions().chart!"
+            [plotOptions]="statusDonutOptions().plotOptions!"
+            [dataLabels]="statusDonutOptions().dataLabels!"
+            [legend]="statusDonutOptions().legend!"
+            [stroke]="statusDonutOptions().stroke!"
+            [tooltip]="statusDonutOptions().tooltip!"
+            [responsive]="statusDonutOptions().responsive!"
+            class="w-full max-w-[260px]"
+          ></apx-chart>
+          <table class="sr-only">
+            <caption>Status das inscrições</caption>
+            <thead><tr><th>Status</th><th>Eventos</th></tr></thead>
+            <tbody>
+              <tr><td>Abertas</td><td>{{ stats().statusInscricoes.abertas }}</td></tr>
+              <tr><td>Em breve</td><td>{{ stats().statusInscricoes.emBreve }}</td></tr>
+              <tr><td>Encerradas</td><td>{{ stats().statusInscricoes.encerradas }}</td></tr>
+            </tbody>
+          </table>
+          <div class="flex w-full flex-col gap-1.5">
+            <div class="flex items-center justify-between rounded-md border border-[rgba(6,214,160,0.14)] bg-[rgba(6,214,160,0.06)] px-3 py-2">
+              <span class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"><span class="h-2.5 w-2.5 rounded-full bg-[#06d6a0]"></span> Abertas</span>
+              <span class="text-sm font-bold text-[var(--foreground)]">{{ stats().statusInscricoes.abertas }}</span>
+            </div>
+            <div class="flex items-center justify-between rounded-md border border-[rgba(251,191,3,0.14)] bg-[rgba(251,191,3,0.06)] px-3 py-2">
+              <span class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"><span class="h-2.5 w-2.5 rounded-full bg-[#ffb703]"></span> Em breve (≤7d)</span>
+              <span class="text-sm font-bold text-[var(--foreground)]">{{ stats().statusInscricoes.emBreve }}</span>
+            </div>
+            <div class="flex items-center justify-between rounded-md border border-[var(--sidebar-border-subtle)] bg-[rgba(0,9,14,0.22)] px-3 py-2">
+              <span class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"><span class="h-2.5 w-2.5 rounded-full bg-[#475569]"></span> Encerradas</span>
+              <span class="text-sm font-bold text-[var(--foreground)]">{{ stats().statusInscricoes.encerradas }}</span>
+            </div>
+          </div>
+          <p class="text-center text-[11px] leading-snug text-[var(--muted-foreground)]">Abertas: &gt;7 dias até a prova · Em breve: ≤7 dias · Encerradas: já realizadas ou sem data</p>
+        </div>
+      }
+    </div>
+  </div>
 }

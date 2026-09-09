@@ -77,6 +77,44 @@ export class DashboardComponent {
 
   readonly PIE_COLORS = ['#fb8500', '#219ebc', '#ffb703', '#8ecae6', '#f72585', '#06d6a0'];
 
+  // ── Task 3: Status das Inscrições ──
+  statusInscricoesTotal = computed(() => {
+    const s = this.stats().statusInscricoes;
+    return (s?.abertas ?? 0) + (s?.emBreve ?? 0) + (s?.encerradas ?? 0);
+  });
+
+  statusDonutOptions = computed<ApexOptions>(() => {
+    const s = this.stats().statusInscricoes;
+    const abertas = s?.abertas ?? 0;
+    const emBreve = s?.emBreve ?? 0;
+    const encerradas = s?.encerradas ?? 0;
+    const total = abertas + emBreve + encerradas;
+    return {
+      series: [abertas, emBreve, encerradas],
+      labels: ['Abertas', 'Em breve', 'Encerradas'],
+      colors: ['#06d6a0', '#ffb703', '#475569'],
+      chart: { type: 'donut', height: 220, background: 'transparent', toolbar: { show: false } },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: '62%',
+            labels: {
+              show: true,
+              name: { show: true, color: '#bae6f5', fontSize: '11px' },
+              value: { show: true, color: '#ffffff', fontSize: '18px', fontWeight: 700, formatter: (v: string) => v },
+              total: { show: true, label: 'Total', color: '#bae6f5', fontSize: '11px', fontWeight: 600, formatter: () => String(total) },
+            },
+          },
+        },
+      },
+      dataLabels: { enabled: false },
+      legend: { show: false },
+      stroke: { show: true, width: 2, colors: ['#00090e'] },
+      tooltip: { theme: 'dark', y: { formatter: (val: number) => `${val} eventos` } },
+      responsive: [{ breakpoint: 480, options: { chart: { height: 200 } } }],
+    };
+  });
+
   eventosColumnOptions = computed<ApexOptions>(() => {
     const raw = this.stats().porMes;
     const map = new Map(raw.map((r) => [r.label, r.count]));

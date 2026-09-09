@@ -213,7 +213,7 @@ a {
 }
 
 .container {
-  width: min(100% - 48px, 1240px);
+  width: min(100% - 32px, 1240px);
   margin: 0 auto;
 }
 
@@ -461,7 +461,7 @@ textarea::placeholder {
 
 @media (max-width: 768px) {
   .container {
-    width: min(100% - 28px, 1240px);
+    width: min(100% - 20px, 1240px);
   }
 
   .modal-body {

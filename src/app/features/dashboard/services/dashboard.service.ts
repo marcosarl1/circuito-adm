@@ -5,6 +5,15 @@ import { EventsService } from '../../events/services/events.service';
 import { Event } from '../../../shared/models/event.model';
 import { environment } from '../../../../environments/environment';
 
+export interface FimDeSemanaDensidade {
+  sabado: string; // YYYY-MM-DD
+  domingo: string; // YYYY-MM-DD
+  label: string; // ex: "10-11 Jan"
+  total: number;
+  nivel: 'livre' | 'moderado' | 'choque';
+  detalhe: { data: string; count: number }[];
+}
+
 export interface DashboardStats {
   total: number;
   ativos: number;
@@ -27,6 +36,9 @@ export interface DashboardStats {
   densidade: { data: string; count: number }[];
   choques: number;
   statusInscricoes: { abertas: number; emBreve: number; encerradas: number };
+  densidadeFimDeSemana: FimDeSemanaDensidade[];
+  finsDeSemanaLivres: number;
+  totalChoquesFimDeSemana: number;
 }
 
 const MESES_PT: Record<string, number> = {
@@ -223,6 +235,39 @@ export class DashboardService {
 
     const valorMedio = precosVals.length ? Math.round((precosVals.reduce((a,b)=>a+b,0)/precosVals.length)*100)/100 : 0;
     const choques = [...densidadePorDia.values()].filter((v) => v > 1).length;
+
+    // Densidade por fim de semana — próximos 12 fins de semana (inclui fim de semana atual)
+    const densidadeFimDeSemana: FimDeSemanaDensidade[] = [];
+    const dow = now.getDay(); // 0 dom ... 6 sáb
+    const daysToSat = (6 - dow + 7) % 7;
+    const firstSat = new Date(now);
+    firstSat.setDate(now.getDate() + daysToSat);
+    firstSat.setHours(0, 0, 0, 0);
+    for (let i = 0; i < 12; i++) {
+      const sat = new Date(firstSat);
+      sat.setDate(firstSat.getDate() + i * 7);
+      const sun = new Date(sat);
+      sun.setDate(sat.getDate() + 1);
+      const satKey = sat.toISOString().slice(0, 10);
+      const sunKey = sun.toISOString().slice(0, 10);
+      const satCount = densidadePorDia.get(satKey) ?? 0;
+      const sunCount = densidadePorDia.get(sunKey) ?? 0;
+      const total = satCount + sunCount;
+      const nivel: FimDeSemanaDensidade['nivel'] = total === 0 ? 'livre' : total >= 3 ? 'choque' : 'moderado';
+      const monthRaw = sun.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
+      const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1);
+      const label = `${String(sat.getDate()).padStart(2, '0')}-${String(sun.getDate()).padStart(2, '0')} ${month}`;
+      densidadeFimDeSemana.push({
+        sabado: satKey,
+        domingo: sunKey,
+        label,
+        total,
+        nivel,
+        detalhe: [{ data: satKey, count: satCount }, { data: sunKey, count: sunCount }],
+      });
+    }
+    const finsDeSemanaLivres = densidadeFimDeSemana.filter((f) => f.nivel === 'livre').length;
+    const totalChoquesFimDeSemana = densidadeFimDeSemana.filter((f) => f.nivel === 'choque').length;
     return {
       total: events.length,
       ativos,
@@ -245,6 +290,9 @@ export class DashboardService {
       densidade: [...densidadePorDia.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([data,count])=>({data,count})),
       choques,
       statusInscricoes: { abertas: statusAbertas, emBreve: statusBreve, encerradas: statusEncerradas },
+      densidadeFimDeSemana,
+      finsDeSemanaLivres,
+      totalChoquesFimDeSemana,
     };
   }
 }
