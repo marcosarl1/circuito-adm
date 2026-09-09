@@ -14,10 +14,19 @@ export interface DashboardStats {
   semPreco: number;
   patrocinados: number;
   semImagem: number;
+  semLink: number;
+  semRegulamento: number;
+  valorMedio: number;
+  lote1Count: number;
   porMes: { label: string; count: number }[];
   porEstado: { estado: string; count: number }[];
+  porCidade: { cidade: string; count: number }[];
+  porDistancia: { distancia: string; count: number }[];
   porOrganizador: { organizador: string; count: number }[];
   porFonte: { fonte: string; count: number }[];
+  densidade: { data: string; count: number }[];
+  choques: number;
+  statusInscricoes: { abertas: number; emBreve: number; encerradas: number };
 }
 
 const MESES_PT: Record<string, number> = {
@@ -114,33 +123,73 @@ export class DashboardService {
     let semPreco = 0;
     let patrocinados = 0;
     let semImagem = 0;
+    let semLink = 0;
+    let semRegulamento = 0;
+    let lote1Count = 0;
+    const precosVals: number[] = [];
 
     const porMes = new Map<string, number>();
     const porEstado = new Map<string, number>();
+    const porCidade = new Map<string, number>();
+    const cidadeDisplay = new Map<string, string>();
+    const porDistancia = new Map<string, number>();
     const porOrg = new Map<string, number>();
     const orgDisplay = new Map<string, string>();
     const porFonte = new Map<string, number>();
     const fonteDisplay = new Map<string, string>();
+    const densidadePorDia = new Map<string, number>();
+    let statusAbertas = 0, statusBreve = 0, statusEncerradas = 0;
+    const in7 = new Date(now);
+    in7.setDate(now.getDate() + 7);
 
     for (const e of events) {
       const d = parseDataRealizacao(e.data_realizacao, (e as unknown as { datas_realizacao?: string[] }).datas_realizacao);
       if (d) {
-        if (d >= now) {
+        const d0 = new Date(d); d0.setHours(0,0,0,0);
+        if (d0 >= now) {
           ativos++;
-          if (d <= in30) proximos30d++;
-          if (d <= in90) proximos90d++;
+          if (d0 <= in30) proximos30d++;
+          if (d0 <= in90) proximos90d++;
         } else {
           passados++;
         }
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const key = `${d0.getFullYear()}-${String(d0.getMonth() + 1).padStart(2, '0')}`;
         porMes.set(key, (porMes.get(key) ?? 0) + 1);
+        densidadePorDia.set(d0.toISOString().slice(0,10), (densidadePorDia.get(d0.toISOString().slice(0,10)) ?? 0) + 1);
+        if (d0 < now) statusEncerradas++;
+        else if (d0 <= in7) statusBreve++;
+        else statusAbertas++;
+      } else {
+        statusEncerradas++;
       }
       if (!e.precos_entries || e.precos_entries.length === 0) semPreco++;
+      else {
+        for (const p of e.precos_entries as string[]) {
+          if (typeof p === 'string' && p.toLowerCase().includes('lote 1')) { lote1Count++; break; }
+        }
+        for (const p of e.precos_entries as string[]) {
+          const m = String(p).match(/R\$\s*([0-9.,]+)/);
+          if (m) { const v = parseFloat(m[1].replace(/\./g, '').replace(',', '.')); if (!isNaN(v)) precosVals.push(v); }
+        }
+      }
       if (e.patrocinado) patrocinados++;
       if (!e.url_imagem) semImagem++;
+      if (!(e as unknown as { url_inscricao?: string }).url_inscricao) semLink++;
+      const linkEdital = (e as unknown as { link_edital?: string }).link_edital;
+      if (!linkEdital || linkEdital === 'edital não encontrado') semRegulamento++;
 
       const est = (e.estado || '—').toUpperCase();
       porEstado.set(est, (porEstado.get(est) ?? 0) + 1);
+
+      const cidRaw = (e.cidade || '—').trim();
+      const cidKey = cidRaw.toLowerCase();
+      if (!cidadeDisplay.has(cidKey)) cidadeDisplay.set(cidKey, cidRaw);
+      porCidade.set(cidKey, (porCidade.get(cidKey) ?? 0) + 1);
+
+      for (const dstr of (e.distancias || [])) {
+        const norm = String(dstr).trim().toUpperCase();
+        if (norm) porDistancia.set(norm, (porDistancia.get(norm) ?? 0) + 1);
+      }
 
       const orgRaw = (e.organizador || '—').trim();
       const orgKey = orgRaw.toLowerCase();
@@ -153,6 +202,8 @@ export class DashboardService {
       porFonte.set(fonteKey, (porFonte.get(fonteKey) ?? 0) + 1);
     }
 
+    const valorMedio = precosVals.length ? Math.round((precosVals.reduce((a,b)=>a+b,0)/precosVals.length)*100)/100 : 0;
+    const choques = [...densidadePorDia.values()].filter((v) => v > 1).length;
     return {
       total: events.length,
       ativos,
@@ -162,19 +213,19 @@ export class DashboardService {
       semPreco,
       patrocinados,
       semImagem,
-      porMes: [...porMes.entries()]
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([label, count]) => ({ label, count })),
-      porEstado: [...porEstado.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .map(([estado, count]) => ({ estado, count })),
-      porOrganizador: [...porOrg.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5)
-        .map(([key, count]) => ({ organizador: orgDisplay.get(key) ?? key, count })),
-      porFonte: [...porFonte.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .map(([key, count]) => ({ fonte: fonteDisplay.get(key) ?? key, count })),
+      semLink,
+      semRegulamento,
+      valorMedio,
+      lote1Count,
+      porMes: [...porMes.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([label,count])=>({label,count})),
+      porEstado: [...porEstado.entries()].sort((a,b)=>b[1]-a[1]).map(([estado,count])=>({estado,count})),
+      porCidade: [...porCidade.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,c])=>({cidade: cidadeDisplay.get(k) ?? k, count:c})),
+      porDistancia: [...porDistancia.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,c])=>({distancia:k,count:c})),
+      porOrganizador: [...porOrg.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,c])=>({organizador: orgDisplay.get(k) ?? k, count:c})),
+      porFonte: [...porFonte.entries()].sort((a,b)=>b[1]-a[1]).map(([k,c])=>({fonte: fonteDisplay.get(k) ?? k, count:c})),
+      densidade: [...densidadePorDia.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([data,count])=>({data,count})),
+      choques,
+      statusInscricoes: { abertas: statusAbertas, emBreve: statusBreve, encerradas: statusEncerradas },
     };
   }
 }
