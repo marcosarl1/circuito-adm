@@ -33,7 +33,6 @@ export class PostsComponent implements OnInit, OnDestroy {
   private readonly ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
   private readonly DRAFT_KEY = 'circuito_posts_draft';
   private draftSaveTimer: ReturnType<typeof setTimeout> | null = null;
-  private draftBannerTimer: ReturnType<typeof setTimeout> | null = null;
   private isRestoringDraft = false;
   private draftReady = false;
 
@@ -43,7 +42,6 @@ export class PostsComponent implements OnInit, OnDestroy {
   imageError = signal('');
   formData = signal<PostFormState>(this.createEmptyForm());
   hasDraft = signal(false);
-  draftProgress = signal(100);
   constructor() {
     // autosave com debounce 2s quando formData muda (exceto durante restore ou pristine)
     effect(() => {
@@ -193,21 +191,11 @@ export class PostsComponent implements OnInit, OnDestroy {
     this.imagePreview.set('');
     this.selectedImageName.set('');
     this.imageError.set('');
-    if (this.draftBannerTimer) {
-      clearTimeout(this.draftBannerTimer);
-      this.draftBannerTimer = null;
-    }
-    this.draftProgress.set(100);
     this.clearDraftStorage();
     this.hasDraft.set(false);
   }
 
   discardDraft(): void {
-    if (this.draftBannerTimer) {
-      clearTimeout(this.draftBannerTimer);
-      this.draftBannerTimer = null;
-    }
-    this.draftProgress.set(100);
     this.clearDraftStorage();
     this.hasDraft.set(false);
     this.resetForm();
@@ -228,21 +216,16 @@ export class PostsComponent implements OnInit, OnDestroy {
     };
     try {
       localStorage.setItem(this.DRAFT_KEY, JSON.stringify(payload));
-      this.showDraftBanner();
+      const wasDraft = this.hasDraft();
+      this.hasDraft.set(true);
+      if (!wasDraft)
+        this.toastService.infoWithAction(
+          'Rascunho salvo automaticamente',
+          'Descartar',
+          () => this.discardDraft(),
+          5000,
+        );
     } catch {}
-  }
-
-  private showDraftBanner(): void {
-    if (this.hasDraft()) return;
-    this.hasDraft.set(true);
-    this.draftProgress.set(100);
-    setTimeout(() => this.draftProgress.set(0), 50);
-    if (this.draftBannerTimer) clearTimeout(this.draftBannerTimer);
-    this.draftBannerTimer = setTimeout(() => {
-      this.hasDraft.set(false);
-      this.draftProgress.set(100);
-      this.draftBannerTimer = null;
-    }, 5000);
   }
 
   private restoreDraft(): void {
@@ -268,8 +251,13 @@ export class PostsComponent implements OnInit, OnDestroy {
         autor: d.autor ?? f.autor,
         data: d.data ?? f.data,
       }));
-      this.showDraftBanner();
-      this.toastService.info('Rascunho restaurado, continue de onde parou', 5000);
+      this.hasDraft.set(true);
+      this.toastService.infoWithAction(
+        'Rascunho restaurado, continue de onde parou.',
+        'Descartar',
+        () => this.discardDraft(),
+        5000,
+      );
     } catch {} finally {
       this.isRestoringDraft = false;
     }
@@ -351,7 +339,6 @@ export class PostsComponent implements OnInit, OnDestroy {
     const prev = this.imagePreview();
     if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
     if (this.draftSaveTimer) clearTimeout(this.draftSaveTimer);
-    if (this.draftBannerTimer) clearTimeout(this.draftBannerTimer);
   }
 
   private createEmptyForm(): PostFormState {

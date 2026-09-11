@@ -18,13 +18,31 @@ export class ToastService {
     this.add('info', message, durationMs);
   }
 
+  infoWithAction(
+    message: string,
+    actionLabel: string,
+    onAction: () => void,
+    durationMs = 5000,
+  ): void {
+    this.add('info', message, durationMs, actionLabel, onAction);
+  }
+
   dismiss(id: string): void {
     this._toasts.update((toasts) => toasts.filter((t) => t.id !== id));
   }
 
-  private add(type: ToastType, message: string, durationMs = 5000): void {
+  private add(
+    type: ToastType,
+    message: string,
+    durationMs = 5000,
+    actionLabel?: string,
+    onAction?: () => void,
+  ): void {
     const id = crypto.randomUUID();
-    this._toasts.update((toasts) => [...toasts, { id, type, message }]);
+    this._toasts.update((toasts) => [
+      ...toasts,
+      { id, type, message, durationMs, actionLabel, onAction },
+    ]);
     setTimeout(() => this.dismiss(id), durationMs);
   }
 }

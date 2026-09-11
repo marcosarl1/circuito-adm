@@ -5,7 +5,7 @@
 >
   @for (item of toast.toasts(); track item.id) {
     <div
-      class="flex items-start gap-3 rounded-[var(--radius-md)] border-l-4 bg-[#011520] p-4 pr-3 shadow-[0_0_0_1px_rgba(142,202,230,0.15),0_8px_32px_rgba(0,0,0,0.7)]"
+      class="relative flex items-start gap-3 overflow-hidden rounded-[var(--radius-md)] border-l-4 bg-[#011520] p-4 pr-3 shadow-[0_0_0_1px_rgba(142,202,230,0.15),0_8px_32px_rgba(0,0,0,0.7)]"
       [class.border-green-500]="item.type === 'success'"
       [class.border-red-500]="item.type === 'error'"
       [class.border-sky-400]="item.type === 'info'"
@@ -60,9 +60,22 @@
           </svg>
         }
       </div>
-      <p class="m-0 flex-1 text-[length:var(--font-size-sm)]">
-        {{ item.message }}
-      </p>
+      <div class="flex flex-1 flex-col gap-2">
+        <p class="m-0 text-[length:var(--font-size-sm)]">
+          {{ item.message }}
+        </p>
+        @if (item.actionLabel) {
+          <div class="flex justify-end">
+            <button
+              class="rounded border border-[rgba(142,202,230,0.22)] px-3 py-1 text-xs font-medium text-[var(--color-text-secondary)] hover:bg-[rgba(142,202,230,0.12)] hover:border-[rgba(142,202,230,0.35)]"
+              (click)="item.onAction?.(); toast.dismiss(item.id)"
+              type="button"
+            >
+              {{ item.actionLabel }}
+            </button>
+          </div>
+        }
+      </div>
       <button
         class="shrink-0 text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
         (click)="toast.dismiss(item.id)"
@@ -84,6 +97,12 @@
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       </button>
+      @if (item.durationMs) {
+        <div
+          class="pointer-events-none absolute bottom-0 left-0 h-0.5 w-full bg-[var(--brand-teal-500)]"
+          [style.animation]="'shrink ' + item.durationMs + 'ms linear forwards'"
+        ></div>
+      }
     </div>
   }
 </div>
