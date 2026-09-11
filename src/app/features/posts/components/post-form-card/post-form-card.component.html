@@ -112,12 +112,19 @@
           [ngModel]="formData().titulo"
           (ngModelChange)="onTitleChange($event)"
           placeholder="Título do post"
-          class="min-h-[42px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 disabled:opacity-60 disabled:cursor-not-allowed"
+          [attr.maxlength]="TITULO_MAX + 20"
+          class="min-h-[42px] w-full rounded-md border bg-[rgba(1,19,28,0.85)] px-3 disabled:opacity-60 disabled:cursor-not-allowed"
+          [class.border-[rgba(142,202,230,0.22)]]="!tituloError() && !tituloOver()"
+          [class.border-[#fca5a5]]="!!tituloError() || tituloOver()"
+          [class.border-[#ffb703]]="!tituloError() && !tituloOver() && tituloCount() > TITULO_MAX * 0.8"
           [disabled]="loading()"
-          [attr.aria-invalid]="tituloError() ? 'true' : null"
-          aria-describedby="titulo-error"
+          [attr.aria-invalid]="tituloError() || tituloOver() ? 'true' : null"
+          aria-describedby="titulo-error titulo-counter"
         />
-        <div id="titulo-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ tituloError() }}</div>
+        <div class="flex items-center justify-between gap-2">
+          <div id="titulo-error" class="min-h-[1.25rem] flex-1 text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ tituloOver() ? 'Título muito longo — máximo ' + TITULO_MAX + ' caracteres' : tituloError() }}</div>
+          <span id="titulo-counter" class="shrink-0 text-xs tabular-nums" [class.text-[var(--color-text-secondary)]]="tituloCount() <= TITULO_MAX * 0.8 && !tituloOver()" [class.text-[#ffb703]]="tituloCount() > TITULO_MAX * 0.8 && !tituloOver()" [class.text-[#fca5a5]]="tituloOver()">{{ tituloCount() }}/{{ TITULO_MAX }}</span>
+        </div>
       </div>
 
       <div class="flex flex-col gap-2">
@@ -218,12 +225,19 @@
           [ngModel]="formData().descricao"
           (ngModelChange)="updateField('descricao', $event)"
           placeholder="Descrição curta, usada como resumo do post"
-          class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2 disabled:opacity-60 disabled:cursor-not-allowed"
+          [attr.maxlength]="DESCRICAO_MAX + 40"
+          class="min-h-[90px] w-full resize-y rounded-md border bg-[rgba(1,19,28,0.85)] px-3 py-2 disabled:opacity-60 disabled:cursor-not-allowed"
+          [class.border-[rgba(142,202,230,0.22)]]="!descricaoError() && !descricaoOver()"
+          [class.border-[#fca5a5]]="!!descricaoError() || descricaoOver()"
+          [class.border-[#ffb703]]="!descricaoError() && !descricaoOver() && descricaoCount() > DESCRICAO_MAX * 0.8"
           [disabled]="loading()"
-          [attr.aria-invalid]="descricaoError() ? 'true' : null"
-          aria-describedby="descricao-error"
+          [attr.aria-invalid]="descricaoError() || descricaoOver() ? 'true' : null"
+          aria-describedby="descricao-error descricao-counter"
         ></textarea>
-        <div id="descricao-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ descricaoError() }}</div>
+        <div class="flex items-center justify-between gap-2">
+          <div id="descricao-error" class="min-h-[1.25rem] flex-1 text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ descricaoOver() ? 'Descrição muito longa — máximo ' + DESCRICAO_MAX + ' caracteres' : descricaoError() }}</div>
+          <span id="descricao-counter" class="shrink-0 text-xs tabular-nums" [class.text-[var(--color-text-secondary)]]="descricaoCount() <= DESCRICAO_MAX * 0.8 && !descricaoOver()" [class.text-[#ffb703]]="descricaoCount() > DESCRICAO_MAX * 0.8 && !descricaoOver()" [class.text-[#fca5a5]]="descricaoOver()">{{ descricaoCount() }}/{{ DESCRICAO_MAX }}</span>
+        </div>
       </div>
 
       <div class="flex flex-col gap-2">
@@ -241,9 +255,12 @@
           class="min-h-[140px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2 disabled:opacity-60 disabled:cursor-not-allowed"
           [disabled]="loading()"
           [attr.aria-invalid]="conteudoError() ? 'true' : null"
-          aria-describedby="conteudo-error"
+          aria-describedby="conteudo-error conteudo-meta"
         ></textarea>
-        <div id="conteudo-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ conteudoError() }}</div>
+        <div class="flex items-center justify-between gap-2">
+          <div id="conteudo-error" class="min-h-[1.25rem] flex-1 text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ conteudoError() }}</div>
+          <span id="conteudo-meta" class="shrink-0 text-xs tabular-nums text-[var(--color-text-secondary)]">{{ conteudoParagraphs() }} {{ conteudoParagraphs() === 1 ? 'parágrafo' : 'parágrafos' }} · {{ conteudoCount() }} caracteres</span>
+        </div>
         <p class="m-0 text-xs text-[var(--color-text-secondary)]">
           Cada linha vira um parágrafo separado no post publicado
         </p>

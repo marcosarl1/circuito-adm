@@ -44,6 +44,10 @@ export class PostFormCardComponent {
   slugCopied = signal(false);
   isDragging = signal(false);
 
+  readonly TITULO_MAX = 80;
+  readonly DESCRICAO_MAX = 160;
+  readonly CONTEUDO_MAX = 5000;
+
   private fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
   constructor() {
@@ -110,6 +114,14 @@ export class PostFormCardComponent {
     const kb = f.size / 1024;
     return kb < 1024 ? `${kb.toFixed(1)} KB` : `${(kb / 1024).toFixed(2)} MB`;
   });
+  tituloCount = computed(() => this.formData().titulo.length);
+  tituloOver = computed(() => this.tituloCount() > this.TITULO_MAX);
+  descricaoCount = computed(() => this.formData().descricao.length);
+  descricaoOver = computed(() => this.descricaoCount() > this.DESCRICAO_MAX);
+  conteudoCount = computed(() => this.formData().conteudoText.length);
+  conteudoParagraphs = computed(() =>
+    this.formData().conteudoText.split('\n').filter((p) => p.trim()).length,
+  );
   descricaoError = computed(() =>
     !this.formData().descricao.trim() && this.submitted() ? 'Descrição é obrigatória' : '',
   );
