@@ -1,4 +1,13 @@
-import { Component, computed, DestroyRef, inject, OnDestroy, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PostsService } from '../services/posts.service';
 import { PostFormCardComponent } from '../components/post-form-card/post-form-card.component';
@@ -13,7 +22,7 @@ import { ConfirmModalService } from '../../../shared/services/confirm-modal.serv
   imports: [PostFormCardComponent, ConfirmModalComponent],
   templateUrl: './posts.component.html',
 })
-export class PostsComponent implements OnDestroy {
+export class PostsComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef);
   private postsService = inject(PostsService);
   private loadingService = inject(LoadingService);
@@ -22,12 +31,48 @@ export class PostsComponent implements OnDestroy {
 
   private readonly MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
   private readonly ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+  private readonly DRAFT_KEY = 'circuito_posts_draft';
+  private draftSaveTimer: ReturnType<typeof setTimeout> | null = null;
+  private draftBannerTimer: ReturnType<typeof setTimeout> | null = null;
+  private isRestoringDraft = false;
+  private draftReady = false;
 
   loading = this.loadingService.loading;
   imagePreview = signal('');
   selectedImageName = signal('');
   imageError = signal('');
   formData = signal<PostFormState>(this.createEmptyForm());
+  hasDraft = signal(false);
+  draftProgress = signal(100);
+  constructor() {
+    // autosave com debounce 2s quando formData muda (exceto durante restore ou pristine)
+    effect(() => {
+      const f = this.formData();
+      // observa todos os campos relevantes
+      void f.titulo;
+      void f.slug;
+      void f.descricao;
+      void f.conteudoText;
+      void f.imagensText;
+      void f.autor;
+      void f.data;
+      if (!this.draftReady) return;
+      if (this.isRestoringDraft) return;
+      if (this.isFormPristine()) {
+        this.clearDraftStorage();
+        this.hasDraft.set(false);
+        return;
+      }
+      if (this.draftSaveTimer) clearTimeout(this.draftSaveTimer);
+      this.draftSaveTimer = setTimeout(() => this.saveDraft(), 2000);
+    });
+  }
+
+  ngOnInit(): void {
+    this.restoreDraft();
+    this.draftReady = true;
+  }
+
   isFormValid = computed(() => {
     const f = this.formData();
     return !!(
@@ -148,6 +193,96 @@ export class PostsComponent implements OnDestroy {
     this.imagePreview.set('');
     this.selectedImageName.set('');
     this.imageError.set('');
+    if (this.draftBannerTimer) {
+      clearTimeout(this.draftBannerTimer);
+      this.draftBannerTimer = null;
+    }
+    this.draftProgress.set(100);
+    this.clearDraftStorage();
+    this.hasDraft.set(false);
+  }
+
+  discardDraft(): void {
+    if (this.draftBannerTimer) {
+      clearTimeout(this.draftBannerTimer);
+      this.draftBannerTimer = null;
+    }
+    this.draftProgress.set(100);
+    this.clearDraftStorage();
+    this.hasDraft.set(false);
+    this.resetForm();
+    this.toastService.info('Rascunho descartado');
+  }
+
+  private saveDraft(): void {
+    const f = this.formData();
+    const payload = {
+      titulo: f.titulo,
+      slug: f.slug,
+      descricao: f.descricao,
+      conteudoText: f.conteudoText,
+      imagensText: f.imagensText,
+      autor: f.autor,
+      data: f.data,
+      savedAt: Date.now(),
+    };
+    try {
+      localStorage.setItem(this.DRAFT_KEY, JSON.stringify(payload));
+      this.showDraftBanner();
+    } catch {}
+  }
+
+  private showDraftBanner(): void {
+    if (this.hasDraft()) return;
+    this.hasDraft.set(true);
+    this.draftProgress.set(100);
+    setTimeout(() => this.draftProgress.set(0), 50);
+    if (this.draftBannerTimer) clearTimeout(this.draftBannerTimer);
+    this.draftBannerTimer = setTimeout(() => {
+      this.hasDraft.set(false);
+      this.draftProgress.set(100);
+      this.draftBannerTimer = null;
+    }, 5000);
+  }
+
+  private restoreDraft(): void {
+    try {
+      const raw = localStorage.getItem(this.DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw) as Partial<PostFormState> & { savedAt?: number };
+      const hasContent =
+        !!d.titulo?.trim() ||
+        !!d.slug?.trim() ||
+        !!d.descricao?.trim() ||
+        !!d.conteudoText?.trim() ||
+        !!d.imagensText?.trim();
+      if (!hasContent) return;
+      this.isRestoringDraft = true;
+      this.formData.update((f) => ({
+        ...f,
+        titulo: d.titulo ?? f.titulo,
+        slug: d.slug ?? f.slug,
+        descricao: d.descricao ?? f.descricao,
+        conteudoText: d.conteudoText ?? f.conteudoText,
+        imagensText: d.imagensText ?? f.imagensText,
+        autor: d.autor ?? f.autor,
+        data: d.data ?? f.data,
+      }));
+      this.showDraftBanner();
+      this.toastService.info('Rascunho restaurado, continue de onde parou', 5000);
+    } catch {} finally {
+      this.isRestoringDraft = false;
+    }
+  }
+
+  private clearDraftStorage(): void {
+    try {
+      localStorage.removeItem(this.DRAFT_KEY);
+    } catch {}
+    if (this.draftSaveTimer) {
+      clearTimeout(this.draftSaveTimer);
+      this.draftSaveTimer = null;
+    }
   }
 
   private isFormPristine(): boolean {
@@ -215,6 +350,8 @@ export class PostsComponent implements OnDestroy {
   ngOnDestroy(): void {
     const prev = this.imagePreview();
     if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+    if (this.draftSaveTimer) clearTimeout(this.draftSaveTimer);
+    if (this.draftBannerTimer) clearTimeout(this.draftBannerTimer);
   }
 
   private createEmptyForm(): PostFormState {

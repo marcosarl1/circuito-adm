@@ -49,9 +49,11 @@
           <span>/</span>
           <span>Blog</span>
           <span>/</span>
-          <span class="truncate text-gray-900">{{
-            formData().titulo || "Título do post"
-          }}</span>
+          @if (formData().titulo.trim()) {
+            <span class="truncate text-gray-900">{{ formData().titulo }}</span>
+          } @else {
+            <span class="truncate italic text-gray-400">— sem título —</span>
+          }
         </nav>
         @if (imagePreview()) {
           <img
@@ -62,14 +64,21 @@
         }
         @if (!imagePreview()) {
           <div
-            class="mb-8 grid h-60 w-full place-items-center rounded-2xl bg-gray-100 text-sm text-gray-400"
+            class="mb-8 grid h-60 w-full place-items-center rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 text-sm italic text-gray-400"
           >
-            Imagem da capa não selecionada
+            — imagem da capa não selecionada —
           </div>
         }
-        <h1 class="mb-3 text-3xl font-bold leading-tight text-gray-900">
-          {{ formData().titulo || "Título do post" }}
-        </h1>
+        @if (formData().titulo.trim()) {
+          <h1 class="mb-3 text-3xl font-bold leading-tight text-gray-900">
+            {{ formData().titulo }}
+          </h1>
+        } @else {
+          <div class="mb-3 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-center">
+            <p class="m-0 text-lg italic text-gray-400">— sem título —</p>
+            <p class="m-0 mt-1 text-xs text-gray-400">O título aparecerá aqui</p>
+          </div>
+        }
         <div class="mb-6 flex items-center gap-2 text-sm text-gray-500">
           <span>{{ formattedDate() || "Data" }}</span>
           <span>·</span>
@@ -79,20 +88,25 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           <span class="truncate">{{ slugPreviewUrl() }}</span>
         </div>
-        <p
-          class="mb-8 border-l-4 border-l-[var(--brand-orange-500)] pl-4 text-base italic leading-7 text-gray-500"
-        >
-          {{ formData().descricao || "Descrição do post aparece aqui." }}
-        </p>
+        @if (formData().descricao.trim()) {
+          <p class="mb-8 border-l-4 border-l-[var(--brand-orange-500)] pl-4 text-base italic leading-7 text-gray-500">
+            {{ formData().descricao }}
+          </p>
+        } @else {
+          <div class="mb-8 rounded-md border-2 border-dashed border-gray-200 bg-gray-50 px-4 py-3">
+            <p class="m-0 text-sm italic text-gray-400">— sem descrição —</p>
+          </div>
+        }
         <article class="grid gap-4 leading-8 text-gray-900">
           @if (paragraphs().length > 0) {
             @for (p of paragraphs(); track $index) {
               <p class="m-0 text-base">{{ p }}</p>
             }
           } @else {
-            <p class="m-0 text-sm italic text-gray-400">
-              Os parágrafos do conteúdo aparecem aqui...
-            </p>
+            <div class="rounded-md border-2 border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-center">
+              <p class="m-0 text-sm italic text-gray-400">— sem conteúdo —</p>
+              <p class="m-0 mt-1 text-xs text-gray-400">Cada linha do campo “Parágrafos” vira um parágrafo aqui</p>
+            </div>
           }
         </article>
         <div class="mt-10">

@@ -1,3 +1,10 @@
+@if (hasDraft()) {
+  <div class="relative mb-3 flex items-center justify-between gap-3 overflow-hidden rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(142,202,230,0.06)] px-3 py-2 text-xs text-[var(--color-text-secondary)]">
+    <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-[var(--brand-teal-500)]"></span> Rascunho salvo automaticamente</span>
+    <button type="button" (click)="discardDraft()" class="rounded border border-[rgba(142,202,230,0.22)] bg-transparent px-3 py-1 text-xs font-medium hover:bg-[rgba(142,202,230,0.12)] hover:border-[rgba(142,202,230,0.35)]">Descartar</button>
+    <div class="pointer-events-none absolute bottom-0 left-0 h-0.5 bg-[var(--brand-teal-500)]" [style.width.%]="draftProgress()" style="transition: width 5s linear;"></div>
+  </div>
+}
 <app-post-form-card
   [(formData)]="formData"
   [imagePreview]="imagePreview()"
