@@ -26,6 +26,7 @@ export class PostsComponent implements OnDestroy {
   loading = this.loadingService.loading;
   imagePreview = signal('');
   selectedImageName = signal('');
+  imageError = signal('');
   formData = signal<PostFormState>(this.createEmptyForm());
 
   onImageSelected(event: Event) {
@@ -37,6 +38,7 @@ export class PostsComponent implements OnDestroy {
     if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
 
     if (!file) {
+      this.imageError.set('');
       this.formData.update((f) => ({ ...f, imagem: null }));
       this.selectedImageName.set('');
       this.imagePreview.set('');
@@ -45,7 +47,7 @@ export class PostsComponent implements OnDestroy {
     }
 
     if (!this.ALLOWED_TYPES.includes(file.type)) {
-      this.toastService.error('Formato inválido. Use JPG, PNG ou WebP.');
+      this.imageError.set('Formato inválido. Use JPG, PNG ou WebP.');
       input.value = '';
       this.formData.update((f) => ({ ...f, imagem: null }));
       this.selectedImageName.set('');
@@ -54,7 +56,7 @@ export class PostsComponent implements OnDestroy {
     }
 
     if (file.size > this.MAX_IMAGE_SIZE) {
-      this.toastService.error('Imagem muito grande. Máximo 5MB.');
+      this.imageError.set('Imagem muito grande. Máximo 5MB.');
       input.value = '';
       this.formData.update((f) => ({ ...f, imagem: null }));
       this.selectedImageName.set('');
@@ -62,6 +64,7 @@ export class PostsComponent implements OnDestroy {
       return;
     }
 
+    this.imageError.set('');
     this.formData.update((f) => ({ ...f, imagem: file }));
     this.selectedImageName.set(file.name);
     this.imagePreview.set(URL.createObjectURL(file));
@@ -120,7 +123,7 @@ export class PostsComponent implements OnDestroy {
     this.formData.set(this.createEmptyForm());
     this.imagePreview.set('');
     this.selectedImageName.set('');
-    // file input DOM value is cleared by child via effect; also clear here if ref available
+    this.imageError.set('');
   }
 
   private isFormPristine(): boolean {

@@ -27,9 +27,9 @@
         <label
           for="imagem"
           class="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-dashed bg-[rgba(1,19,28,0.85)] px-3 py-2 transition-colors hover:border-[var(--primary)]"
-          [class.border-[rgba(142,202,230,0.3)]]="!imagemError()"
-          [class.border-[#fca5a5]]="!!imagemError()"
-          [attr.aria-invalid]="imagemError() ? 'true' : null"
+          [class.border-[rgba(142,202,230,0.3)]]="!imageDisplayError()"
+          [class.border-[#fca5a5]]="!!imageDisplayError()"
+          [attr.aria-invalid]="imageDisplayError() ? 'true' : null"
         >
           <span
             class="shrink-0 rounded-md bg-[rgba(2,48,71,0.6)] px-3 py-1.5 text-sm font-semibold"
@@ -51,7 +51,7 @@
           (change)="imageSelected.emit($event)"
           aria-describedby="imagem-error"
         />
-        <div id="imagem-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ imagemError() }}</div>
+        <div id="imagem-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ imageDisplayError() }}</div>
         <p class="m-0 text-xs text-[var(--color-text-secondary)]">
           JPG, PNG ou WebP — máximo 5MB
         </p>

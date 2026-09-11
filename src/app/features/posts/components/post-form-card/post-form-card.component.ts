@@ -27,6 +27,7 @@ export class PostFormCardComponent {
   loading = this.loadingService.loading;
   imagePreview = input('');
   selectedImageName = input('');
+  imageError = input('');
 
   publish = output<void>();
   reset = output<void>();
@@ -60,6 +61,7 @@ export class PostFormCardComponent {
   imagemError = computed(() =>
     !this.formData().imagem && this.submitted() ? 'Imagem da capa é obrigatória' : '',
   );
+  imageDisplayError = computed(() => this.imageError() || this.imagemError());
   tituloError = computed(() =>
     !this.formData().titulo.trim() && this.submitted() ? 'Título é obrigatório' : '',
   );
