@@ -29,10 +29,13 @@ export class PostFormCardComponent {
   selectedImageName = input('');
   imageError = input('');
 
+  isFormValid = input(false);
+
   publish = output<void>();
   reset = output<void>();
   imageSelected = output<Event>();
   titleChange = output<string>();
+  previewOpened = output<void>();
 
   showPreview = signal(false);
   submitted = signal(false);
@@ -54,6 +57,21 @@ export class PostFormCardComponent {
       if (!this.formData().imagem) {
         const el = this.fileInput()?.nativeElement;
         if (el) el.value = '';
+      }
+    });
+
+    // fecha o preview e limpa submitted quando o formulário é resetado (Limpar ou publish sucesso)
+    effect(() => {
+      const f = this.formData();
+      const isPristine =
+        !f.imagem &&
+        !f.titulo.trim() &&
+        !f.slug.trim() &&
+        !f.descricao.trim() &&
+        !f.conteudoText.trim() &&
+        !f.imagensText.trim();
+      if (isPristine && this.showPreview()) {
+        this.showPreview.set(false);
       }
     });
   }
@@ -88,6 +106,17 @@ export class PostFormCardComponent {
   onTitleChange(value: string) {
     this.updateField('titulo', value);
     this.titleChange.emit(value);
+  }
+
+  openPreview(): void {
+    // marca submitted para exibir erros inline caso tente pré-visualizar inválido
+    if (!this.isFormValid()) this.submitted.set(true);
+    this.showPreview.set(true);
+  }
+
+  handleModalPublish(): void {
+    this.submitted.set(true);
+    this.publish.emit();
   }
 
   handlePublish(): void {

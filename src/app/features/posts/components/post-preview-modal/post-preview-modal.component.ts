@@ -21,7 +21,10 @@ import { PostFormState } from '../../../../shared/models/post.model';
 export class PostPreviewModalComponent implements AfterViewInit, OnDestroy {
   formData = input.required<PostFormState>();
   imagePreview = input('');
+  isFormValid = input(false);
+  loading = input(false);
   close = output<void>();
+  publish = output<void>();
 
   private el = inject(ElementRef<HTMLElement>);
   private checker = inject(InteractivityChecker, { optional: true });

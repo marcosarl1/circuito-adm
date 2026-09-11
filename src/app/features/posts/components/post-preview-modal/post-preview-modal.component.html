@@ -155,5 +155,36 @@
         </div>
       </main>
     </div>
+    <div
+      class="flex flex-col gap-2 border-t border-[rgba(142,202,230,0.18)] bg-[var(--card)] p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4"
+    >
+      <button
+        class="btn btn-ghost btn-sm min-h-10 sm:min-h-9 order-2 sm:order-1"
+        type="button"
+        (click)="close.emit()"
+        [disabled]="loading()"
+      >
+        Continuar editando
+      </button>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 order-1 sm:order-2">
+        @if (!isFormValid()) {
+          <span class="text-xs text-[#fca5a5] sm:text-right">Preencha os campos obrigatórios para publicar</span>
+        }
+          <button
+          class="btn btn-primary btn-sm min-h-10 sm:min-h-9 disabled:opacity-40"
+          type="button"
+          (click)="publish.emit()"
+          [disabled]="loading() || !isFormValid()"
+          [attr.aria-busy]="loading()"
+        >
+          @if (loading()) {
+            <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden="true"></span>
+            Publicando...
+          } @else {
+            Publicar agora
+          }
+        </button>
+      </div>
+    </div>
   </div>
 </div>

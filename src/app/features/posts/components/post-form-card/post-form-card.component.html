@@ -244,39 +244,34 @@
   </div>
 
   <div
-    class="card-footer flex flex-col gap-2 border-t border-[var(--color-border-light)] sm:flex-row sm:justify-end"
+    class="card-footer flex flex-row justify-end gap-2 border-t border-[var(--color-border-light)]"
   >
-    <div class="flex gap-2 sm:contents">
-      <button
-        class="btn btn-secondary btn-sm min-h-10 flex-1 sm:min-h-8 sm:flex-none sm:order-2"
-        type="button"
-        (click)="handleReset()"
-        [disabled]="loading()"
-      >
-        Limpar
-      </button>
-      <button
-        class="btn btn-primary btn-sm min-h-10 flex-1 sm:min-h-8 sm:flex-none sm:order-3"
-        (click)="handlePublish()"
-        [disabled]="loading()"
-        [attr.aria-busy]="loading()"
-      >
-        {{ loading() ? "Publicando..." : "Publicar" }}
-      </button>
-    </div>
     <button
-      class="btn btn-secondary btn-sm min-h-10 sm:min-h-8 sm:order-1"
+      class="btn btn-ghost btn-sm min-h-10 flex-1 sm:flex-none sm:min-h-9"
       type="button"
-      (click)="showPreview.set(true)"
+      (click)="handleReset()"
+      [disabled]="loading()"
     >
-      Preview
+      Limpar
+    </button>
+    <button
+      class="btn btn-primary btn-sm min-h-10 flex-1 sm:flex-none sm:min-h-9"
+      type="button"
+      (click)="openPreview()"
+      [disabled]="loading()"
+    >
+      Pré-visualizar
+      <span aria-hidden="true">→</span>
     </button>
   </div>
   @if (showPreview()) {
     <app-post-preview-modal
       [formData]="formData()"
       [imagePreview]="imagePreview()"
+      [isFormValid]="isFormValid()"
+      [loading]="loading()"
       (close)="showPreview.set(false)"
+      (publish)="handleModalPublish()"
     ></app-post-preview-modal>
   }
 </div>
