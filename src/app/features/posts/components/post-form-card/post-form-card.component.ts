@@ -12,12 +12,13 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PostPreviewModalComponent } from '../post-preview-modal/post-preview-modal.component';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { PostFormState } from '../../../../shared/models/post.model';
 import { LoadingService } from '../../../../core/services/loading.service';
 
 @Component({
   selector: 'app-post-form-card',
-  imports: [FormsModule, PostPreviewModalComponent],
+  imports: [FormsModule, PostPreviewModalComponent, IconComponent],
   templateUrl: './post-form-card.component.html',
 })
 export class PostFormCardComponent {
@@ -33,12 +34,15 @@ export class PostFormCardComponent {
   publish = output<void>();
   reset = output<void>();
   imageSelected = output<Event>();
+  imageFileSelected = output<File>();
+  clearImage = output<void>();
   titleChange = output<string>();
 
   showPreview = signal(false);
   submitted = signal(false);
   slugLocked = signal(true);
   slugCopied = signal(false);
+  isDragging = signal(false);
 
   private fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
@@ -100,6 +104,12 @@ export class PostFormCardComponent {
     const slug = this.formData().slug.trim() || 'seu-slug';
     return `circuitoapp.com.br/blog/${slug}`;
   });
+  imageFileSizeLabel = computed(() => {
+    const f = this.formData().imagem;
+    if (!f) return '';
+    const kb = f.size / 1024;
+    return kb < 1024 ? `${kb.toFixed(1)} KB` : `${(kb / 1024).toFixed(2)} MB`;
+  });
   descricaoError = computed(() =>
     !this.formData().descricao.trim() && this.submitted() ? 'Descrição é obrigatória' : '',
   );
@@ -157,6 +167,31 @@ export class PostFormCardComponent {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    if (this.loading()) return;
+    this.isDragging.set(true);
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging.set(false);
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging.set(false);
+    if (this.loading()) return;
+    const file = event.dataTransfer?.files?.[0];
+    if (file) this.imageFileSelected.emit(file);
+  }
+
+  onRemoveImage(event?: MouseEvent): void {
+    event?.preventDefault();
+    event?.stopPropagation();
+    this.clearImage.emit();
   }
 
   openPreview(): void {

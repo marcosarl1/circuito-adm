@@ -44,23 +44,34 @@ export class PostsComponent implements OnDestroy {
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
+    if (!file) {
+      this.clearImage(input);
+      return;
+    }
+    this.handleImageFile(file, input);
+  }
 
-    // revoke previous blob url to avoid memory leak
+  onImageFile(file: File) {
+    this.handleImageFile(file);
+  }
+
+  clearImage(input?: HTMLInputElement) {
+    const prev = this.imagePreview();
+    if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+    this.imageError.set('');
+    this.formData.update((f) => ({ ...f, imagem: null }));
+    this.selectedImageName.set('');
+    this.imagePreview.set('');
+    if (input) input.value = '';
+  }
+
+  private handleImageFile(file: File, input?: HTMLInputElement) {
     const prev = this.imagePreview();
     if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
 
-    if (!file) {
-      this.imageError.set('');
-      this.formData.update((f) => ({ ...f, imagem: null }));
-      this.selectedImageName.set('');
-      this.imagePreview.set('');
-      input.value = '';
-      return;
-    }
-
     if (!this.ALLOWED_TYPES.includes(file.type)) {
       this.imageError.set('Formato inválido. Use JPG, PNG ou WebP.');
-      input.value = '';
+      if (input) input.value = '';
       this.formData.update((f) => ({ ...f, imagem: null }));
       this.selectedImageName.set('');
       this.imagePreview.set('');
@@ -69,7 +80,7 @@ export class PostsComponent implements OnDestroy {
 
     if (file.size > this.MAX_IMAGE_SIZE) {
       this.imageError.set('Imagem muito grande. Máximo 5MB.');
-      input.value = '';
+      if (input) input.value = '';
       this.formData.update((f) => ({ ...f, imagem: null }));
       this.selectedImageName.set('');
       this.imagePreview.set('');
@@ -80,6 +91,7 @@ export class PostsComponent implements OnDestroy {
     this.formData.update((f) => ({ ...f, imagem: file }));
     this.selectedImageName.set(file.name);
     this.imagePreview.set(URL.createObjectURL(file));
+    if (input) input.value = '';
   }
 
   publishPost() {
