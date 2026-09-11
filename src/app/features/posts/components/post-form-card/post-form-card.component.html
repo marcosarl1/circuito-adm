@@ -267,23 +267,39 @@
       </div>
 
       <div class="flex flex-col gap-2">
-        <label
-          for="imagens"
-          class="text-sm font-medium text-[var(--color-text-secondary)]"
-          >Imagens adicionais</label
-        >
-        <textarea
-          id="imagens"
-          rows="3"
-          [ngModel]="formData().imagensText"
-          (ngModelChange)="updateField('imagensText', $event)"
-          placeholder="Uma URL por linha"
-          class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 py-2 disabled:opacity-60 disabled:cursor-not-allowed"
-          [disabled]="loading()"
-        ></textarea>
-        <p class="m-0 text-xs text-[var(--color-text-secondary)]">
-          Opcional — imagens exibidas ao longo do texto
-        </p>
+        <label for="nova-imagem-url" class="text-sm font-medium text-[var(--color-text-secondary)]">Imagens adicionais <span class="font-normal text-[var(--color-text-secondary)]/70">— opcional</span></label>
+        <div class="flex gap-2">
+          <input
+            id="nova-imagem-url"
+            type="url"
+            autocomplete="off"
+            [ngModel]="newImageUrl()"
+            (ngModelChange)="newImageUrl.set($event)"
+            (keydown)="onImageUrlKeydown($event)"
+            placeholder="https://exemplo.com/imagem.jpg"
+            class="min-h-[38px] flex-1 rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(1,19,28,0.85)] px-3 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+            [disabled]="loading()"
+            aria-describedby="nova-imagem-error"
+          />
+          <button type="button" (click)="addImageUrl()" [disabled]="loading() || !newImageUrl().trim()" class="btn btn-secondary btn-sm min-h-[38px] shrink-0 disabled:opacity-40">Adicionar</button>
+        </div>
+        <div id="nova-imagem-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ imageUrlError() }}</div>
+        @if (imagensList().length > 0) {
+          <div class="grid gap-2">
+            @for (url of imagensList(); track url) {
+              <div class="flex items-center gap-2 rounded-md border border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.35)] p-1.5 pr-2">
+                <img [src]="url" alt="" class="h-10 w-10 shrink-0 rounded-md object-cover bg-[rgba(2,48,71,0.4)]" loading="lazy" onerror="this.style.display='none'" />
+                <span class="min-w-0 flex-1 truncate font-mono text-xs text-[var(--color-text-secondary)]" [title]="url">{{ url }}</span>
+                <button type="button" (click)="removeImageUrl($index)" class="grid h-7 w-7 shrink-0 place-items-center rounded-md text-[var(--color-text-secondary)] hover:bg-[rgba(248,113,113,0.12)] hover:text-[#fca5a5]" aria-label="Remover imagem" title="Remover">
+                  <app-icon name="heroXMark" size="14" strokeWidth="2"></app-icon>
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="m-0 text-xs text-[var(--color-text-secondary)]/70">Nenhuma imagem adicional — adicione URLs que aparecerão intercaladas no preview</p>
+        }
+        <p class="m-0 text-xs text-[var(--color-text-secondary)]">{{ imagensList().length }} {{ imagensList().length === 1 ? 'imagem' : 'imagens' }} adicionada(s)</p>
       </div>
     </section>
 

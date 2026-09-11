@@ -43,6 +43,8 @@ export class PostFormCardComponent {
   slugLocked = signal(true);
   slugCopied = signal(false);
   isDragging = signal(false);
+  newImageUrl = signal('');
+  imageUrlError = signal('');
 
   readonly TITULO_MAX = 80;
   readonly DESCRICAO_MAX = 160;
@@ -121,6 +123,12 @@ export class PostFormCardComponent {
   conteudoCount = computed(() => this.formData().conteudoText.length);
   conteudoParagraphs = computed(() =>
     this.formData().conteudoText.split('\n').filter((p) => p.trim()).length,
+  );
+  imagensList = computed(() =>
+    this.formData()
+      .imagensText.split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean),
   );
   descricaoError = computed(() =>
     !this.formData().descricao.trim() && this.submitted() ? 'Descrição é obrigatória' : '',
@@ -204,6 +212,47 @@ export class PostFormCardComponent {
     event?.preventDefault();
     event?.stopPropagation();
     this.clearImage.emit();
+  }
+
+  addImageUrl(): void {
+    const raw = this.newImageUrl().trim();
+    if (!raw) return;
+    if (!this.isValidUrl(raw)) {
+      this.imageUrlError.set('URL inválida — use https://...');
+      return;
+    }
+    const list = this.imagensList();
+    if (list.includes(raw)) {
+      this.imageUrlError.set('Essa URL já foi adicionada');
+      return;
+    }
+    this.imageUrlError.set('');
+    const next = [...list, raw].join('\n');
+    this.updateField('imagensText', next);
+    this.newImageUrl.set('');
+  }
+
+  removeImageUrl(index: number): void {
+    const list = this.imagensList();
+    list.splice(index, 1);
+    this.updateField('imagensText', list.join('\n'));
+    this.imageUrlError.set('');
+  }
+
+  onImageUrlKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.addImageUrl();
+    }
+  }
+
+  private isValidUrl(value: string): boolean {
+    try {
+      const u = new URL(value);
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch {
+      return false;
+    }
   }
 
   openPreview(): void {
