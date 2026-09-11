@@ -2,13 +2,15 @@ import { Component, DestroyRef, inject, OnDestroy, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PostsService } from '../services/posts.service';
 import { PostFormCardComponent } from '../components/post-form-card/post-form-card.component';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { PostFormState } from '../../../shared/models/post.model';
 import { LoadingService } from '../../../core/services/loading.service';
 import { ToastService } from '../../../shared/services/toast.service';
+import { ConfirmModalService } from '../../../shared/services/confirm-modal.service';
 
 @Component({
   selector: 'app-posts',
-  imports: [PostFormCardComponent],
+  imports: [PostFormCardComponent, ConfirmModalComponent],
   templateUrl: './posts.component.html',
 })
 export class PostsComponent implements OnDestroy {
@@ -16,6 +18,7 @@ export class PostsComponent implements OnDestroy {
   private postsService = inject(PostsService);
   private loadingService = inject(LoadingService);
   private toastService = inject(ToastService);
+  private confirmModal = inject(ConfirmModalService);
 
   private readonly MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
   private readonly ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
@@ -95,6 +98,24 @@ export class PostsComponent implements OnDestroy {
       });
   }
 
+  async handleResetRequest(): Promise<void> {
+    if (this.isFormPristine()) {
+      this.resetForm();
+      return;
+    }
+    const confirmed = await this.confirmModal.confirm(
+      'Tem certeza que deseja limpar o formulário? Todo o conteúdo preenchido será perdido.',
+      {
+        title: 'Limpar formulário?',
+        confirmText: 'Limpar',
+        cancelText: 'Cancelar',
+        variant: 'default',
+      },
+    );
+    if (!confirmed) return;
+    this.resetForm();
+  }
+
   resetForm() {
     const prev = this.imagePreview();
     if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
@@ -102,6 +123,21 @@ export class PostsComponent implements OnDestroy {
     this.imagePreview.set('');
     this.selectedImageName.set('');
     // file input DOM value is cleared by child via effect; also clear here if ref available
+  }
+
+  private isFormPristine(): boolean {
+    const f = this.formData();
+    const empty = this.createEmptyForm();
+    return (
+      !f.imagem &&
+      f.titulo.trim() === '' &&
+      f.slug.trim() === '' &&
+      f.descricao.trim() === '' &&
+      f.conteudoText.trim() === '' &&
+      f.imagensText.trim() === '' &&
+      f.autor === empty.autor &&
+      f.data === empty.data
+    );
   }
 
   onTitleChange(titulo: string) {

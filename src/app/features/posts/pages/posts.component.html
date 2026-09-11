@@ -3,7 +3,8 @@
   [imagePreview]="imagePreview()"
   [selectedImageName]="selectedImageName()"
   (publish)="publishPost()"
-  (reset)="resetForm()"
+  (reset)="handleResetRequest()"
   (imageSelected)="onImageSelected($event)"
   (titleChange)="onTitleChange($event)"
 ></app-post-form-card>
+<app-confirm-modal></app-confirm-modal>
