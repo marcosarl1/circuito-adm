@@ -57,6 +57,9 @@ export class PostFormCardComponent {
     });
   }
 
+  imagemError = computed(() =>
+    !this.formData().imagem && this.submitted() ? 'Imagem da capa é obrigatória' : '',
+  );
   tituloError = computed(() =>
     !this.formData().titulo.trim() && this.submitted() ? 'Título é obrigatório' : '',
   );

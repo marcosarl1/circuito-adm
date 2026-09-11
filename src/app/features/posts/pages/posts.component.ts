@@ -69,14 +69,12 @@ export class PostsComponent implements OnDestroy {
 
   publishPost() {
     if (!this.validateForm()) {
+      const hasImage = !!this.formData().imagem;
       this.toastService.error(
-        'Preencha os campos obrigatórios antes de publicar.',
+        hasImage
+          ? 'Preencha os campos obrigatórios antes de publicar.'
+          : 'Selecione a imagem da capa e preencha os campos obrigatórios.',
       );
-      return;
-    }
-
-    if (!this.formData().imagem) {
-      this.toastService.error('Selecione a imagem principal da postagem.');
       return;
     }
 
@@ -149,7 +147,15 @@ export class PostsComponent implements OnDestroy {
 
   private validateForm(): boolean {
     const f = this.formData();
-    return !!(f.slug && f.titulo && f.descricao && f.data && f.autor);
+    return !!(
+      f.imagem &&
+      f.slug.trim() &&
+      f.titulo.trim() &&
+      f.descricao.trim() &&
+      f.conteudoText.trim() &&
+      f.data.trim() &&
+      f.autor.trim()
+    );
   }
 
   private buildFormData(): FormData {
