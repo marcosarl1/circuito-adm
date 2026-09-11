@@ -28,20 +28,6 @@ export class PostsComponent implements OnDestroy {
   selectedImageName = signal('');
   imageError = signal('');
   formData = signal<PostFormState>(this.createEmptyForm());
-  private formHash = computed(() => {
-    const f = this.formData();
-    // hash determinístico dos campos que afetam o preview/publicação
-    return JSON.stringify({
-      imagem: f.imagem ? `${f.imagem.name}:${f.imagem.size}:${f.imagem.type}` : null,
-      titulo: f.titulo,
-      slug: f.slug,
-      descricao: f.descricao,
-      conteudoText: f.conteudoText,
-      imagensText: f.imagensText,
-      autor: f.autor,
-      data: f.data,
-    });
-  });
   isFormValid = computed(() => {
     const f = this.formData();
     return !!(

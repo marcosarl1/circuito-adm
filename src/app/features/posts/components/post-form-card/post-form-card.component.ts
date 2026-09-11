@@ -28,17 +28,17 @@ export class PostFormCardComponent {
   imagePreview = input('');
   selectedImageName = input('');
   imageError = input('');
-
   isFormValid = input(false);
 
   publish = output<void>();
   reset = output<void>();
   imageSelected = output<Event>();
   titleChange = output<string>();
-  previewOpened = output<void>();
 
   showPreview = signal(false);
   submitted = signal(false);
+  slugLocked = signal(true);
+  slugCopied = signal(false);
 
   private fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
@@ -83,9 +83,23 @@ export class PostFormCardComponent {
   tituloError = computed(() =>
     !this.formData().titulo.trim() && this.submitted() ? 'Título é obrigatório' : '',
   );
-  slugError = computed(() =>
-    !this.formData().slug.trim() && this.submitted() ? 'Slug é obrigatório' : '',
-  );
+  slugFormatValid = computed(() => {
+    const s = this.formData().slug.trim();
+    if (!s) return true; // vazio tratado por slugError
+    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s);
+  });
+  slugError = computed(() => {
+    const s = this.formData().slug.trim();
+    if (!s && this.submitted()) return 'Slug é obrigatório';
+    if (s && !this.slugFormatValid() && this.submitted())
+      return 'Use apenas letras minúsculas, números e hifens (ex: meu-post)';
+    if (s && !this.slugFormatValid()) return 'Formato inválido';
+    return '';
+  });
+  slugPreviewUrl = computed(() => {
+    const slug = this.formData().slug.trim() || 'seu-slug';
+    return `circuitoapp.com.br/blog/${slug}`;
+  });
   descricaoError = computed(() =>
     !this.formData().descricao.trim() && this.submitted() ? 'Descrição é obrigatória' : '',
   );
@@ -105,7 +119,44 @@ export class PostFormCardComponent {
 
   onTitleChange(value: string) {
     this.updateField('titulo', value);
-    this.titleChange.emit(value);
+    if (this.slugLocked()) this.titleChange.emit(value);
+  }
+
+  onSlugChange(value: string) {
+    this.slugLocked.set(false);
+    this.updateField('slug', value);
+  }
+
+  toggleSlugLock(): void {
+    const next = !this.slugLocked();
+    this.slugLocked.set(next);
+    if (next) {
+      const gen = this.generateSlug(this.formData().titulo);
+      if (gen) this.formData.update((f) => ({ ...f, slug: gen }));
+    }
+  }
+
+  async copySlugUrl(): Promise<void> {
+    const url = `https://${this.slugPreviewUrl()}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      this.slugCopied.set(true);
+      setTimeout(() => this.slugCopied.set(false), 1800);
+    } catch {
+      // fallback: seleciona texto via execCommand não necessário
+    }
+  }
+
+  private generateSlug(titulo: string): string {
+    return titulo
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
   }
 
   openPreview(): void {
