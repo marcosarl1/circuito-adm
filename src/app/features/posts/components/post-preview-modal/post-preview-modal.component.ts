@@ -52,6 +52,11 @@ export class PostPreviewModalComponent implements AfterViewInit, OnDestroy {
     });
   });
 
+  slugPreviewUrl = computed(() => {
+    const slug = this.formData().slug.trim() || 'seu-slug';
+    return `circuitoapp.com.br/blog/${slug}`;
+  });
+
   // keep method for backward compat if template still calls it
   getParagraphs(): string[] {
     return this.paragraphs();

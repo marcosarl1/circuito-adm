@@ -75,6 +75,10 @@
           <span>·</span>
           <span>{{ formData().autor || "Autor" }}</span>
         </div>
+        <div class="mb-6 flex items-center gap-2 rounded-full bg-gray-50 px-3 py-1.5 font-mono text-xs text-gray-500">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span class="truncate">{{ slugPreviewUrl() }}</span>
+        </div>
         <p
           class="mb-8 border-l-4 border-l-[var(--brand-orange-500)] pl-4 text-base italic leading-7 text-gray-500"
         >
