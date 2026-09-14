@@ -1,12 +1,14 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   Component,
+  computed,
   type OnInit,
   ElementRef,
   inject,
   input,
   model,
   output,
+  signal,
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -40,6 +42,29 @@ export class EventFormModalComponent implements OnInit {
 
   private firstField = viewChild<ElementRef<HTMLInputElement>>('firstField');
 
+  submitted = signal(false);
+
+  nomeError = computed(() =>
+    !this.formData().nome_evento.trim() && this.submitted() ? 'Nome é obrigatório' : '',
+  );
+  dataError = computed(() =>
+    !this.formData().data_realizacao.trim() && this.submitted() ? 'Data é obrigatória' : '',
+  );
+  cidadeError = computed(() =>
+    !this.formData().cidade.trim() && this.submitted() ? 'Cidade é obrigatória' : '',
+  );
+  estadoError = computed(() =>
+    !this.formData().estado.trim() && this.submitted() ? 'Estado é obrigatório' : '',
+  );
+  organizadorError = computed(() =>
+    !this.formData().organizador.trim() && this.submitted() ? 'Organizador é obrigatório' : '',
+  );
+  urlInscricaoError = computed(() =>
+    !this.formData().url_inscricao.trim() && this.submitted()
+      ? 'Link de inscrição é obrigatório'
+      : '',
+  );
+
   readonly stateOptions: ComboboxOption[] = ESTADOS_BRASILEIROS.map((uf) => ({
     value: uf.sigla,
     label: uf.nome,
@@ -58,6 +83,16 @@ export class EventFormModalComponent implements OnInit {
 
   ngAfterViewInit() {
     this.firstField()?.nativeElement.focus();
+  }
+
+  handleSave(): void {
+    this.submitted.set(true);
+    this.save.emit();
+  }
+
+  handleCancel(): void {
+    this.submitted.set(false);
+    this.cancel.emit();
   }
 
   patch(partial: Partial<EventFormState>) {

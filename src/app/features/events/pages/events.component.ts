@@ -52,8 +52,6 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   events = signal<Event[]>([]);
   loading = this.loadingService.loading;
-  showColdHint = signal(false);
-  /** skeletons só quando não há dado stale para exibir */
   showSkeleton = computed(() => this.loading() && this.events().length === 0);
   showForm = signal(false);
   editingId = signal<string | null>(null);
@@ -75,7 +73,6 @@ export class EventsComponent implements OnInit, OnDestroy {
   showScrapeCooldown = signal(false);
   lastFinishedAt = signal<string | null>(null);
   private scrapePolling?: ReturnType<typeof setInterval>;
-  private coldHintTimer?: ReturnType<typeof setTimeout>;
 
   pageEvents = computed(() => this.events());
   filteredEvents = computed(() => this.events());
@@ -137,7 +134,6 @@ export class EventsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.searchSubscription?.unsubscribe();
     this.clearScrapePolling();
-    if (this.coldHintTimer) clearTimeout(this.coldHintTimer);
   }
 
   private applyPage(data: { eventos?: Event[]; total?: number; total_pages?: number }) {
@@ -154,24 +150,12 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   loadEvents() {
-    if (this.coldHintTimer) clearTimeout(this.coldHintTimer);
-    this.showColdHint.set(false);
-    // se ainda carregando após 2s, mostra hint de cold start
-    if (this.events().length === 0) {
-      this.coldHintTimer = setTimeout(() => {
-        if (this.loading()) this.showColdHint.set(true);
-      }, 2000);
-    }
 
     this.eventsService.getEvents(this.searchTerm(), this.currentPage()).subscribe({
       next: (data) => {
-        if (this.coldHintTimer) clearTimeout(this.coldHintTimer);
-        this.showColdHint.set(false);
         this.applyPage(data);
       },
       error: (error) => {
-        if (this.coldHintTimer) clearTimeout(this.coldHintTimer);
-        this.showColdHint.set(false);
         this.toastService.error('Erro ao carregar eventos: ' + error.message);
       },
     });
@@ -546,11 +530,11 @@ export class EventsComponent implements OnInit, OnDestroy {
       },
       kits: kits.length
         ? kits.map((kit: EventKit) => ({
-            nome: kit.nome,
-            itensText: this.toMultilineText(kit.itens),
-            local_retirada: kit.local_retirada ?? '',
-            data_retirada: kit.data_retirada ?? '',
-          }))
+          nome: kit.nome,
+          itensText: this.toMultilineText(kit.itens),
+          local_retirada: kit.local_retirada ?? '',
+          data_retirada: kit.data_retirada ?? '',
+        }))
         : [this.createEmptyKit()],
       camposProtegidosText: this.toMultilineText(event.campos_protegidos),
       listaPrecosText: this.toMultilineText(event.lista_precos),

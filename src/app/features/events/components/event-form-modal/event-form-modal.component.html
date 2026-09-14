@@ -45,8 +45,11 @@
               (ngModelChange)="patch({ nome_evento: $event })"
               placeholder="Ex: Corrida Circuito PB"
               aria-required="true"
+              [attr.aria-invalid]="nomeError() ? 'true' : null"
+              aria-describedby="nome_evento-error"
               class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
             />
+            <div id="nome_evento-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ nomeError() }}</div>
           </div>
 
           <div class="flex flex-col gap-2">
@@ -61,22 +64,24 @@
               [ngModel]="formData().data_realizacao"
               (ngModelChange)="patch({ data_realizacao: $event })"
               aria-required="true"
+              [attr.aria-invalid]="dataError() ? 'true' : null"
+              aria-describedby="data_realizacao-error"
               class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
             />
+            <div id="data_realizacao-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ dataError() }}</div>
           </div>
 
           <div class="flex flex-col gap-2">
             <label
               for="horario"
               class="text-sm font-medium text-[var(--color-text-secondary)]"
-              >Horário *</label
+              >Horário</label
             >
             <input
               id="horario"
               type="time"
               [ngModel]="formData().horario"
               (ngModelChange)="patch({ horario: $event })"
-              aria-required="true"
               class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
             />
           </div>
@@ -94,8 +99,11 @@
               (ngModelChange)="patch({ cidade: $event })"
               placeholder="João Pessoa"
               aria-required="true"
+              [attr.aria-invalid]="cidadeError() ? 'true' : null"
+              aria-describedby="cidade-error"
               class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
             />
+            <div id="cidade-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ cidadeError() }}</div>
           </div>
 
           <div class="flex flex-col gap-2">
@@ -116,6 +124,7 @@
               ariaLabelledby="estado-label"
               ariaRequired
             />
+            <div id="estado-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ estadoError() }}</div>
           </div>
 
           <div class="flex flex-col gap-2">
@@ -131,8 +140,11 @@
               (ngModelChange)="patch({ organizador: $event })"
               placeholder="Nome do organizador"
               aria-required="true"
+              [attr.aria-invalid]="organizadorError() ? 'true' : null"
+              aria-describedby="organizador-error"
               class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
             />
+            <div id="organizador-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ organizadorError() }}</div>
           </div>
 
           <div class="flex flex-col gap-2">
@@ -211,8 +223,11 @@
               (ngModelChange)="patch({ url_inscricao: $event })"
               placeholder="https://..."
               aria-required="true"
+              [attr.aria-invalid]="urlInscricaoError() ? 'true' : null"
+              aria-describedby="url_inscricao-error"
               class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
             />
+            <div id="url_inscricao-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ urlInscricaoError() }}</div>
           </div>
 
           <div class="md:col-span-2 flex flex-col gap-2">
@@ -550,13 +565,13 @@
       <button
         class="btn btn-secondary min-h-11 sm:min-h-9"
         type="button"
-        (click)="cancel.emit()"
+        (click)="handleCancel()"
       >
         Cancelar
       </button>
       <button
         class="btn btn-primary min-h-11 sm:min-h-9"
-        (click)="save.emit()"
+        (click)="handleSave()"
         [attr.aria-busy]="loading()"
       >
         {{ editingId() ? "Atualizar" : "Criar" }}
