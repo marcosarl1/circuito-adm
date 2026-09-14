@@ -86,10 +86,12 @@
         class="text-xs text-[var(--muted-foreground)] text-center sm:text-left"
       >
         {{ totalResults() }} resultado(s) para
-        <strong class="text-[var--foreground)]">{{ searchTerm() }} </strong>
+        <strong class="text-[var(--foreground)]">{{ searchTerm() }}</strong>
         <button
-          class="underline bg-transparent border-none cursor-pointer text-xs text-[var(--muted-foreground)] p-0"
-          (click)="onSearchChange(' ')"
+          type="button"
+          class="underline bg-transparent border-none cursor-pointer text-xs text-[var(--muted-foreground)] p-0 hover:text-[var(--foreground)]"
+          (click)="onSearchChange('')"
+          aria-label="Limpar busca"
         >
           limpar
         </button>
