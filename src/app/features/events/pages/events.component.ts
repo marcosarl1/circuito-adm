@@ -63,6 +63,7 @@ export class EventsComponent implements OnInit, OnDestroy {
   totalPages = signal(1);
   totalResults = signal(0);
   formData = signal<EventFormState>(this.createEmptyForm());
+  private initialSnapshot = signal<string>(JSON.stringify(this.createEmptyForm()));
 
   showScrapeModal = signal(false);
   scrapeRunning = signal(false);
@@ -321,6 +322,7 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   openCreateForm() {
     this.resetForm();
+    this.initialSnapshot.set(JSON.stringify(this.createEmptyForm()));
     this.showForm.set(true);
     this.editingId.set(null);
   }
@@ -339,7 +341,9 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   editEvent(event: Event) {
-    this.formData.set(this.mapEventToForm(event));
+    const mapped = this.mapEventToForm(event);
+    this.formData.set(mapped);
+    this.initialSnapshot.set(JSON.stringify(mapped));
     this.editingId.set(event._id);
     this.showForm.set(true);
   }
@@ -390,7 +394,23 @@ export class EventsComponent implements OnInit, OnDestroy {
     });
   }
 
-  cancelEdit() {
+  private isFormDirty(): boolean {
+    return JSON.stringify(this.formData()) !== this.initialSnapshot();
+  }
+
+  async cancelEdit() {
+    if (this.isFormDirty()) {
+      const confirmed = await this.confirmModal.confirm(
+        'Descartar alterações? As informações preenchidas serão perdidas.',
+        {
+          title: 'Descartar alterações?',
+          confirmText: 'Descartar',
+          cancelText: 'Continuar editando',
+          variant: 'default',
+        },
+      );
+      if (!confirmed) return;
+    }
     this.resetForm();
     this.showForm.set(false);
   }
