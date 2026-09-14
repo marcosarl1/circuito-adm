@@ -1,10 +1,17 @@
+import { IMAGE_LOADER, ImageLoaderConfig, NgOptimizedImage } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { Event } from '../../../../shared/models/event.model';
 
 @Component({
   selector: 'app-event-card',
-  imports: [],
+  imports: [NgOptimizedImage],
   templateUrl: './event-card.component.html',
+  providers: [
+    {
+      provide: IMAGE_LOADER,
+      useValue: (config: ImageLoaderConfig) => config.src,
+    },
+  ],
 })
 export class EventCardComponent {
   event = input.required<Event>();
