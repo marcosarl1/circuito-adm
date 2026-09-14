@@ -1,16 +1,20 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
+  AfterViewInit,
   Component,
   computed,
   type OnInit,
   ElementRef,
+  HostListener,
   inject,
   input,
   model,
+  OnDestroy,
   output,
   signal,
   viewChild,
 } from '@angular/core';
+import { InteractivityChecker } from '@angular/cdk/a11y';
 import { FormsModule } from '@angular/forms';
 import { LoadingService } from '../../../../core/services/loading.service';
 import { ESTADOS_BRASILEIROS } from '../../../../shared/constants/ufs.constants';
@@ -24,11 +28,8 @@ import { EventFormState, KitForm } from '../../models/event-form-state.model';
   selector: 'app-event-form-modal',
   imports: [FormsModule, ScrollingModule, ComboboxComponent],
   templateUrl: './event-form-modal.component.html',
-  host: {
-    '(keydown.escape)': 'cancel.emit()',
-  },
 })
-export class EventFormModalComponent implements OnInit {
+export class EventFormModalComponent implements OnInit, AfterViewInit, OnDestroy {
   private loadingService = inject(LoadingService);
 
   formData = model.required<EventFormState>();
@@ -41,6 +42,10 @@ export class EventFormModalComponent implements OnInit {
   removeKit = output<number>();
 
   private firstField = viewChild<ElementRef<HTMLInputElement>>('firstField');
+  private el = inject(ElementRef<HTMLElement>);
+  private checker = inject(InteractivityChecker, { optional: true });
+  private previousOverflow: string | null = null;
+  private previousActiveElement: HTMLElement | null = null;
 
   submitted = signal(false);
 
@@ -82,7 +87,65 @@ export class EventFormModalComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.firstField()?.nativeElement.focus();
+    this.previousActiveElement = document.activeElement as HTMLElement | null;
+    this.previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    queueMicrotask(() => {
+      const target =
+        (this.el.nativeElement.querySelector('[data-autofocus]') as HTMLElement | null) ??
+        this.firstField()?.nativeElement ??
+        this.findFocusable()[0];
+      target?.focus();
+    });
+  }
+
+  ngOnDestroy(): void {
+    document.body.style.overflow = this.previousOverflow ?? '';
+    this.previousActiveElement?.focus?.();
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onWindowKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Escape') return;
+    event.preventDefault();
+    this.handleCancel();
+  }
+
+  @HostListener('keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Tab') return;
+    this.trapTab(event);
+  }
+
+  private findFocusable(): HTMLElement[] {
+    const root = this.el.nativeElement;
+    const nodes = root.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1")]',
+    );
+    return (Array.from(nodes) as HTMLElement[]).filter((n) => {
+      if (n.closest('[hidden]') || n.getAttribute('aria-hidden') === 'true') return false;
+      if (this.checker) return this.checker.isTabbable(n);
+      return n.tabIndex >= 0 || n instanceof HTMLButtonElement || n instanceof HTMLAnchorElement;
+    });
+  }
+
+  private trapTab(event: KeyboardEvent): void {
+    const focusable = this.findFocusable();
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+    if (event.shiftKey) {
+      if (active === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   }
 
   handleSave(): void {
