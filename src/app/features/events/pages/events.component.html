@@ -21,7 +21,8 @@
     <button
       class="btn btn-primary inline-flex items-center justify-center gap-2 w-full whitespace-nowrap sm:w-auto"
       (click)="openCreateForm()"
-      [disabled]="loading()"
+      [disabled]="loading() || scrapeRunning()"
+      [attr.title]="scrapeRunning() ? 'Aguarde a coleta terminar' : null"
     >
       <app-icon name="heroPlus" size="16" strokeWidth="2"></app-icon>
       Novo evento
@@ -38,7 +39,8 @@
       <button
         class="btn btn-ghost inline-flex items-center justify-center gap-1.5 whitespace-nowrap"
         (click)="syncBucket()"
-        [disabled]="loading()"
+        [disabled]="loading() || scrapeRunning()"
+        [attr.title]="scrapeRunning() ? 'Aguarde a coleta terminar' : null"
       >
         <app-icon name="heroCloudArrowUp" size="16" strokeWidth="1.8"></app-icon>
         Sincronizar
@@ -47,6 +49,17 @@
   </div>
 </div>
 
+@if (scrapeRunning()) {
+  <div
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
+    class="mb-3 flex items-center gap-3 rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(142,202,230,0.06)] px-3 py-2.5 text-xs text-[var(--color-text-secondary)]"
+  >
+    <span class="h-4 w-4 animate-spin rounded-full border-2 border-[var(--brand-teal-500)] border-t-transparent" aria-hidden="true"></span>
+    Coletando eventos — atualizando a cada 4s, não feche a página
+  </div>
+}
 @if (showForm()) {
   <app-event-form-modal
     [(formData)]="formData"
