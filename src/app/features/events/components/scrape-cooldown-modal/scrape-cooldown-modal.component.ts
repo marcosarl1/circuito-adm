@@ -44,6 +44,19 @@ export class ScrapeCooldownModalComponent implements AfterViewInit, OnDestroy {
     return Math.floor((Date.now() - finished) / 86_400_000);
   });
 
+  diasRestantes = computed<number>(() => Math.max(0, 15 - this.diasAtras()));
+
+  dataLiberacao = computed<string>(() => {
+    const t = this.finishedTime();
+    if (t === null) return '';
+    const d = new Date(t + 15 * 86_400_000);
+    return d.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  });
+
   dataFormatada = computed<string>(() => {
     const d = this.finishedDate();
     if (!d) return '';

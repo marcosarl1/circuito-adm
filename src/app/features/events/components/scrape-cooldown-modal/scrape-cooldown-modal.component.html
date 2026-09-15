@@ -57,6 +57,15 @@
           novamente?
         }
       </p>
+      @if (hasValidDate()) {
+        <div
+          class="flex items-start gap-2 rounded-md border border-amber-800/30 bg-amber-950/40 px-3 py-2 text-xs leading-5 text-amber-200"
+          role="status"
+        >
+          <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-400" aria-hidden="true"></span>
+          <span>Faltam <strong>{{ diasRestantes() }} {{ diasRestantes() === 1 ? "dia" : "dias" }}</strong> para liberar ({{ dataLiberacao() }}), rodar agora pode gerar custo duplicado.</span>
+        </div>
+      }
     </div>
     <div
       class="card-footer flex flex-col-reverse gap-3 border-t border-[rgba(142,202,230,0.18)] p-4 sm:flex-row sm:justify-end"
