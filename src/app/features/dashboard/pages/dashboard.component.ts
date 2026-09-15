@@ -2,14 +2,14 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DashboardService } from '../services/dashboard.service';
 import { Event } from '../../../shared/models/event.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
-import { NgApexchartsModule } from 'ng-apexcharts';
+import { ChartComponent } from 'ng-apexcharts';
 import type { ApexOptions } from 'ng-apexcharts';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [IconComponent, NgApexchartsModule, RouterLink],
+  imports: [IconComponent, ChartComponent, RouterLink],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {
