@@ -22,6 +22,54 @@
       class="card p-4 h-[320px] animate-pulse bg-[rgba(142,202,230,0.04)]"
     ></div>
   </div>
+} @else if (hasError()) {
+  <div
+    class="card flex flex-col items-center justify-center gap-3 px-6 py-12 text-center"
+    role="alert"
+    aria-live="assertive"
+  >
+    <div
+      class="grid h-12 w-12 place-items-center rounded-full bg-[rgba(248,113,113,0.12)] text-[#f87171]"
+      aria-hidden="true"
+    >
+      <app-icon name="heroExclamationTriangle" size="24" strokeWidth="1.8"></app-icon>
+    </div>
+    <h2 class="text-base font-semibold text-[var(--foreground)]">
+      Falha ao carregar o dashboard
+    </h2>
+    <p class="max-w-[420px] text-sm text-[var(--muted-foreground)]">
+      {{ error() }}
+    </p>
+    <button
+      type="button"
+      class="btn btn-primary mt-2 inline-flex items-center gap-2"
+      (click)="retry()"
+    >
+      <app-icon name="heroArrowPath" size="16" strokeWidth="1.8"></app-icon>
+      Tentar novamente
+    </button>
+  </div>
+} @else if (isEmpty()) {
+  <div
+    class="card flex flex-col items-center justify-center gap-3 px-6 py-12 text-center"
+  >
+    <div
+      class="grid h-12 w-12 place-items-center rounded-full bg-[rgba(142,202,230,0.08)] text-[var(--muted-foreground)]"
+      aria-hidden="true"
+    >
+      <app-icon name="heroCalendarDays" size="24" strokeWidth="1.8"></app-icon>
+    </div>
+    <h2 class="text-base font-semibold text-[var(--foreground)]">
+      Nenhum evento cadastrado
+    </h2>
+    <p class="max-w-[420px] text-sm text-[var(--muted-foreground)]">
+      Quando houver eventos, as estatísticas aparecerão aqui.
+    </p>
+    <a routerLink="/events" class="btn btn-primary mt-2 inline-flex items-center gap-2">
+      <app-icon name="heroPlus" size="16" strokeWidth="2"></app-icon>
+      Criar primeiro evento
+    </a>
+  </div>
 } @else {
   <section aria-labelledby="zona-sumario">
     <h2 id="zona-sumario" class="sr-only">Sumário de Negócio</h2>

@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   heroArrowDownTray,
+  heroExclamationTriangle,
   heroArrowPath,
   heroArrowRightStartOnRectangle,
   heroArrowUpTray,
@@ -36,6 +37,7 @@ import {
   providers: [
     provideIcons({
       heroCircleStack,
+      heroExclamationTriangle,
       heroCheck,
       heroCheckCircle,
       heroClock,

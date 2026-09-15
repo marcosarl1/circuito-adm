@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DashboardService } from '../services/dashboard.service';
 import { Event } from '../../../shared/models/event.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
@@ -12,10 +12,12 @@ import { RouterLink } from '@angular/router';
   imports: [IconComponent, ChartComponent, RouterLink],
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
 
   loading = signal(true);
+  error = signal<string | null>(null);
+  hasError = computed(() => !!this.error());
   events = signal<Event[]>([]);
   stats = computed(() => this.dashboardService.getStats(this.events()));
 
@@ -419,6 +421,10 @@ export class DashboardComponent {
     responsive: [{ breakpoint: 480, options: { chart: { height: 200 } } }],
   }));
 
+  isEmpty = computed(
+    () => !this.loading() && !this.hasError() && this.stats().total === 0,
+  );
+
   proximosEventos = computed(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -474,13 +480,30 @@ export class DashboardComponent {
       .map((x) => x.e);
   });
 
-  constructor() {
+  ngOnInit(): void {
+    this.load();
+  }
+
+  load(): void {
+    this.loading.set(true);
+    this.error.set(null);
     this.dashboardService.getAllEvents().subscribe({
       next: (ev) => {
         this.events.set(ev);
         this.loading.set(false);
       },
-      error: () => this.loading.set(false),
+      error: (err: unknown) => {
+        const msg =
+          err instanceof Error && err.message
+            ? err.message
+            : 'Falha ao carregar estatísticas. Verifique sua conexão.';
+        this.error.set(msg);
+        this.loading.set(false);
+      },
     });
+  }
+
+  retry(): void {
+    this.load();
   }
 }
