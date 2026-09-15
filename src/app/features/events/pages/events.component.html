@@ -93,27 +93,27 @@
   </div>
   <div
     class="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between"
+    aria-live="polite"
   >
-    @if (searchTerm()) {
-      <p
-        class="text-xs text-[var(--muted-foreground)] text-center sm:text-left"
-      >
-        {{ totalResults() }} resultado(s) para
-        <strong class="text-[var(--foreground)]">{{ searchTerm() }}</strong>
-        <button
-          type="button"
-          class="underline bg-transparent border-none cursor-pointer text-xs text-[var(--muted-foreground)] p-0 hover:text-[var(--foreground)]"
-          (click)="onSearchChange('')"
-          aria-label="Limpar busca"
-        >
-          limpar
-        </button>
-      </p>
-    } @else {
+    <div class="flex flex-col gap-1 text-center sm:text-left">
       <span class="text-xs text-[var(--muted-foreground)]">
-        Página {{ currentPage() }} de {{ totalPages() }}
+        {{ totalResults() }} eventos • Página {{ currentPage() }} de {{ totalPages() }}
       </span>
-    }
+      @if (searchTerm()) {
+        <span class="text-xs text-[var(--muted-foreground)]">
+          {{ totalResults() }} resultado(s) para
+          <strong class="text-[var(--foreground)]">{{ searchTerm() }} </strong>
+          <button
+            type="button"
+            class="underline bg-transparent border-none cursor-pointer text-xs text-[var(--muted-foreground)] p-0 hover:text-[var(--foreground)]"
+            (click)="onSearchChange('')"
+            aria-label="Limpar busca"
+          >
+            limpar
+          </button>
+        </span>
+      }
+    </div>
 
     <div class="flex items-center gap-1 flex-wrap justify-center">
       <button
