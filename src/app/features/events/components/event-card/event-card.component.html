@@ -7,9 +7,11 @@
         [ngSrc]="event().url_imagem"
         [alt]="getEventTitle()"
         fill
+        [priority]="priority()"
+        decoding="async"
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         class="object-cover"
-        (error)="$event.target.style.display='none'"
+        (error)="onImgError($event)"
       />
     </div>
   }

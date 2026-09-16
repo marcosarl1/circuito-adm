@@ -82,9 +82,10 @@
 @if (!showSkeleton() && pageEvents().length > 0) {
   <div class="events-list">
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
-      @for (event of pageEvents(); track event._id) {
+      @for (event of pageEvents(); track event._id; let idx = $index) {
         <app-event-card
           [event]="event"
+          [priority]="idx < 3"
           (edit)="editEvent($event)"
           (delete)="deleteEvent($event)"
         ></app-event-card>

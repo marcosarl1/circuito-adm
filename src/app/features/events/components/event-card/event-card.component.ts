@@ -1,6 +1,6 @@
 import { IMAGE_LOADER, ImageLoaderConfig, NgOptimizedImage } from '@angular/common';
 import { Component, input, output } from '@angular/core';
-import { Event } from '../../../../shared/models/event.model';
+import { Event as CircuitoEvent } from '../../../../shared/models/event.model';
 
 @Component({
   selector: 'app-event-card',
@@ -14,9 +14,15 @@ import { Event } from '../../../../shared/models/event.model';
   ],
 })
 export class EventCardComponent {
-  event = input.required<Event>();
-  edit = output<Event>();
+  event = input.required<CircuitoEvent>();
+  priority = input(false);
+  edit = output<CircuitoEvent>();
   delete = output<string>();
+
+  onImgError(e: globalThis.Event): void {
+    const target = e.target as HTMLElement | null;
+    if (target) target.style.display = 'none';
+  }
 
   editEvent() {
     this.edit.emit(this.event());
