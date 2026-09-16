@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { DashboardService } from '../services/dashboard.service';
+import { DashboardService, DashboardStats } from '../services/dashboard.service';
 import { Event } from '../../../shared/models/event.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { ChartComponent } from 'ng-apexcharts';
@@ -18,8 +18,82 @@ export class DashboardComponent implements OnInit {
   loading = signal(true);
   error = signal<string | null>(null);
   hasError = computed(() => !!this.error());
-  events = signal<Event[]>([]);
-  stats = computed(() => this.dashboardService.getStats(this.events()));
+  serverStats = signal<DashboardStats | null>(null);
+  stats = computed(() => {
+    const s = this.serverStats();
+    if (!s)
+      return {
+        total: 0,
+        ativos: 0,
+        passados: 0,
+        proximos30d: 0,
+        proximos90d: 0,
+        semPreco: 0,
+        patrocinados: 0,
+        semImagem: 0,
+        semLink: 0,
+        semRegulamento: 0,
+        valorMedio: 0,
+        lote1Count: 0,
+        porMes: [],
+        porEstado: [],
+        porCidade: [],
+        porDistancia: [],
+        porOrganizador: [],
+        porFonte: [],
+        densidade: [],
+        choques: 0,
+        statusInscricoes: { abertas: 0, emBreve: 0, encerradas: 0 },
+        densidadeFimDeSemana: [],
+        finsDeSemanaLivres: 0,
+        totalChoquesFimDeSemana: 0,
+        scraperHealth: [],
+        proximosEventos: [],
+      } as DashboardStats;
+    return this.enrichWithFimDeSemana(s);
+  });
+
+  private enrichWithFimDeSemana(s: DashboardStats): DashboardStats {
+    if (s.densidadeFimDeSemana && s.densidadeFimDeSemana.length) return s;
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const densidadePorDia = new Map<string, number>(s.densidade.map((d) => [d.data, d.count]));
+    const dow = now.getDay();
+    const daysToSat = (6 - dow + 7) % 7;
+    const firstSat = new Date(now);
+    firstSat.setDate(now.getDate() + daysToSat);
+    firstSat.setHours(0, 0, 0, 0);
+    const densidadeFimDeSemana = [] as DashboardStats['densidadeFimDeSemana'];
+    for (let i = 0; i < 12; i++) {
+      const sat = new Date(firstSat);
+      sat.setDate(firstSat.getDate() + i * 7);
+      const sun = new Date(sat);
+      sun.setDate(sat.getDate() + 1);
+      const satKey = sat.toISOString().slice(0, 10);
+      const sunKey = sun.toISOString().slice(0, 10);
+      const satCount = densidadePorDia.get(satKey) ?? 0;
+      const sunCount = densidadePorDia.get(sunKey) ?? 0;
+      const total = satCount + sunCount;
+      const nivel = total === 0 ? 'livre' : total >= 3 ? 'choque' : 'moderado';
+      const monthRaw = sun.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
+      const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1);
+      const label = `${String(sat.getDate()).padStart(2, '0')}-${String(sun.getDate()).padStart(2, '0')} ${month}`;
+      densidadeFimDeSemana.push({
+        sabado: satKey,
+        domingo: sunKey,
+        label,
+        total,
+        nivel: nivel as DashboardStats['densidadeFimDeSemana'][number]['nivel'],
+        detalhe: [{ data: satKey, count: satCount }, { data: sunKey, count: sunCount }],
+      });
+    }
+    return {
+      ...s,
+      densidadeFimDeSemana,
+      finsDeSemanaLivres: densidadeFimDeSemana.filter((f) => f.nivel === 'livre').length,
+      totalChoquesFimDeSemana: densidadeFimDeSemana.filter((f) => f.nivel === 'choque').length,
+    };
+  }
 
   porMesSorted = computed(() => [...this.stats().porMes].reverse());
 
@@ -117,95 +191,54 @@ export class DashboardComponent implements OnInit {
   }
 
   scraperStatus = computed(() => {
-    const IGNORADAS = ['manual', 'ticketsports'];
-    const map = new Map<
-      string,
-      {
-        fonte: string;
-        display: string;
-        maxMs: number;
-        count: number;
-        semLink: number;
-        semRegulamento: number;
-        semImagem: number;
-        semPreco: number;
-      }
-    >();
-    for (const e of this.events()) {
-      const raw = (e.site_coleta || '').trim();
-      const key = raw.toLowerCase();
-      if (!raw || raw === '—' || IGNORADAS.some((ig) => key.includes(ig)))
-        continue;
-      const ms = e.data_coleta ? new Date(e.data_coleta).getTime() : 0;
-      const prev = map.get(key);
-      const semLink = !(e as unknown as { url_inscricao?: string })
-        .url_inscricao
-        ? 1
-        : 0;
-      const linkEdital = (e as unknown as { link_edital?: string }).link_edital;
-      const semRegulamento =
-        !linkEdital || linkEdital === 'edital não encontrado' ? 1 : 0;
-      const semImagem = !e.url_imagem ? 1 : 0;
-      const semPreco =
-        !e.precos_entries || e.precos_entries.length === 0 ? 1 : 0;
-      if (!prev) {
-        map.set(key, {
-          fonte: key,
-          display: raw,
-          maxMs: isNaN(ms) ? 0 : ms,
-          count: 1,
-          semLink,
-          semRegulamento,
-          semImagem,
-          semPreco,
-        });
-      } else {
-        prev.count += 1;
-        prev.semLink += semLink;
-        prev.semRegulamento += semRegulamento;
-        prev.semImagem += semImagem;
-        prev.semPreco += semPreco;
-        if (!isNaN(ms) && ms > prev.maxMs) prev.maxMs = ms;
-      }
+    const sh = this.serverStats()?.scraperHealth;
+    if (sh && sh.length) {
+      const now = Date.now();
+      return sh
+        .map((h) => {
+          const maxMs = h.maxDataColeta ? new Date(h.maxDataColeta).getTime() : 0;
+          const diffMs = now - maxMs;
+          const diffH = Math.floor(diffMs / 3600000);
+          const diffD = Math.floor(diffH / 24);
+          let relativo = '—';
+          let status: 'ok' | 'atrasado' = 'ok';
+          const dataSync = maxMs
+            ? new Date(maxMs).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+            : '—';
+          if (!maxMs || isNaN(maxMs)) {
+            relativo = 'sem dados';
+            status = 'atrasado';
+          } else if (diffH < 1) {
+            relativo = 'há poucos minutos';
+          } else if (diffH < 24) {
+            relativo = `há ${diffH}h`;
+          } else if (diffD === 1) {
+            relativo = 'há 1 dia';
+          } else if (diffD < 15) {
+            relativo = `há ${diffD} dias`;
+          } else {
+            relativo = `há ${diffD} dias`;
+            status = 'atrasado';
+          }
+          return {
+            fonte: h.fonte,
+            display: h.display,
+            maxMs: isNaN(maxMs) ? 0 : maxMs,
+            count: h.count,
+            semLink: h.semLink,
+            semRegulamento: h.semRegulamento,
+            semImagem: h.semImagem,
+            semPreco: h.semPreco,
+            relativo,
+            status,
+            dataSync,
+            diffD: isNaN(diffD) ? 0 : diffD,
+            totalPendencias: h.semLink + h.semRegulamento + h.semImagem + h.semPreco,
+          };
+        })
+        .sort((a, b) => b.maxMs - a.maxMs);
     }
-    const now = Date.now();
-    return [...map.values()]
-      .sort((a, b) => b.maxMs - a.maxMs)
-      .map((v) => {
-        const diffMs = now - v.maxMs;
-        const diffH = Math.floor(diffMs / 3600000);
-        const diffD = Math.floor(diffH / 24);
-        let relativo = '—';
-        let status: 'ok' | 'atrasado' = 'ok';
-        const dataSync = v.maxMs
-          ? new Date(v.maxMs).toLocaleString('pt-BR', {
-              dateStyle: 'short',
-              timeStyle: 'short',
-            })
-          : '—';
-        if (!v.maxMs) {
-          relativo = 'sem dados';
-          status = 'atrasado';
-        } else if (diffH < 1) {
-          relativo = 'há poucos minutos';
-          status = 'ok';
-        } else if (diffH < 24) {
-          relativo = `há ${diffH}h`;
-          status = 'ok';
-        } else if (diffD === 1) {
-          relativo = 'há 1 dia';
-          status = 'ok';
-        } else if (diffD < 15) {
-          relativo = `há ${diffD} dias`;
-          status = 'ok';
-        } else {
-          relativo = `há ${diffD} dias`;
-          status = 'atrasado';
-        }
-        const totalPendencias =
-          v.semLink + v.semRegulamento + v.semImagem + v.semPreco;
-        return { ...v, relativo, status, dataSync, diffD, totalPendencias };
-      });
+    return [];
   });
 
   statusDonutOptions = computed<ApexOptions>(() => {
@@ -426,58 +459,16 @@ export class DashboardComponent implements OnInit {
   );
 
   proximosEventos = computed(() => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    const in30 = new Date(now);
-    in30.setDate(now.getDate() + 30);
-    const MESES: Record<string, number> = {
-      janeiro: 1,
-      fevereiro: 2,
-      marco: 3,
-      março: 3,
-      abril: 4,
-      maio: 5,
-      junho: 6,
-      julho: 7,
-      agosto: 8,
-      setembro: 9,
-      outubro: 10,
-      novembro: 11,
-      dezembro: 12,
-    };
-    const parse = (raw: string, datasISO?: unknown): Date | null => {
-      if (datasISO && Array.isArray(datasISO) && datasISO.length > 0) {
-        const d = new Date(datasISO[0] as string);
-        if (!isNaN(d.getTime())) return d;
-      }
-      if (!raw) return null;
-      const iso = new Date(raw);
-      if (!isNaN(iso.getTime()) && raw.includes('-')) return iso;
-      try {
-        const p = raw.toLowerCase().trim().split(/\s+/);
-        const d = parseInt(p[0], 10);
-        const m = MESES[p[2]];
-        const y = parseInt(p[4], 10);
-        if (!d || !m || !y) return null;
-        return new Date(y, m - 1, d);
-      } catch {
-        return null;
-      }
-    };
-    return this.events()
-      .map((e) => ({
-        e,
-        d: parse(
-          e.data_realizacao,
-          (e as unknown as { datas_realizacao?: unknown }).datas_realizacao,
-        ),
-      }))
-      .filter(
-        (x): x is { e: Event; d: Date } => !!x.d && x.d >= now && x.d <= in30,
-      )
-      .sort((a, b) => a.d.getTime() - b.d.getTime())
-      .slice(0, 5)
-      .map((x) => x.e);
+    const server = this.serverStats()?.proximosEventos ?? [];
+    return server.map((p) => ({
+      _id: p._id,
+      nome_evento: p.nome_evento,
+      data_realizacao: p.data_realizacao,
+      cidade: p.cidade,
+      estado: p.estado,
+      organizador: p.organizador,
+      datas_realizacao: p.datas_realizacao,
+    })) as unknown as Event[];
   });
 
   ngOnInit(): void {
@@ -487,16 +478,14 @@ export class DashboardComponent implements OnInit {
   load(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.dashboardService.getAllEvents().subscribe({
-      next: (ev) => {
-        this.events.set(ev);
+    this.serverStats.set(null);
+    this.dashboardService.getDashboardStats().subscribe({
+      next: (s) => {
+        this.serverStats.set(s);
         this.loading.set(false);
       },
       error: (err: unknown) => {
-        const msg =
-          err instanceof Error && err.message
-            ? err.message
-            : 'Falha ao carregar estatísticas. Verifique sua conexão.';
+        const msg = err instanceof Error && err.message ? err.message : 'Falha ao carregar estatísticas. Verifique sua conexão.';
         this.error.set(msg);
         this.loading.set(false);
       },

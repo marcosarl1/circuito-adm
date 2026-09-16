@@ -46,16 +46,20 @@ export class EventsService {
       : {};
   }
 
-  getEvents(search = '', page = 1, size = this.pageSize): Observable<EventPage> {
+  getEvents(search = '', page = 1, size = this.pageSize, fields?: string): Observable<EventPage> {
     const query = search?.trim() || '';
 
-    const key = query ? `q:${query}:${page}:s:${size}` : `p:${page}:s:${size}`;
+    const cacheKeySuffix = fields ? `:f:${fields}` : '';
+    const key = query ? `q:${query}:${page}:s:${size}${cacheKeySuffix}` : `p:${page}:s:${size}${cacheKeySuffix}`;
     const cached = this.eventsCache.get(key);
     if (cached) return of(cached);
 
     let params = new HttpParams().set('page', page).set('size', size);
     if (query) {
       params = params.set('q', query);
+    }
+    if (fields) {
+      params = params.set('fields', fields);
     }
 
     return this.http

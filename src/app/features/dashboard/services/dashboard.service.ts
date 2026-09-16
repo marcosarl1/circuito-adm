@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable, isDevMode } from '@angular/core';
-import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
-import { EventsService } from '../../events/services/events.service';
+import { Observable } from 'rxjs';
 import { Event } from '../../../shared/models/event.model';
 import { environment } from '../../../../environments/environment';
 
@@ -39,6 +38,29 @@ export interface DashboardStats {
   densidadeFimDeSemana: FimDeSemanaDensidade[];
   finsDeSemanaLivres: number;
   totalChoquesFimDeSemana: number;
+  scraperHealth?: {
+    fonte: string;
+    display: string;
+    count: number;
+    semLink: number;
+    semRegulamento: number;
+    semImagem: number;
+    semPreco: number;
+    maxDataColeta: string | null;
+  }[];
+  proximosEventos?: {
+    _id: string;
+    nome_evento: string;
+    data_realizacao: string;
+    datas_realizacao?: string[];
+    cidade: string;
+    estado: string;
+    organizador: string;
+  }[];
+  comPercurso?: number;
+  comKits?: number;
+  porHorario?: { label: string; count: number }[];
+  porKit?: { label: string; count: number }[];
 }
 
 const MESES_PT: Record<string, number> = {
@@ -83,7 +105,6 @@ function parseDataRealizacao(raw: string, datasISO?: string[] | Date[]): Date | 
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  private eventsService = inject(EventsService);
   private http = inject(HttpClient);
 
   private get baseUrl(): string {
@@ -92,32 +113,11 @@ export class DashboardService {
 
   getDashboardStats(): Observable<DashboardStats> {
     const url = `${this.baseUrl}/dashboard/stats`;
-    const headers = isDevMode() && environment.apiKey ? { headers: new HttpHeaders({ 'x-api-key': environment.apiKey }) } : undefined;
+    const headers =
+      isDevMode() && environment.apiKey ? { headers: new HttpHeaders({ 'x-api-key': environment.apiKey }) } : undefined;
     const opts: { headers?: HttpHeaders } = headers ? { headers: headers.headers } : {};
     // @ts-ignore - HttpClient overload typing for dynamic headers
-    return this.http.get<DashboardStats>(url, opts).pipe(
-      catchError(() => this.getAllEvents().pipe(map((events) => this.getStats(events)))),
-    );
-  }
-
-  getAllEvents(): Observable<Event[]> {
-    const size = 100;
-    return this.eventsService.getEvents('', 1, size).pipe(
-      switchMap((first) => {
-        if (first.total_pages <= 1) return of(first.eventos);
-        const pages = Array.from({ length: first.total_pages - 1 }, (_, i) => i + 2);
-        const rest$ = pages.map((p) => this.eventsService.getEvents('', p, size));
-        if (rest$.length === 0) return of(first.eventos);
-        return forkJoin(rest$).pipe(
-          map((pages) => {
-            const all = [first.eventos, ...pages.flatMap((pg) => pg.eventos)].flat();
-            const byId = new Map<string, Event>();
-            for (const e of all) byId.set(e._id, e);
-            return [...byId.values()];
-          }),
-        );
-      }),
-    );
+    return this.http.get<DashboardStats>(url, opts);
   }
 
   getStats(events: Event[]): DashboardStats {
@@ -157,7 +157,7 @@ export class DashboardService {
     for (const e of events) {
       const d = parseDataRealizacao(e.data_realizacao, (e as unknown as { datas_realizacao?: string[] }).datas_realizacao);
       if (d) {
-        const d0 = new Date(d); d0.setHours(0,0,0,0);
+        const d0 = new Date(d); d0.setHours(0, 0, 0, 0);
         if (d0 >= now) {
           ativos++;
           if (d0 <= in30) proximos30d++;
@@ -167,7 +167,7 @@ export class DashboardService {
         }
         const key = `${d0.getFullYear()}-${String(d0.getMonth() + 1).padStart(2, '0')}`;
         porMes.set(key, (porMes.get(key) ?? 0) + 1);
-        densidadePorDia.set(d0.toISOString().slice(0,10), (densidadePorDia.get(d0.toISOString().slice(0,10)) ?? 0) + 1);
+        densidadePorDia.set(d0.toISOString().slice(0, 10), (densidadePorDia.get(d0.toISOString().slice(0, 10)) ?? 0) + 1);
         if (d0 < now) statusEncerradas++;
         else if (d0 <= in7) statusBreve++;
         else statusAbertas++;
@@ -233,7 +233,7 @@ export class DashboardService {
       porFonte.set(fonteKey, (porFonte.get(fonteKey) ?? 0) + 1);
     }
 
-    const valorMedio = precosVals.length ? Math.round((precosVals.reduce((a,b)=>a+b,0)/precosVals.length)*100)/100 : 0;
+    const valorMedio = precosVals.length ? Math.round((precosVals.reduce((a, b) => a + b, 0) / precosVals.length) * 100) / 100 : 0;
     const choques = [...densidadePorDia.values()].filter((v) => v > 1).length;
 
     // Densidade por fim de semana — próximos 12 fins de semana (inclui fim de semana atual)
@@ -281,13 +281,13 @@ export class DashboardService {
       semRegulamento,
       valorMedio,
       lote1Count,
-      porMes: [...porMes.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([label,count])=>({label,count})),
-      porEstado: [...porEstado.entries()].sort((a,b)=>b[1]-a[1]).map(([estado,count])=>({estado,count})),
-      porCidade: [...porCidade.entries()].sort((a,b)=>b[1]-a[1]).map(([k,c])=>({cidade: cidadeDisplay.get(k) ?? k, count:c})),
-      porDistancia: [...porDistancia.entries()].sort((a,b)=>b[1]-a[1]).map(([k,c])=>({distancia:k,count:c})),
-      porOrganizador: [...porOrg.entries()].sort((a,b)=>b[1]-a[1]).map(([k,c])=>({organizador: orgDisplay.get(k) ?? k, count:c})),
-      porFonte: [...porFonte.entries()].sort((a,b)=>b[1]-a[1]).map(([k,c])=>({fonte: fonteDisplay.get(k) ?? k, count:c})),
-      densidade: [...densidadePorDia.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([data,count])=>({data,count})),
+      porMes: [...porMes.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([label, count]) => ({ label, count })),
+      porEstado: [...porEstado.entries()].sort((a, b) => b[1] - a[1]).map(([estado, count]) => ({ estado, count })),
+      porCidade: [...porCidade.entries()].sort((a, b) => b[1] - a[1]).map(([k, c]) => ({ cidade: cidadeDisplay.get(k) ?? k, count: c })),
+      porDistancia: [...porDistancia.entries()].sort((a, b) => b[1] - a[1]).map(([k, c]) => ({ distancia: k, count: c })),
+      porOrganizador: [...porOrg.entries()].sort((a, b) => b[1] - a[1]).map(([k, c]) => ({ organizador: orgDisplay.get(k) ?? k, count: c })),
+      porFonte: [...porFonte.entries()].sort((a, b) => b[1] - a[1]).map(([k, c]) => ({ fonte: fonteDisplay.get(k) ?? k, count: c })),
+      densidade: [...densidadePorDia.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([data, count]) => ({ data, count })),
       choques,
       statusInscricoes: { abertas: statusAbertas, emBreve: statusBreve, encerradas: statusEncerradas },
       densidadeFimDeSemana,
