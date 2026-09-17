@@ -9,7 +9,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { EventsService } from '../services/events.service';
+import { EVENT_CARD_FIELDS, EventsService } from '../services/events.service';
 import { EventCardComponent } from '../components/event-card/event-card.component';
 import { EventFormModalComponent } from '../components/event-form-modal/event-form-modal.component';
 import {
@@ -120,8 +120,8 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.eventsService.restorePersisted();
-    // hidrata SWR: mostra stale imediatamente enquanto revalida
-    const stale = this.eventsService.getStale(this.searchTerm(), this.currentPage());
+
+    const stale = this.eventsService.getStale(this.searchTerm(), this.currentPage(), this.pageSize, EVENT_CARD_FIELDS);
     if (stale) this.applyPage(stale);
 
     this.searchSubscription = this.searchSubject
@@ -150,15 +150,16 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   loadEvents() {
-
-    this.eventsService.getEvents(this.searchTerm(), this.currentPage()).subscribe({
-      next: (data) => {
-        this.applyPage(data);
-      },
-      error: (error) => {
-        this.toastService.error('Erro ao carregar eventos: ' + error.message);
-      },
-    });
+    this.eventsService
+      .getEvents(this.searchTerm(), this.currentPage(), this.pageSize, EVENT_CARD_FIELDS)
+      .subscribe({
+        next: (data) => {
+          this.applyPage(data);
+        },
+        error: (error) => {
+          this.toastService.error('Erro ao carregar eventos: ' + error.message);
+        },
+      });
   }
 
   runScrapers() {
@@ -325,6 +326,20 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   editEvent(event: Event) {
+    const isSlim = event.kits === undefined && event.percurso === undefined && event.precos_entries === undefined;
+    if (isSlim) {
+      this.eventsService.getEvento(event._id).subscribe({
+        next: (full) => {
+          const mapped = this.mapEventToForm(full);
+          this.formData.set(mapped);
+          this.initialSnapshot.set(JSON.stringify(mapped));
+          this.editingId.set(full._id);
+          this.showForm.set(true);
+        },
+        error: (err) => this.toastService.error('Erro ao carregar evento: ' + err.message),
+      });
+      return;
+    }
     const mapped = this.mapEventToForm(event);
     this.formData.set(mapped);
     this.initialSnapshot.set(JSON.stringify(mapped));

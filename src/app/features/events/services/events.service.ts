@@ -16,6 +16,9 @@ import { SKIP_LOADING } from '../../../core/contexts/skip-loading.context';
 import { ScrapeImportResult, ScrapeJobStatus } from '../models/scrape.model';
 import { environment } from '../../../../environments/environment';
 
+export const EVENT_CARD_FIELDS =
+  '_id,nome_evento,data_realizacao,datas_realizacao,cidade,estado,organizador,site_coleta,distancias,horario,url_imagem';
+
 const PERSIST_KEY_PREFIX = 'circuito:events:v1:';
 const PERSIST_TTL_MS = 5 * 60 * 1000;
 
@@ -72,10 +75,11 @@ export class EventsService {
       );
   }
 
-  /** SWR: tenta devolver stale de localStorage para render imediato */
-  getStale(search = '', page = 1, size = this.pageSize): EventPage | null {
+
+  getStale(search = '', page = 1, size = this.pageSize, fields?: string): EventPage | null {
     const query = search?.trim() || '';
-    const key = query ? `q:${query}:${page}:s:${size}` : `p:${page}:s:${size}`;
+    const cacheKeySuffix = fields ? `:f:${fields}` : '';
+    const key = query ? `q:${query}:${page}:s:${size}${cacheKeySuffix}` : `p:${page}:s:${size}${cacheKeySuffix}`;
     // memória primeiro
     const mem = this.eventsCache.get(key);
     if (mem) return mem;
@@ -113,14 +117,14 @@ export class EventsService {
           this.eventsCache.set(cacheKey, parsed.data);
         }
       }
-    } catch {}
+    } catch { }
   }
 
   private persist(key: string, data: EventPage): void {
     try {
       const entry: PersistedEntry = { data, ts: Date.now() };
       localStorage.setItem(PERSIST_KEY_PREFIX + key, JSON.stringify(entry));
-    } catch {}
+    } catch { }
   }
 
   runScrape(): Observable<{ job_id: string }> {
@@ -195,6 +199,14 @@ export class EventsService {
       );
   }
 
+  getEvento(id: string): Observable<import('../../../shared/models/event.model').Event> {
+    return this.http
+      .get<import('../../../shared/models/event.model').Event>(`${this.baseUrl}/eventos/${id}`, {
+        ...this.apiHeaders,
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   syncBucket(): Observable<any> {
     return this.http
       .post(`${this.baseUrl}/sync-bucket`, null, { ...this.apiHeaders })
@@ -213,7 +225,7 @@ export class EventsService {
         if (k?.startsWith(PERSIST_KEY_PREFIX)) toRemove.push(k);
       }
       toRemove.forEach((k) => localStorage.removeItem(k));
-    } catch {}
+    } catch { }
   }
 
   private handleError(error: HttpErrorResponse | Error) {
