@@ -171,7 +171,7 @@
       </div>
       <div class="mt-4 flex flex-1 items-center justify-center">
         @defer (on viewport) {
-          <apx-chart
+          <apx-chart-core
             [series]="eventosColumnOptions().series!"
             [chart]="eventosColumnOptions().chart!"
             [plotOptions]="eventosColumnOptions().plotOptions!"
@@ -185,7 +185,7 @@
             [noData]="eventosColumnOptions().noData!"
             [states]="eventosColumnOptions().states!"
             class="w-full"
-          ></apx-chart>
+          ></apx-chart-core>
         } @placeholder {
           <div class="h-[260px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
         }
@@ -367,7 +367,7 @@
       </h3>
       <div class="mt-3 flex flex-1 items-center justify-center">
         @defer (on viewport) {
-          <apx-chart
+          <apx-chart-core
             [series]="distanciasChartOptions().series!"
             [chart]="distanciasChartOptions().chart!"
             [plotOptions]="distanciasChartOptions().plotOptions!"
@@ -379,7 +379,7 @@
             [tooltip]="distanciasChartOptions().tooltip!"
             [legend]="distanciasChartOptions().legend!"
             class="w-full"
-          ></apx-chart>
+          ></apx-chart-core>
         } @placeholder {
           <div class="h-[280px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
         }
@@ -452,7 +452,7 @@
       @if (operacionalView() === "fontes") {
         <div class="mt-4 flex flex-1 flex-col items-center gap-3">
           @defer (on viewport) {
-            <apx-chart
+            <apx-chart-core
               [series]="chartOptions().series!"
               [labels]="chartOptions().labels!"
               [colors]="chartOptions().colors!"
@@ -464,7 +464,7 @@
               [tooltip]="chartOptions().tooltip!"
               [responsive]="chartOptions().responsive!"
               class="w-full max-w-[280px]"
-            ></apx-chart>
+            ></apx-chart-core>
           } @placeholder {
             <div class="h-[220px] w-full max-w-[280px] animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
           }
@@ -496,7 +496,7 @@
         } @else {
           <div class="mt-4 flex flex-1 flex-col items-center gap-3">
             @defer (on viewport) {
-              <apx-chart
+              <apx-chart-core
                 [series]="statusDonutOptions().series!"
                 [labels]="statusDonutOptions().labels!"
                 [colors]="statusDonutOptions().colors!"
@@ -508,7 +508,7 @@
                 [tooltip]="statusDonutOptions().tooltip!"
                 [responsive]="statusDonutOptions().responsive!"
                 class="w-full max-w-[260px]"
-              ></apx-chart>
+              ></apx-chart-core>
             } @placeholder {
               <div class="h-[190px] w-full max-w-[260px] animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
             }

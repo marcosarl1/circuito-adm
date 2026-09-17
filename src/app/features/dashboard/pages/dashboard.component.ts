@@ -2,14 +2,16 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DashboardService, DashboardStats } from '../services/dashboard.service';
 import { Event } from '../../../shared/models/event.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
-import { ChartComponent } from 'ng-apexcharts';
+import { ChartCoreComponent } from 'ng-apexcharts';
 import type { ApexOptions } from 'ng-apexcharts';
+import 'apexcharts/bar';
+import 'apexcharts/donut';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [IconComponent, ChartComponent, RouterLink],
+  imports: [IconComponent, ChartCoreComponent, RouterLink],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
