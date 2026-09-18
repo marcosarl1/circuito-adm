@@ -1,5 +1,5 @@
 import { IMAGE_LOADER, ImageLoaderConfig, NgOptimizedImage } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { Event as CircuitoEvent } from '../../../../shared/models/event.model';
 
 @Component({
@@ -32,30 +32,25 @@ export class EventCardComponent {
     this.delete.emit(this.event()._id);
   }
 
-  getEventTitle(): string {
-    return this.event().nome_evento || 'Evento sem título';
-  }
+  title = computed(() => this.event().nome_evento || 'Evento sem título');
 
-  getEventDescription(): string {
-    return (
+  description = computed(
+    () =>
       this.event().categorias_premiadas ||
       this.event()?.percurso?.trajeto ||
       this.event()?.site_coleta ||
-      'Sem descrição disponível'
-    );
-  }
+      'Sem descrição disponível',
+  );
 
-  getEventDate(): string {
-    return this.event().data_realizacao || 'Data a definir';
-  }
+  date = computed(() => this.event().data_realizacao || 'Data a definir');
 
-  getEventTime(): string {
+  time = computed(() => {
     const horario = this.event().horario?.trim();
 
     if (!horario) return '';
     if (this.isPlaceHolderTime(horario)) return 'A definir';
     return horario;
-  }
+  });
 
   private isPlaceHolderTime(value: string): boolean {
     const placeholders = [
@@ -67,20 +62,19 @@ export class EventCardComponent {
     return placeholders.includes(value.toLowerCase());
   }
 
-  getEventLocation(): string {
-    return (
+  location = computed(
+    () =>
       [this.event().cidade, this.event().estado].filter(Boolean).join(', ') ||
-      'Local a definir'
-    );
-  }
+      'Local a definir',
+  );
 
-  getEventOrganizer(): string {
-    return this.event().organizador || 'Organizador não informado';
-  }
+  organizer = computed(
+    () => this.event().organizador || 'Organizador não informado',
+  );
 
-  getEventDistances(): string {
-    return this.event().distancias?.length
+  distances = computed(() =>
+    this.event().distancias?.length
       ? this.event().distancias.join(', ')
-      : 'Distâncias não informadas';
-  }
+      : 'Distâncias não informadas',
+  );
 }

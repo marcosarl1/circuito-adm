@@ -5,7 +5,7 @@
     <div class="relative aspect-[16/9] w-full overflow-hidden bg-[rgba(0,9,14,0.4)]">
       <img
         [ngSrc]="event().url_imagem"
-        [alt]="getEventTitle()"
+        [alt]="title()"
         fill
         [priority]="priority()"
         decoding="async"
@@ -22,9 +22,9 @@
       <p
         class="truncate text-[0.65rem] font-bold uppercase tracking-wide text-[var(--muted-foreground)] sm:text-[0.7rem]"
       >
-        {{ getEventDate() }}
-        @if (getEventTime()) {
-          <span> · {{ getEventTime() }}</span>
+        {{ date() }}
+        @if (time()) {
+          <span> · {{ time() }}</span>
         }
       </p>
 
@@ -37,9 +37,9 @@
     </div>
     <h4
       class="m-0 line-clamp-2 min-h-[2.75rem] text-base font-semibold leading-snug sm:min-h-[3.125rem] sm:text-lg"
-      [title]="getEventTitle()"
+      [title]="title()"
     >
-      {{ getEventTitle() }}
+      {{ title() }}
     </h4>
   </div>
 
@@ -54,8 +54,8 @@
       >
       <span
         class="min-w-0 overflow-hidden truncate text-right font-medium"
-        [title]="getEventLocation()"
-        >{{ getEventLocation() }}</span
+        [title]="location()"
+        >{{ location() }}</span
       >
     </div>
     <div
@@ -66,8 +66,8 @@
       >
       <span
         class="min-w-0 overflow-hidden truncate text-right font-medium"
-        [title]="getEventOrganizer()"
-        >{{ getEventOrganizer() }}</span
+        [title]="organizer()"
+        >{{ organizer() }}</span
       >
     </div>
     <div
@@ -78,9 +78,9 @@
       >
       <span
         class="min-w-0 min-h-[2rem] overflow-hidden text-right font-semibold text-[var(--primary)] line-clamp-2 sm:min-h-[2.25rem]"
-        [title]="getEventDistances()"
+        [title]="distances()"
       >
-        {{ getEventDistances() }}
+        {{ distances() }}
       </span>
     </div>
   </div>
