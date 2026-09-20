@@ -60,15 +60,17 @@
     Coletando eventos — atualizando a cada 4s, não feche a página
   </div>
 }
-@defer (when showForm(); prefetch on idle) {
-  <app-event-form-modal
-    [(formData)]="formData"
-    [editingId]="editingId()"
-    (save)="saveEvent()"
-    (cancel)="cancelEdit()"
-    (addKit)="addKit()"
-    (removeKit)="removeKit($event)"
-  ></app-event-form-modal>
+@if (showForm()) {
+  @defer (on immediate; prefetch on idle) {
+    <app-event-form-modal
+      [(formData)]="formData"
+      [editingId]="editingId()"
+      (save)="saveEvent()"
+      (cancel)="cancelEdit()"
+      (addKit)="addKit()"
+      (removeKit)="removeKit($event)"
+    ></app-event-form-modal>
+  }
 }
 
 @if (showSkeleton()) {
@@ -207,21 +209,25 @@
     </div>
   </div>
 }
-@defer (when showScrapeCooldown(); prefetch on idle) {
-  <app-scrape-cooldown-modal
-    [lastFinishedAt]="lastFinishedAt()"
-    (proceed)="confirmRecentScrape()"
-    (cancel)="cancelRecentScrape()"
-  ></app-scrape-cooldown-modal>
+@if (showScrapeCooldown()) {
+  @defer (on immediate; prefetch on idle) {
+    <app-scrape-cooldown-modal
+      [lastFinishedAt]="lastFinishedAt()"
+      (proceed)="confirmRecentScrape()"
+      (cancel)="cancelRecentScrape()"
+    ></app-scrape-cooldown-modal>
+  }
 }
-@defer (when showScrapeModal(); prefetch on idle) {
-  <app-scrape-report-modal
-    [report]="scrapeReport()"
-    [importing]="importing()"
-    [importResult]="importResult()"
-    [error]="scrapeError()"
-    (import)="importScrapedEvents()"
-    (close)="closeScrapeReport()"
-  ></app-scrape-report-modal>
+@if (showScrapeModal()) {
+  @defer (on immediate; prefetch on idle) {
+    <app-scrape-report-modal
+      [report]="scrapeReport()"
+      [importing]="importing()"
+      [importResult]="importResult()"
+      [error]="scrapeError()"
+      (import)="importScrapedEvents()"
+      (close)="closeScrapeReport()"
+    ></app-scrape-report-modal>
+  }
 }
 <app-confirm-modal></app-confirm-modal>
