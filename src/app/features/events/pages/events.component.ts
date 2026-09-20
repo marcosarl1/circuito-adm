@@ -7,7 +7,18 @@ import {
   computed,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Subject, Subscription } from 'rxjs';
+import {
+  Subject,
+  Subscription,
+  catchError,
+  exhaustMap,
+  map,
+  of,
+  takeUntil,
+  takeWhile,
+  timeout,
+  timer,
+} from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { EVENT_CARD_FIELDS, EventsService } from '../services/events.service';
 import { EventCardComponent } from '../components/event-card/event-card.component';
@@ -72,7 +83,12 @@ export class EventsComponent implements OnInit, OnDestroy {
   scrapeError = signal<string | null>(null);
   showScrapeCooldown = signal(false);
   lastFinishedAt = signal<string | null>(null);
-  private scrapePolling?: ReturnType<typeof setInterval>;
+  private scrapePollingSub?: Subscription;
+
+  private readonly SCRAPE_POLL_INTERVAL_MS = 4000;
+  private readonly SCRAPE_REQUEST_TIMEOUT_MS = 15000;
+  private readonly SCRAPE_MAX_ERRORS = 5;
+  private readonly SCRAPE_MAX_DURATION_MS = 15 * 60 * 1000;
 
   pageEvents = computed(() => this.events());
   filteredEvents = computed(() => this.events());
@@ -225,9 +241,41 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   private pollScrapeStatus(jobId: string) {
-    this.scrapePolling = setInterval(() => {
-      this.eventsService.getScrapeStatus(jobId).subscribe({
-        next: (status) => {
+
+    this.clearScrapePolling();
+    let consecutiveErrors = 0;
+
+    this.scrapePollingSub = timer(0, this.SCRAPE_POLL_INTERVAL_MS)
+      .pipe(
+        exhaustMap(() =>
+          this.eventsService.getScrapeStatus(jobId).pipe(
+            timeout(this.SCRAPE_REQUEST_TIMEOUT_MS),
+            map((status) => ({ ok: true as const, status })),
+            catchError((err: unknown) => of({ ok: false as const, error: err })),
+          ),
+        ),
+        takeUntil(timer(this.SCRAPE_MAX_DURATION_MS)),
+        takeWhile((res) => {
+          if (!res.ok) {
+            consecutiveErrors += 1;
+            return consecutiveErrors < this.SCRAPE_MAX_ERRORS;
+          }
+          consecutiveErrors = 0;
+          return (
+            res.status.status !== 'complete' && res.status.status !== 'failed'
+          );
+        }, true),
+      )
+      .subscribe({
+        next: (res) => {
+          if (!res.ok) {
+            if (consecutiveErrors >= this.SCRAPE_MAX_ERRORS) {
+              this.failScrapePolling('Falha de conexão com o monitor do scraper.');
+              this.openScrapeReport();
+            }
+            return;
+          }
+          const status = res.status;
           if (status.status === 'complete') {
             this.scrapeRunning.set(false);
             this.scraping.set(false);
@@ -245,23 +293,28 @@ export class EventsComponent implements OnInit, OnDestroy {
             this.clearScrapePolling();
             this.openScrapeReport();
           }
+          // running → aguarda o próximo tick
         },
-        error: (error) => {
-          this.scrapeRunning.set(false);
-          this.scraping.set(false);
-          this.scrapeError.set(error.message);
-          this.clearScrapePolling();
-          this.openScrapeReport();
+        complete: () => {
+          if (this.scrapeRunning()) {
+            this.failScrapePolling('Tempo esgotado aguardando o scraper.');
+            this.openScrapeReport();
+          }
         },
       });
-    }, 4000);
+  }
+
+  private failScrapePolling(message: string): void {
+    this.scrapeRunning.set(false);
+    this.scraping.set(false);
+    this.scrapeError.set(message);
+    this.toastService.error(message, 7000);
+    this.clearScrapePolling();
   }
 
   private clearScrapePolling() {
-    if (this.scrapePolling) {
-      clearInterval(this.scrapePolling);
-      this.scrapePolling = undefined;
-    }
+    this.scrapePollingSub?.unsubscribe();
+    this.scrapePollingSub = undefined;
   }
 
   openScrapeReport() {
