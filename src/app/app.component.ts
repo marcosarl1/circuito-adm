@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, afterNextRender, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { WarmupService } from './core/services/warmup.service';
 
 @Component({
   selector: 'app-root',
@@ -8,4 +9,9 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'admin-panel';
+  private warmup = inject(WarmupService);
+
+  constructor() {
+    afterNextRender(() => this.warmup.warm());
+  }
 }

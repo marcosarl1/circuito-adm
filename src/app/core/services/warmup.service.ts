@@ -1,4 +1,4 @@
-import { Service, inject } from '@angular/core';
+import { Service, inject, isDevMode } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { SKIP_LOADING } from '../contexts/skip-loading.context';
 
@@ -11,25 +11,24 @@ export class WarmupService {
     if (this.warmed) return;
     this.warmed = true;
 
-    const ctx = new HttpContext().set(SKIP_LOADING, true);
-    const idle =
-      typeof globalThis !== 'undefined' &&
-      typeof (globalThis as unknown as { requestIdleCallback?: unknown })
-        .requestIdleCallback === 'function'
-        ? (cb: () => void) =>
-            (
-              globalThis as unknown as {
-                requestIdleCallback: (cb: () => void) => number;
-              }
-            ).requestIdleCallback(cb)
-        : (cb: () => void) => setTimeout(cb, 800);
+    if (isDevMode()) return;
 
-    idle(() => {
+
+    this.whenIdle(() => {
+      const ctx = new HttpContext().set(SKIP_LOADING, true);
       this.http
-        .get('/api/events-proxy/health', { context: ctx })
-        .subscribe({ error: () => {} });
-
-      fetch('/api/warmup', { method: 'GET' }).catch(() => {});
+        .get('/api/warmup', { context: ctx })
+        .subscribe({ error: () => { } });
     });
+  }
+
+  private whenIdle(cb: () => void): void {
+    const ric = (
+      globalThis as unknown as {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      }
+    ).requestIdleCallback;
+    if (typeof ric === 'function') ric.call(globalThis, cb, { timeout: 2000 });
+    else setTimeout(cb, 800);
   }
 }
