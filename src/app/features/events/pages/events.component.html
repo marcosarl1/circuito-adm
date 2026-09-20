@@ -60,7 +60,7 @@
     Coletando eventos — atualizando a cada 4s, não feche a página
   </div>
 }
-@if (showForm()) {
+@defer (when showForm(); prefetch on idle) {
   <app-event-form-modal
     [(formData)]="formData"
     [editingId]="editingId()"
@@ -207,14 +207,14 @@
     </div>
   </div>
 }
-@if (showScrapeCooldown()) {
+@defer (when showScrapeCooldown(); prefetch on idle) {
   <app-scrape-cooldown-modal
     [lastFinishedAt]="lastFinishedAt()"
     (proceed)="confirmRecentScrape()"
     (cancel)="cancelRecentScrape()"
   ></app-scrape-cooldown-modal>
 }
-@if (showScrapeModal()) {
+@defer (when showScrapeModal(); prefetch on idle) {
   <app-scrape-report-modal
     [report]="scrapeReport()"
     [importing]="importing()"
