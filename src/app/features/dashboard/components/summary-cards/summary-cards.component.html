@@ -1,0 +1,81 @@
+<section aria-labelledby="zona-sumario">
+  <h2 id="zona-sumario" class="sr-only">Sumário de Negócio</h2>
+  <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <!-- Total de Eventos -->
+    <div class="card p-4">
+      <p
+        class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+      >
+        Total de Eventos
+      </p>
+      <p
+        class="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]"
+      >
+        {{ stats().total }}
+      </p>
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        <span
+          class="inline-flex items-center rounded-full border border-[var(--sidebar-border-subtle)] px-2 py-0.5 text-xs font-medium text-[var(--muted-foreground)]"
+          >{{ stats().passados }} passados</span
+        >
+      </div>
+    </div>
+    <div class="card p-4">
+      <p
+        class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+      >
+        Eventos Ativos
+      </p>
+      <p
+        class="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]"
+      >
+        {{ stats().ativos }}
+      </p>
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        <span
+          class="inline-flex items-center rounded-full border border-[rgba(6,214,160,0.18)] bg-[rgba(6,214,160,0.08)] px-2 py-0.5 text-xs font-medium text-[#06d6a0]"
+          >{{ stats().patrocinados }} patrocinados</span
+        >
+      </div>
+    </div>
+    <div class="card p-4">
+      <p
+        class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+      >
+        Próximos 30 dias
+      </p>
+      <p
+        class="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]"
+      >
+        {{ stats().proximos30d }}
+      </p>
+      <p class="mt-3 text-xs text-[var(--muted-foreground)]">
+        {{ stats().proximos90d }} nos próximos 90 dias
+      </p>
+    </div>
+    <div class="card p-4">
+      <p
+        class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+      >
+        Ticket Médio
+      </p>
+      <p
+        class="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]"
+      >
+        {{ ticketMedio() }}
+      </p>
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        <span
+          class="inline-flex items-center rounded-full border border-[var(--sidebar-border-subtle)] px-2 py-0.5 text-xs font-medium text-[var(--muted-foreground)]"
+          >{{ stats().lote1Count }} em Lote 1</span
+        >
+        @if (stats().semPreco > 0) {
+          <span
+            class="inline-flex items-center rounded-full border border-[rgba(251,191,3,0.2)] bg-[rgba(251,191,3,0.08)] px-2 py-0.5 text-xs font-medium text-[#ffb703]"
+            >{{ stats().semPreco }} sem preço</span
+          >
+        }
+      </div>
+    </div>
+  </div>
+</section>

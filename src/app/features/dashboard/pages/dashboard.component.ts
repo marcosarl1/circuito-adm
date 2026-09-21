@@ -4,13 +4,22 @@ import { Event } from '../../../shared/models/event.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import type { ApexOptions } from 'apexcharts';
 import { RouterLink } from '@angular/router';
-import { BarChartComponent } from '../components/bar-chart/bar-chart.component';
-import { DonutChartComponent } from '../components/donut-chart/donut-chart.component';
+import { SummaryCardsComponent } from '../components/summary-cards/summary-cards.component';
+import { TrendsSectionComponent } from '../components/trends-section/trends-section.component';
+import { OperationalSectionComponent } from '../components/operational-section/operational-section.component';
+import { SystemHealthComponent } from '../components/system-health/system-health.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [IconComponent, BarChartComponent, DonutChartComponent, RouterLink],
+  imports: [
+    IconComponent,
+    RouterLink,
+    SummaryCardsComponent,
+    TrendsSectionComponent,
+    OperationalSectionComponent,
+    SystemHealthComponent,
+  ],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
@@ -193,9 +202,6 @@ export class DashboardComponent implements OnInit {
     if (s.has(fonte)) s.delete(fonte);
     else s.add(fonte);
     this.scraperOpen.set(s);
-  }
-  isScraperOpen(fonte: string) {
-    return this.scraperOpen().has(fonte);
   }
 
   scraperStatus = computed(() => {

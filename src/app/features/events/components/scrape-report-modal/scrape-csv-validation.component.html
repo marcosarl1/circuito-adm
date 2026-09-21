@@ -1,0 +1,508 @@
+<section
+  class="rounded-xl border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] p-4 max-md:p-3"
+>
+  <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+    <h4
+      class="m-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]"
+    >
+      Validação dos CSVs
+    </h4>
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- chip counts -->
+      @if (view().has) {
+        <div class="hidden items-center gap-1.5 text-[11px] md:flex">
+          @if (view().chips.duplicados > 0) {
+            <span
+              class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+              >dup {{ view().chips.duplicados }}</span
+            >
+          }
+          @if (view().chips.sem_preco > 0) {
+            <span
+              class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+              >Sem preço {{ view().chips.sem_preco }}</span
+            >
+          }
+          @if (view().chips.sem_imagem > 0) {
+            <span
+              class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+              >Sem imagem {{ view().chips.sem_imagem }}</span
+            >
+          }
+          @if (view().chips.passados > 0) {
+            <span
+              class="inline-flex items-center rounded-full border border-amber-800/30 bg-amber-950/50 px-2 py-0.5 font-medium text-amber-200"
+              >Passados {{ view().chips.passados }}</span
+            >
+          }
+        </div>
+      }
+      <!-- toggle só alertas -->
+      <button
+        type="button"
+        role="switch"
+        [attr.aria-checked]="view().onlyAlerts"
+        (click)="toggleOnlyAlerts.emit()"
+        class="inline-flex items-center gap-2 rounded-full border px-3 py-2 min-h-[44px] text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+        [class.border-amber-700/50]="view().onlyAlerts"
+        [class.bg-amber-950]="view().onlyAlerts"
+        [class.text-amber-100]="view().onlyAlerts"
+        [class.border-[rgba(142,202,230,0.18)]]="!view().onlyAlerts"
+        [class.bg-[rgba(142,202,230,0.08)]]="!view().onlyAlerts"
+        [class.text-[var(--color-text-secondary)]]="!view().onlyAlerts"
+      >
+        <span
+          class="grid h-3.5 w-3.5 place-items-center rounded-full border text-[10px] leading-none"
+          [class.border-amber-600]="view().onlyAlerts"
+          [class.bg-amber-600]="view().onlyAlerts"
+          [class.text-white]="view().onlyAlerts"
+          [class.border-[rgba(142,202,230,0.35)]]="!view().onlyAlerts"
+          [class.bg-transparent]="!view().onlyAlerts"
+        >
+          @if (view().onlyAlerts) {
+            ✓
+          }
+        </span>
+        Só com alertas
+        @if (view().alerts > 0) {
+          <span
+            class="rounded-full bg-black/20 px-1.5 py-0 text-[10px] font-bold"
+            >{{ view().alerts }}</span
+          >
+        }
+      </button>
+    </div>
+  </div>
+  @if (view().has) {
+    <div class="mb-3 flex items-center gap-2">
+      <div class="relative flex-1">
+        <svg
+          class="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-text-secondary)]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input
+          type="search"
+          placeholder="Filtrar por fonte..."
+          class="h-11 min-h-[44px] w-full rounded-full border border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.35)] py-2 pl-8 pr-10 text-xs text-[var(--foreground)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--brand-teal-500)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal-500)]/30"
+          [value]="view().query"
+          (input)="queryChange.emit($any($event.target).value)"
+          aria-label="Filtrar CSV por fonte"
+        />
+        @if (view().query) {
+          <button
+            type="button"
+            class="absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-[var(--color-text-secondary)] hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)]"
+            (click)="queryChange.emit('')"
+            aria-label="Limpar filtro"
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        }
+      </div>
+      @if (view().noQueryResult) {
+        <span
+          class="shrink-0 text-xs text-[var(--color-text-secondary)]"
+          >sem resultado</span
+        >
+      }
+    </div>
+  }
+
+  @if (!view().has) {
+    <div
+      class="grid place-items-center gap-3 rounded-xl border border-dashed border-[rgba(142,202,230,0.18)] bg-[rgba(0,9,14,0.22)] px-6 py-10 text-center"
+    >
+      <div
+        class="grid h-10 w-10 place-items-center rounded-full bg-[rgba(142,202,230,0.08)] text-[var(--brand-sky-200)]"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path
+            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+          />
+          <path d="M14 2v6h6" />
+          <path d="M10 13H8" />
+          <path d="M16 17H8" />
+          <path d="M13 13h1" />
+        </svg>
+      </div>
+      <div>
+        <p class="m-0 text-sm font-semibold text-[var(--foreground)]">
+          Nenhum CSV gerado
+        </p>
+        <p
+          class="mx-auto mt-1 max-w-[38ch] text-xs leading-5 text-[var(--color-text-secondary)]"
+        >
+          Nenhum arquivo passou pela validação. Isso pode indicar que
+          todas as fontes falharam ou retornaram vazias.
+        </p>
+      </div>
+    </div>
+  } @else if (view().empty) {
+    <div
+      class="rounded-lg border border-[rgba(142,202,230,0.12)] bg-[rgba(142,202,230,0.06)] px-4 py-6 text-center"
+    >
+      <p class="m-0 text-sm font-medium text-[var(--foreground)]">
+        Nenhum arquivo com alerta
+      </p>
+      <p class="mt-1 text-xs text-[var(--color-text-secondary)]">
+        Desative “Só com alertas” para ver todos os
+        {{ view().totalFiles }} arquivos.
+      </p>
+      <button
+        type="button"
+        class="mt-3 rounded-full border border-[rgba(142,202,230,0.18)] bg-[rgba(142,202,230,0.08)] px-3 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[rgba(142,202,230,0.12)]"
+        (click)="showAll.emit()"
+      >
+        Mostrar todos
+      </button>
+    </div>
+  } @else {
+    <div
+      class="overflow-hidden rounded-lg border border-[rgba(142,202,230,0.14)]"
+    >
+      <!-- desktop table -->
+      <div class="hidden max-h-[320px] overflow-auto md:block">
+        <table class="w-full min-w-[680px] border-collapse text-sm">
+          <thead
+            class="sticky top-0 z-10 bg-[rgba(1,19,28,0.96)] backdrop-blur"
+          >
+            <tr
+              class="text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-secondary)]"
+            >
+              <th
+                class="whitespace-nowrap px-3 py-2.5"
+                [attr.aria-sort]="
+                  view().sortBy === 'fonte'
+                    ? view().sortDir === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : 'none'
+                "
+              >
+                <app-csv-sort-button
+                  label="Fonte"
+                  sortKey="fonte"
+                  [active]="view().sortBy === 'fonte'"
+                  [dir]="view().sortDir"
+                  idleTitle="Ordenar por fonte"
+                  (sort)="sortChange.emit($event)"
+                />
+              </th>
+              <th
+                class="whitespace-nowrap px-2 py-2.5 text-right"
+                [attr.aria-sort]="
+                  view().sortBy === 'total'
+                    ? view().sortDir === 'desc'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'none'
+                "
+              >
+                <app-csv-sort-button
+                  label="Total"
+                  sortKey="total"
+                  [active]="view().sortBy === 'total'"
+                  [dir]="view().sortDir"
+                  idleTitle="Ordenar por total"
+                  (sort)="sortChange.emit($event)"
+                />
+              </th>
+              <th
+                class="whitespace-nowrap px-2 py-2.5 text-right"
+                [attr.aria-sort]="
+                  view().sortBy === 'duplicados'
+                    ? view().sortDir === 'desc'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'none'
+                "
+              >
+                <app-csv-sort-button
+                  label="Duplicados"
+                  sortKey="duplicados"
+                  [active]="view().sortBy === 'duplicados'"
+                  [dir]="view().sortDir"
+                  idleTitle="Ordenar por duplicados"
+                  (sort)="sortChange.emit($event)"
+                />
+              </th>
+              <th
+                class="whitespace-nowrap px-2 py-2.5 text-right"
+                [attr.aria-sort]="
+                  view().sortBy === 'sem_preco'
+                    ? view().sortDir === 'desc'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'none'
+                "
+              >
+                <app-csv-sort-button
+                  label="Sem preço"
+                  sortKey="sem_preco"
+                  [active]="view().sortBy === 'sem_preco'"
+                  [dir]="view().sortDir"
+                  idleTitle="Ordenar por sem preço"
+                  (sort)="sortChange.emit($event)"
+                />
+              </th>
+              <th
+                class="whitespace-nowrap px-2 py-2.5 text-right"
+                [attr.aria-sort]="
+                  view().sortBy === 'passados'
+                    ? view().sortDir === 'desc'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'none'
+                "
+              >
+                <app-csv-sort-button
+                  label="Passados"
+                  sortKey="passados"
+                  [active]="view().sortBy === 'passados'"
+                  [dir]="view().sortDir"
+                  idleTitle="Ordenar por passados"
+                  (sort)="sortChange.emit($event)"
+                />
+              </th>
+              <th
+                class="whitespace-nowrap px-2 py-2.5 text-right"
+                [attr.aria-sort]="
+                  view().sortBy === 'sem_imagem'
+                    ? view().sortDir === 'desc'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'none'
+                "
+              >
+                <app-csv-sort-button
+                  label="Sem imagem"
+                  sortKey="sem_imagem"
+                  [active]="view().sortBy === 'sem_imagem'"
+                  [dir]="view().sortDir"
+                  idleTitle="Ordenar por sem imagem"
+                  (sort)="sortChange.emit($event)"
+                />
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[rgba(142,202,230,0.08)]">
+            @for (csv of view().list; track csv.fonte) {
+              <tr
+                class="transition-colors hover:bg-[rgba(142,202,230,0.06)]"
+              >
+                <td class="px-3 py-2.5">
+                  <span class="inline-flex items-center gap-2">
+                    <span
+                      class="h-1.5 w-1.5 shrink-0 rounded-full"
+                      [class.bg-teal-400]="csv.ok"
+                      [class.bg-amber-400]="!csv.ok"
+                    ></span>
+                    <span
+                      class="text-[13px] font-medium leading-none"
+                      >{{ csv.fonte }}</span
+                    >
+                  </span>
+                </td>
+                <td
+                  class="px-2 py-2.5 text-right tabular-nums text-[13px] font-semibold"
+                >
+                  {{ csv.total }}
+                </td>
+                <td
+                  class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                  [class.text-amber-200]="csv.duplicados > 0"
+                  [class.font-semibold]="csv.duplicados > 0"
+                  [class.text-[var(--color-text-secondary)]]="
+                    csv.duplicados === 0
+                  "
+                >
+                  {{ csv.duplicados }}
+                </td>
+                <td
+                  class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                  [class.text-amber-200]="csv.sem_preco > 0"
+                  [class.font-semibold]="csv.sem_preco > 0"
+                  [class.text-[var(--color-text-secondary)]]="
+                    csv.sem_preco === 0
+                  "
+                >
+                  {{ csv.sem_preco }}
+                </td>
+                <td
+                  class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                  [class.text-amber-200]="csv.eventos_passados > 0"
+                  [class.font-semibold]="csv.eventos_passados > 0"
+                  [class.text-[var(--color-text-secondary)]]="
+                    csv.eventos_passados === 0
+                  "
+                >
+                  {{ csv.eventos_passados }}
+                </td>
+                <td
+                  class="px-2 py-2.5 text-right tabular-nums text-[13px]"
+                  [class.text-amber-200]="csv.sem_imagem > 0"
+                  [class.font-semibold]="csv.sem_imagem > 0"
+                  [class.text-[var(--color-text-secondary)]]="
+                    csv.sem_imagem === 0
+                  "
+                >
+                  {{ csv.sem_imagem }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <!-- mobile cards 2x2 -->
+      <div
+        class="grid max-h-[380px] gap-2 overflow-auto p-2 md:hidden"
+      >
+        @for (csv of view().list; track csv.fonte) {
+          <div
+            class="rounded-lg border border-[rgba(142,202,230,0.12)] bg-[rgba(0,9,14,0.22)] p-3"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <span class="flex min-w-0 items-center gap-2">
+                <span
+                  class="h-2 w-2 shrink-0 rounded-full"
+                  [class.bg-teal-400]="csv.ok"
+                  [class.bg-amber-400]="!csv.ok"
+                ></span>
+                <span
+                  class="truncate text-[13px] font-semibold leading-none"
+                  >{{ csv.fonte }}</span
+                >
+              </span>
+              <span
+                class="shrink-0 rounded-full border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.28)] px-2 py-1 text-[11px] font-bold tabular-nums leading-none"
+                >{{ csv.total }} total</span
+              >
+            </div>
+            <div
+              class="mt-3 grid grid-cols-2 gap-2 max-[360px]:grid-cols-1 max-[360px]:gap-1.5"
+            >
+              <div
+                class="rounded-md border border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.18)] px-2.5 py-2"
+              >
+                <div
+                  class="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]"
+                >
+                  Duplicados
+                </div>
+                <div
+                  class="mt-1 text-[13px] font-semibold tabular-nums"
+                  [class.text-amber-200]="csv.duplicados > 0"
+                  [class.text-[var(--color-text-secondary)]]="
+                    csv.duplicados === 0
+                  "
+                >
+                  {{ csv.duplicados }}
+                </div>
+              </div>
+              <div
+                class="rounded-md border border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.18)] px-2.5 py-2"
+              >
+                <div
+                  class="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]"
+                >
+                  Sem preço
+                </div>
+                <div
+                  class="mt-1 text-[13px] font-semibold tabular-nums"
+                  [class.text-amber-200]="csv.sem_preco > 0"
+                  [class.text-[var(--color-text-secondary)]]="
+                    csv.sem_preco === 0
+                  "
+                >
+                  {{ csv.sem_preco }}
+                </div>
+              </div>
+              <div
+                class="rounded-md border border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.18)] px-2.5 py-2"
+              >
+                <div
+                  class="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]"
+                >
+                  Passados
+                </div>
+                <div
+                  class="mt-1 text-[13px] font-semibold tabular-nums"
+                  [class.text-amber-200]="csv.eventos_passados > 0"
+                  [class.text-[var(--color-text-secondary)]]="
+                    csv.eventos_passados === 0
+                  "
+                >
+                  {{ csv.eventos_passados }}
+                </div>
+              </div>
+              <div
+                class="rounded-md border border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.18)] px-2.5 py-2"
+              >
+                <div
+                  class="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]"
+                >
+                  Sem imagem
+                </div>
+                <div
+                  class="mt-1 text-[13px] font-semibold tabular-nums"
+                  [class.text-amber-200]="csv.sem_imagem > 0"
+                  [class.text-[var(--color-text-secondary)]]="
+                    csv.sem_imagem === 0
+                  "
+                >
+                  {{ csv.sem_imagem }}
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+      <div
+        class="flex items-center justify-between border-t border-[rgba(142,202,230,0.08)] bg-[rgba(0,9,14,0.28)] px-3 py-2 text-[11px] text-[var(--color-text-secondary)]"
+      >
+        <span
+          >{{ view().filteredCount }} de
+          {{ view().totalFiles }} arquivos</span
+        >
+        <span class="hidden md:inline"
+          >Clique no cabeçalho para ordenar</span
+        >
+        <span class="md:hidden"
+          >{{ view().filteredCount }} itens</span
+        >
+      </div>
+    </div>
+  }
+</section>

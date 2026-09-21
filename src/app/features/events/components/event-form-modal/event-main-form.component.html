@@ -1,0 +1,162 @@
+<section class="grid gap-4">
+  <div class="flex items-center gap-2">
+    <span
+      class="grid h-6 w-6 place-items-center rounded-md bg-[rgba(251,133,0,0.15)] text-xs font-bold text-[var(--primary)]"
+      >1</span
+    >
+    <h4 class="m-0 text-base font-semibold sm:text-lg">
+      Dados principais
+    </h4>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <label
+        for="nome_evento"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Nome do evento *</label
+      >
+      <input
+        id="nome_evento"
+        data-autofocus
+        type="text"
+        [ngModel]="formData().nome_evento"
+        (ngModelChange)="patch({ nome_evento: $event })"
+        placeholder="Ex: Corrida Circuito PB"
+        aria-required="true"
+        [attr.aria-invalid]="nomeError() ? 'true' : null"
+        aria-describedby="nome_evento-error"
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+      <div id="nome_evento-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ nomeError() }}</div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="data_realizacao"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Data de realização *</label
+      >
+      <input
+        id="data_realizacao"
+        type="date"
+        [ngModel]="formData().data_realizacao"
+        (ngModelChange)="patch({ data_realizacao: $event })"
+        aria-required="true"
+        [attr.aria-invalid]="dataError() ? 'true' : null"
+        aria-describedby="data_realizacao-error"
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+      <div id="data_realizacao-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ dataError() }}</div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="horario"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Horário</label
+      >
+      <input
+        id="horario"
+        type="time"
+        [ngModel]="formData().horario"
+        (ngModelChange)="patch({ horario: $event })"
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="cidade"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Cidade *</label
+      >
+      <input
+        id="cidade"
+        type="text"
+        [ngModel]="formData().cidade"
+        (ngModelChange)="patch({ cidade: $event })"
+        placeholder="João Pessoa"
+        aria-required="true"
+        [attr.aria-invalid]="cidadeError() ? 'true' : null"
+        aria-describedby="cidade-error"
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+      <div id="cidade-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ cidadeError() }}</div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        id="estado-label"
+        for="estado-input"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Estado *</label
+      >
+
+      <app-combobox
+        id="estado-input"
+        [items]="stateOptions"
+        [value]="formData().estado"
+        (valueChange)="patch({ estado: $event ?? '' })"
+        placeholder="Buscar estado..."
+        emptyMessage="Nenhum estado encontrado"
+        ariaLabelledby="estado-label"
+        ariaRequired
+      />
+      <div id="estado-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ estadoError() }}</div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="organizador"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Organizador *</label
+      >
+      <input
+        id="organizador"
+        type="text"
+        [ngModel]="formData().organizador"
+        (ngModelChange)="patch({ organizador: $event })"
+        placeholder="Nome do organizador"
+        aria-required="true"
+        [attr.aria-invalid]="organizadorError() ? 'true' : null"
+        aria-describedby="organizador-error"
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+      <div id="organizador-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ organizadorError() }}</div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        id="patrocinado-label"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Patrocinado</label
+      >
+      <app-combobox
+        id="patrocinado"
+        [items]="sponsoredOptions"
+        [value]="formData().patrocinado ? 'true' : 'false'"
+        (valueChange)="patch({ patrocinado: $event === 'true' })"
+        ariaLabelledby="patrocinado-label"
+      >
+      </app-combobox>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="data_coleta"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Data de coleta</label
+      >
+      <input
+        id="data_coleta"
+        type="datetime-local"
+        [ngModel]="toDateTimeLocal(formData().data_coleta)"
+        (ngModelChange)="
+          patch({ data_coleta: fromDatetimeLocal($event) })
+        "
+        class="min-h-[38px] w-full rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.6)] px-3 text-sm"
+      />
+    </div>
+  </div>
+</section>

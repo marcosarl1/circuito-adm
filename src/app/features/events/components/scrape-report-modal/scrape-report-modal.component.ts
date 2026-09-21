@@ -18,18 +18,38 @@ import {
   ScrapeReport,
   ScrapeScraperResult,
 } from '../../models/scrape.model';
+import {
+  ScrapeHeaderView,
+  ScrapeReportHeaderComponent,
+} from './scrape-report-header.component';
+import {
+  ScrapeSourcesComponent,
+  ScrapeSourcesView,
+} from './scrape-sources.component';
+import {
+  ScrapeTimelineComponent,
+  ScrapeTimelineView,
+} from './scrape-timeline.component';
+import {
+  ScrapeCsvValidationComponent,
+  ScrapeCsvView,
+} from './scrape-csv-validation.component';
+import { ScrapeImportStatusComponent } from './scrape-import-status.component';
+import { CsvSortKey } from './csv-sort-button.component';
 
-type SortKey =
-  | 'total'
-  | 'duplicados'
-  | 'fonte'
-  | 'sem_preco'
-  | 'sem_imagem'
-  | 'passados';
+type SortKey = CsvSortKey;
 
 @Component({
   selector: 'app-scrape-report-modal',
-  imports: [A11yModule, IconComponent],
+  imports: [
+    A11yModule,
+    IconComponent,
+    ScrapeReportHeaderComponent,
+    ScrapeSourcesComponent,
+    ScrapeTimelineComponent,
+    ScrapeCsvValidationComponent,
+    ScrapeImportStatusComponent,
+  ],
   templateUrl: './scrape-report-modal.component.html',
 })
 export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
@@ -258,6 +278,64 @@ export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
     const csvs = this.report()?.csvs ?? [];
     return csvs.reduce((a, c) => a + c.total, 0);
   });
+
+  headerView = computed<ScrapeHeaderView>(() => {
+    const s = this.summary();
+    const meta = this.timelineMeta();
+    const r = this.report();
+    return {
+      hasReport: !!r,
+      fontes: s.total,
+      ok: s.ok,
+      falhas: s.fail,
+      duration: s.duration,
+      eventos: this.totalEventsCount(),
+      arquivos: r ? r.csvs.length : null,
+      tempoReal: meta?.totalWall ?? null,
+      tempoSomado: meta ? meta.totalFromScrapers : s.duration,
+    };
+  });
+
+  sourcesView = computed<ScrapeSourcesView>(() => {
+    const total = this.report()?.scrapers.length ?? 0;
+    const rem = this.remaining();
+    return {
+      has: this.hasScrapers(),
+      label: this.scraperCountLabel(),
+      remaining: rem,
+      expanded: this.expanded(),
+      showExpand: rem > 0 || (total > 8 && this.expanded()),
+      total,
+      failures: this.summary().fail,
+      query: this.scraperQuery(),
+      empty: this.filteredScrapers().length === 0,
+      list: this.visibleScrapers(),
+      selected: this.selectedScraper(),
+      selectedName: this.selectedDetail(),
+    };
+  });
+
+  timelineView = computed<ScrapeTimelineView>(() => ({
+    show: this.hasScrapers(),
+    meta: this.timelineMeta(),
+    bars: this.timelineBars(),
+  }));
+
+  csvView = computed<ScrapeCsvView>(() => ({
+    has: this.hasCsvs(),
+    chips: this.csvChipCounts(),
+    alerts: this.alertsCount(),
+    onlyAlerts: this.onlyAlerts(),
+    query: this.csvQuery(),
+    noQueryResult:
+      this.csvQuery().trim() !== '' && this.filteredAndSortedCsvs().length === 0,
+    empty: this.filteredAndSortedCsvs().length === 0,
+    list: this.filteredAndSortedCsvs(),
+    sortBy: this.sortBy(),
+    sortDir: this.sortDir(),
+    totalFiles: this.report()?.csvs.length ?? 0,
+    filteredCount: this.filteredAndSortedCsvs().length,
+  }));
 
   toggleExpanded() {
     this.expanded.update((v) => !v);

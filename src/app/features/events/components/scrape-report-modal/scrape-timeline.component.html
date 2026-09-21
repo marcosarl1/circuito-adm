@@ -1,0 +1,97 @@
+@if (view().show && view().meta; as meta) {
+  <section
+    class="rounded-xl border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] p-4 max-md:p-3"
+  >
+    <div
+      class="mb-3 flex flex-wrap items-baseline justify-between gap-2"
+    >
+      <h4
+        class="m-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]"
+      >
+        Timeline
+      </h4>
+      <span
+        class="flex flex-wrap items-center gap-1.5 text-xs tabular-nums text-[var(--color-text-secondary)]"
+      >
+        @if (meta.startLabel && meta.endLabel) {
+          <span>{{ meta.startLabel }} → {{ meta.endLabel }}</span>
+          @if (meta.totalWall !== null) {
+            <span class="inline-flex items-center gap-1">
+              · {{ meta.totalWall.toFixed(1) }}s real
+              <span
+                class="hidden md:inline"
+                title="Soma sequencial de todos os scrapers; real é o wall-clock com paralelismo"
+                >· {{ meta.totalFromScrapers.toFixed(1) }}s
+                somados</span
+              >
+            </span>
+          } @else {
+            <span
+              >· {{ meta.totalFromScrapers.toFixed(1) }}s
+              somados</span
+            >
+          }
+        } @else {
+          <span
+            >{{ meta.totalFromScrapers.toFixed(1) }}s somados
+            @if (meta.totalWall !== null) {
+              · {{ meta.totalWall.toFixed(1) }}s real
+            }
+          </span>
+        }
+      </span>
+    </div>
+
+    <div
+      class="overflow-hidden rounded-lg border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)]"
+    >
+      @for (bar of view().bars; track bar.nome) {
+        <div
+          class="flex flex-col gap-1.5 border-b border-[rgba(142,202,230,0.06)] px-3 py-2.5 last:border-b-0 hover:bg-[rgba(142,202,230,0.04)]"
+        >
+          <div class="flex items-center gap-2">
+            <span
+              class="h-1.5 w-1.5 shrink-0 rounded-full"
+              [class.bg-teal-400]="bar.ok"
+              [class.bg-red-400]="!bar.ok"
+            ></span>
+            <span
+              class="truncate text-xs font-medium text-[var(--foreground)]"
+              >{{ bar.nome }}</span
+            >
+            @if (bar.isBottleneck) {
+              <span
+                class="inline-flex shrink-0 items-center rounded-full border border-amber-800/40 bg-amber-950 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide leading-none text-amber-100"
+                title="Fonte com maior duração — determina o tempo total"
+              >
+                + lento
+              </span>
+            }
+          </div>
+          <div class="flex items-center gap-2 md:gap-3">
+            <div
+              class="h-1.5 flex-1 overflow-hidden rounded-full bg-[rgba(142,202,230,0.14)]"
+            >
+              <div
+                class="h-full rounded-full transition-all"
+                [class.bg-teal-600]="bar.ok && !bar.isBottleneck"
+                [class.bg-amber-500]="bar.isBottleneck && bar.ok"
+                [class.bg-red-600]="!bar.ok"
+                [style.width.%]="bar.width"
+              ></div>
+            </div>
+            <span
+              class="inline-flex shrink-0 items-center justify-center rounded-full border bg-transparent px-2.5 text-[11px] font-semibold tabular-nums leading-none h-[22px]"
+              [class.border-teal-800/50]="bar.ok"
+              [class.text-teal-100]="bar.ok"
+              [class.border-red-800/50]="!bar.ok"
+              [class.text-red-100]="!bar.ok"
+            >
+              {{ bar.duration_s }}s
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+}

@@ -1,0 +1,254 @@
+<section
+  class="card mt-4 flex flex-col p-4 sm:p-5"
+  aria-labelledby="zona-saude"
+>
+  <div
+    class="flex items-center justify-between border-b border-[var(--sidebar-border-subtle)] pb-3.5"
+  >
+    <div>
+      <h2
+        id="zona-saude"
+        class="text-sm font-semibold text-[var(--foreground)]"
+      >
+        Saúde do Sistema & Qualidade
+      </h2>
+      <p class="mt-0.5 text-xs text-[var(--muted-foreground)]">
+        Monitoramento de automações e pendências de cadastro
+      </p>
+    </div>
+
+    <div
+      class="flex items-center gap-1.5 rounded-full border border-[var(--sidebar-border-subtle)] bg-[rgba(142,202,230,0.04)] px-3 py-1"
+    >
+      <span class="text-xs font-bold text-[var(--foreground)]">{{
+        scrapers().length
+      }}</span>
+      <span class="text-xs text-[var(--muted-foreground)]">fontes</span>
+    </div>
+  </div>
+
+  @if (scrapers().length === 0) {
+    <div class="flex flex-1 items-center justify-center py-10">
+      <p class="text-sm text-[var(--muted-foreground)]">
+        Nenhum scraper ativo no momento.
+      </p>
+    </div>
+  } @else {
+    <div class="divide-y divide-[var(--sidebar-border-subtle)]">
+      @for (s of scrapers(); track s.fonte) {
+        <div class="py-3.5">
+          <button
+            type="button"
+            class="group flex w-full items-center justify-between gap-4 text-left focus:outline-none"
+            (click)="toggle.emit(s.fonte)"
+            [attr.aria-expanded]="isOpen(s.fonte)"
+          >
+            <div class="flex items-center gap-3 min-w-0">
+              <span
+                class="relative flex h-2.5 w-2.5 shrink-0 items-center justify-center"
+              >
+                @if (s.status === "ok") {
+                  <span
+                    class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#06d6a0] opacity-40"
+                  ></span>
+                }
+                <span
+                  class="relative inline-flex h-2.5 w-2.5 rounded-full"
+                  [class.bg-[#06d6a0]]="s.status === 'ok'"
+                  [class.bg-[#ffb703]]="s.status === 'atrasado'"
+                ></span>
+              </span>
+              <div class="min-w-0">
+                <p
+                  class="truncate text-sm font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]"
+                >
+                  {{ s.display }}
+                </p>
+                <p class="truncate text-xs text-[var(--muted-foreground)]">
+                  Atualizado {{ s.relativo }} • {{ s.count }} eventos
+                </p>
+              </div>
+            </div>
+
+            <div class="flex shrink-0 items-center gap-2.5">
+              @if (s.totalPendencias > 0) {
+                <span
+                  class="inline-flex items-center justify-center rounded-md bg-[rgba(251,191,3,0.12)] px-2.5 py-1 text-xs font-semibold text-[#ffb703]"
+                >
+                  {{ s.totalPendencias }} pendências
+                </span>
+              } @else {
+                <span
+                  class="inline-flex items-center justify-center rounded-md bg-[rgba(6,214,160,0.12)] px-2.5 py-1 text-xs font-semibold text-[#06d6a0]"
+                >
+                  Tudo OK
+                </span>
+              }
+              <app-icon
+                [name]="
+                  isOpen(s.fonte) ? 'heroChevronUp' : 'heroChevronDown'
+                "
+                size="16"
+                class="text-[var(--muted-foreground)] transition-transform duration-200"
+              ></app-icon>
+            </div>
+          </button>
+
+          @if (isOpen(s.fonte)) {
+            <div
+              class="mt-3.5 rounded-xl border border-[rgba(142,202,230,0.1)] bg-[rgba(142,202,230,0.02)] p-4"
+            >
+              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                  <h3
+                    class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+                  >
+                    Detalhes da Coleta
+                  </h3>
+                  <div class="mt-3 space-y-2 text-xs">
+                    <div class="flex items-center gap-2">
+                      <span class="text-[var(--muted-foreground)]"
+                        >Última execução:</span
+                      ><span class="font-medium text-[var(--foreground)]">{{
+                        s.dataSync
+                      }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-[var(--muted-foreground)]"
+                        >Idade dos dados:</span
+                      ><span
+                        class="font-semibold"
+                        [class.text-[#06d6a0]]="s.status === 'ok'"
+                        [class.text-[#ffb703]]="s.status === 'atrasado'"
+                        >{{ s.diffD }} dias</span
+                      >
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-[var(--muted-foreground)]"
+                        >Eventos lidos:</span
+                      ><span class="font-medium text-[var(--foreground)]"
+                        >{{ s.count }} registros</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3
+                    class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+                  >
+                    Qualidade dos Dados
+                  </h3>
+                  <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                    <!-- Link -->
+                    <div
+                      class="flex items-center justify-between rounded-lg border border-[var(--sidebar-border-subtle)] bg-[var(--card)] px-3 py-2"
+                      [class.border-[rgba(248,113,113,0.2)]]="s.semLink > 0"
+                      [class.bg-[rgba(248,113,113,0.06)]]="s.semLink > 0"
+                    >
+                      <span
+                        [class.text-[#f87171]]="s.semLink > 0"
+                        [class.text-[var(--muted-foreground)]]="
+                          s.semLink === 0
+                        "
+                        >Sem Link</span
+                      >
+                      <span
+                        class="font-bold"
+                        [class.text-[#f87171]]="s.semLink > 0"
+                        [class.text-[var(--foreground)]]="s.semLink === 0"
+                        >{{ s.semLink }}</span
+                      >
+                    </div>
+
+                    <div
+                      class="flex items-center justify-between rounded-lg border border-[var(--sidebar-border-subtle)] bg-[var(--card)] px-3 py-2"
+                      [class.border-[rgba(248,113,113,0.2)]]="
+                        s.semRegulamento > 0
+                      "
+                      [class.bg-[rgba(248,113,113,0.06)]]="
+                        s.semRegulamento > 0
+                      "
+                    >
+                      <span
+                        [class.text-[#f87171]]="s.semRegulamento > 0"
+                        [class.text-[var(--muted-foreground)]]="
+                          s.semRegulamento === 0
+                        "
+                        >Regulamento</span
+                      >
+                      <span
+                        class="font-bold"
+                        [class.text-[#f87171]]="s.semRegulamento > 0"
+                        [class.text-[var(--foreground)]]="
+                          s.semRegulamento === 0
+                        "
+                        >{{ s.semRegulamento }}</span
+                      >
+                    </div>
+
+                    <div
+                      class="flex items-center justify-between rounded-lg border border-[var(--sidebar-border-subtle)] bg-[var(--card)] px-3 py-2"
+                      [class.border-[rgba(248,113,113,0.2)]]="s.semImagem > 0"
+                      [class.bg-[rgba(248,113,113,0.06)]]="s.semImagem > 0"
+                    >
+                      <span
+                        [class.text-[#f87171]]="s.semImagem > 0"
+                        [class.text-[var(--muted-foreground)]]="
+                          s.semImagem === 0
+                        "
+                        >Sem Imagem</span
+                      >
+                      <span
+                        class="font-bold"
+                        [class.text-[#f87171]]="s.semImagem > 0"
+                        [class.text-[var(--foreground)]]="s.semImagem === 0"
+                        >{{ s.semImagem }}</span
+                      >
+                    </div>
+
+                    <div
+                      class="flex items-center justify-between rounded-lg border border-[var(--sidebar-border-subtle)] bg-[var(--card)] px-3 py-2"
+                      [class.border-[rgba(248,113,113,0.2)]]="s.semPreco > 0"
+                      [class.bg-[rgba(248,113,113,0.06)]]="s.semPreco > 0"
+                    >
+                      <span
+                        [class.text-[#f87171]]="s.semPreco > 0"
+                        [class.text-[var(--muted-foreground)]]="
+                          s.semPreco === 0
+                        "
+                        >Sem Preço</span
+                      >
+                      <span
+                        class="font-bold"
+                        [class.text-[#f87171]]="s.semPreco > 0"
+                        [class.text-[var(--foreground)]]="s.semPreco === 0"
+                        >{{ s.semPreco }}</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="mt-4 flex justify-end border-t border-[rgba(142,202,230,0.08)] pt-3"
+              >
+                <a
+                  routerLink="/events"
+                  class="inline-flex items-center gap-1 text-xs font-semibold text-[var(--brand-amber-500)] hover:underline"
+                >
+                  Filtrar eventos desta fonte
+                  <app-icon
+                    name="heroChevronRight"
+                    size="12"
+                    strokeWidth="2"
+                  ></app-icon>
+                </a>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</section>

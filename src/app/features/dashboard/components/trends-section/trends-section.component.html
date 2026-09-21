@@ -1,0 +1,185 @@
+<section
+  class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3"
+  aria-labelledby="zona-tendencias"
+>
+  <h2 id="zona-tendencias" class="sr-only">Visão Geral e Tendências</h2>
+  <div class="card flex flex-col p-4 lg:col-span-2 lg:min-h-[360px]">
+    <div class="flex items-baseline justify-between gap-2">
+      <h3
+        class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+      >
+        Evolução de Eventos
+      </h3>
+      <span class="text-xs text-[var(--muted-foreground)]"
+        >Últimos 6 meses</span
+      >
+    </div>
+    <div class="mt-4 flex flex-1 items-center justify-center">
+      @defer (on viewport) {
+        <app-bar-chart [options]="evolucao()" klass="w-full" />
+      } @placeholder {
+        <div class="h-[290px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
+      }
+      <table class="sr-only">
+        <caption>
+          Eventos últimos 6 meses
+        </caption>
+        <thead>
+          <tr>
+            <th>Mês</th>
+            <th>Eventos</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of meses(); track item.label) {
+            <tr>
+              <td>{{ item.label }}</td>
+              <td>{{ item.count }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card flex flex-col p-4 lg:col-span-1 lg:min-h-[360px]">
+    <div class="flex items-center justify-between gap-2">
+      <h3
+        class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+      >
+        Localização
+      </h3>
+      <div
+        class="flex items-center gap-1 rounded-full border border-[var(--sidebar-border-subtle)] p-1"
+      >
+        <button
+          type="button"
+          class="rounded-full px-3 py-1 text-xs font-medium transition-colors"
+          [class.bg-[var(--primary)]]="localView() === 'estado'"
+          [class.text-white]="localView() === 'estado'"
+          [class.text-[var(--muted-foreground)]]="localView() !== 'estado'"
+          (click)="toggleLocal.emit('estado')"
+        >
+          Estados
+        </button>
+        <button
+          type="button"
+          class="rounded-full px-3 py-1 text-xs font-medium transition-colors"
+          [class.bg-[var(--primary)]]="localView() === 'cidade'"
+          [class.text-white]="localView() === 'cidade'"
+          [class.text-[var(--muted-foreground)]]="localView() !== 'cidade'"
+          (click)="toggleLocal.emit('cidade')"
+        >
+          Cidades
+        </button>
+      </div>
+    </div>
+    @if (localView() === "estado") {
+      <div class="mt-4 space-y-2.5 flex-1">
+        @for (item of estados(); track item.estado) {
+          <div class="flex items-center gap-3">
+            <span
+              class="w-10 shrink-0 text-sm font-medium uppercase tracking-wider text-[var(--muted-foreground)]"
+              >{{ item.estado }}</span
+            >
+            <div
+              class="h-2 flex-1 overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]"
+            >
+              <div
+                class="h-full rounded-full bg-[var(--foreground)] transition-all duration-500"
+                [style.width.%]="(item.count / estadoMax()) * 100"
+              ></div>
+            </div>
+            <span
+              class="w-6 text-right text-sm font-semibold text-[var(--foreground)]"
+              >{{ item.count }}</span
+            >
+          </div>
+        }
+      </div>
+      @if (estadoTotalPages() > 1) {
+        <div class="mt-3 flex items-center justify-end gap-1">
+          <button
+            type="button"
+            class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30"
+            (click)="prevEstado.emit()"
+            [disabled]="estadoPage() === 0"
+            aria-label="Página anterior"
+          >
+            <app-icon
+              name="heroChevronLeft"
+              size="14"
+              strokeWidth="2"
+            ></app-icon>
+          </button>
+          <button
+            type="button"
+            class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--foreground)] disabled:opacity-30"
+            (click)="nextEstado.emit()"
+            [disabled]="estadoPage() === estadoTotalPages() - 1"
+            aria-label="Próxima página"
+          >
+            <app-icon
+              name="heroChevronRight"
+              size="14"
+              strokeWidth="2"
+            ></app-icon>
+          </button>
+        </div>
+      }
+    } @else {
+      <div class="mt-4 space-y-2.5 flex-1">
+        @for (item of cidades(); track item.cidade) {
+          <div class="flex items-center gap-3">
+            <span
+              class="flex-1 truncate text-sm font-medium text-[var(--muted-foreground)]"
+              >{{ item.cidade }}</span
+            >
+            <div
+              class="h-2 flex-1 overflow-hidden rounded-full bg-[rgba(142,202,230,0.12)]"
+            >
+              <div
+                class="h-full rounded-full bg-[var(--foreground)] transition-all duration-500"
+                [style.width.%]="(item.count / cidadeMax()) * 100"
+              ></div>
+            </div>
+            <span
+              class="w-6 text-right text-sm font-semibold text-[var(--foreground)]"
+              >{{ item.count }}</span
+            >
+          </div>
+        }
+      </div>
+      @if (cidadeTotalPages() > 1) {
+        <div class="mt-3 flex items-center justify-end gap-1">
+          <button
+            type="button"
+            class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)]"
+            (click)="prevCidade.emit()"
+            [disabled]="cidadePage() === 0"
+            aria-label="Página anterior"
+          >
+            <app-icon
+              name="heroChevronLeft"
+              size="14"
+              strokeWidth="2"
+            ></app-icon>
+          </button>
+          <button
+            type="button"
+            class="grid h-7 w-7 place-items-center rounded-md border border-[var(--sidebar-border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--sidebar-accent)]"
+            (click)="nextCidade.emit()"
+            [disabled]="cidadePage() === cidadeTotalPages() - 1"
+            aria-label="Próxima página"
+          >
+            <app-icon
+              name="heroChevronRight"
+              size="14"
+              strokeWidth="2"
+            ></app-icon>
+          </button>
+        </div>
+      }
+    }
+  </div>
+</section>

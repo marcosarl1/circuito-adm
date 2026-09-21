@@ -1,0 +1,387 @@
+<section
+  class="rounded-xl border border-[rgba(142,202,230,0.14)] bg-[rgba(0,9,14,0.22)] p-4 max-md:p-3"
+>
+  <div
+    class="mb-3 flex flex-wrap items-baseline justify-between gap-2"
+  >
+    <h4
+      class="m-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]"
+    >
+      Fontes
+    </h4>
+    @if (view().has) {
+      <span class="text-xs text-[var(--color-text-secondary)]">
+        @if (view().label; as label) {
+          {{ label }}
+        } @else if (view().remaining > 0 && !view().expanded) {
+          +{{ view().remaining }} ocultas
+        } @else if (view().failures === 0) {
+          todas operacionais
+        } @else {
+          toque para ver detalhe
+        }
+      </span>
+    }
+  </div>
+  @if (view().has) {
+    <div class="mb-3 flex items-center gap-2">
+      <div class="relative flex-1">
+        <svg
+          class="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-text-secondary)]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input
+          type="search"
+          placeholder="Buscar fonte..."
+          class="h-11 min-h-[44px] w-full rounded-full border border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.35)] py-2 pl-8 pr-10 text-xs text-[var(--foreground)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--brand-teal-500)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-teal-500)]/30"
+          [value]="view().query"
+          (input)="queryChange.emit($any($event.target).value)"
+          aria-label="Buscar fonte"
+        />
+        @if (view().query) {
+          <button
+            type="button"
+            class="absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-[var(--color-text-secondary)] hover:bg-[rgba(142,202,230,0.10)] hover:text-[var(--foreground)]"
+            (click)="queryChange.emit('')"
+            aria-label="Limpar busca"
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        }
+      </div>
+      @if (view().empty) {
+        <span
+          class="shrink-0 text-xs text-[var(--color-text-secondary)]"
+          >nenhum resultado</span
+        >
+      }
+    </div>
+  }
+
+  @if (!view().has) {
+    <div
+      class="grid place-items-center gap-3 rounded-xl border border-dashed border-[rgba(142,202,230,0.18)] bg-[rgba(0,9,14,0.22)] px-6 py-10 text-center"
+    >
+      <div
+        class="grid h-10 w-10 place-items-center rounded-full bg-[rgba(142,202,230,0.08)] text-[var(--brand-sky-200)]"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+          <path d="M8.5 11h6" />
+        </svg>
+      </div>
+      <div>
+        <p class="m-0 text-sm font-semibold text-[var(--foreground)]">
+          Nenhuma fonte retornou dados
+        </p>
+        <p
+          class="mx-auto mt-1 max-w-[36ch] text-xs leading-5 text-[var(--color-text-secondary)]"
+        >
+          A coleta terminou sem registrar scrapers. Tente rodar
+          novamente ou verifique a conexão com os coletores.
+        </p>
+      </div>
+    </div>
+  } @else if (view().empty) {
+    <div
+      class="grid place-items-center gap-2 rounded-lg border border-dashed border-[rgba(142,202,230,0.16)] bg-[rgba(0,9,14,0.14)] px-6 py-8 text-center"
+    >
+      <p class="m-0 text-sm font-medium text-[var(--foreground)]">
+        Nenhuma fonte encontrada
+      </p>
+      <p class="m-0 text-xs text-[var(--color-text-secondary)]">
+        Nenhum resultado para “{{ view().query }}”.
+      </p>
+      <button
+        type="button"
+        class="mt-1 text-xs font-medium text-[var(--brand-sky-500)] underline underline-offset-2 hover:text-[var(--brand-sky-200)]"
+        (click)="queryChange.emit('')"
+      >
+        Limpar busca
+      </button>
+    </div>
+  } @else {
+    <div
+      class="grid grid-cols-1 gap-2 md:grid-cols-2"
+      role="list"
+      aria-label="Lista de fontes"
+    >
+      @for (scraper of view().list; track scraper.nome) {
+        <button
+          type="button"
+          role="listitem"
+          class="group flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+          [class.border-teal-800/50]="scraper.ok"
+          [class.bg-teal-950]="scraper.ok"
+          [class.hover:bg-teal-900]="hasDetail(scraper) && scraper.ok"
+          [class.border-red-900/60]="!scraper.ok"
+          [class.bg-red-950]="!scraper.ok"
+          [class.hover:bg-red-900]="hasDetail(scraper) && !scraper.ok"
+          [class.ring-2]="
+            hasDetail(scraper) && view().selectedName === scraper.nome
+          "
+          [class.ring-teal-600/30]="
+            hasDetail(scraper) &&
+            view().selectedName === scraper.nome &&
+            scraper.ok
+          "
+          [class.ring-red-600/30]="
+            hasDetail(scraper) &&
+            view().selectedName === scraper.nome &&
+            !scraper.ok
+          "
+          [class.cursor-pointer]="hasDetail(scraper)"
+          [class.cursor-default]="!hasDetail(scraper)"
+          [class.opacity-80]="!hasDetail(scraper)"
+          [class.hover:opacity-100]="!hasDetail(scraper)"
+          (click)="hasDetail(scraper) && toggleDetail.emit(scraper.nome)"
+          [attr.aria-expanded]="
+            hasDetail(scraper)
+              ? view().selectedName === scraper.nome
+              : null
+          "
+          [attr.aria-controls]="
+            hasDetail(scraper) ? 'scraper-detail-panel' : null
+          "
+          [attr.aria-disabled]="!hasDetail(scraper)"
+          [attr.title]="
+            hasDetail(scraper)
+              ? scraper.nome + ' · clique para detalhes'
+              : scraper.nome
+          "
+        >
+          <span class="flex min-w-0 items-center gap-2.5">
+            <span
+              class="h-2 w-2 shrink-0 rounded-full"
+              [class.bg-teal-400]="scraper.ok"
+              [class.bg-red-400]="!scraper.ok"
+            ></span>
+            <span
+              class="min-w-0 break-words text-xs font-medium leading-tight"
+              [class.text-teal-100]="scraper.ok"
+              [class.text-red-100]="!scraper.ok"
+              >{{ scraper.nome }}</span
+            >
+          </span>
+          <span class="flex shrink-0 items-center gap-2">
+            <span
+              class="inline-flex items-center justify-center rounded-full border px-2.5 text-[11px] font-bold tabular-nums leading-none h-[22px]"
+              [class.border-teal-800/40]="scraper.ok"
+              [class.text-teal-100]="scraper.ok"
+              [class.border-red-900/40]="!scraper.ok"
+              [class.text-red-100]="!scraper.ok"
+            >
+              {{ scraper.duration_s }}s
+            </span>
+            @if (hasDetail(scraper)) {
+              <svg
+                class="h-3.5 w-3.5 shrink-0 opacity-60 transition-transform group-hover:opacity-100"
+                [class.rotate-180]="view().selectedName === scraper.nome"
+                [class.text-teal-200]="scraper.ok"
+                [class.text-red-200]="!scraper.ok"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            }
+          </span>
+        </button>
+        @if (
+          view().selectedName === scraper.nome && view().selected;
+          as selMobile
+        ) {
+          <div
+            role="region"
+            [attr.aria-label]="'Detalhe de ' + selMobile.nome"
+            class="col-span-1 mt-2 rounded-lg border bg-[rgba(0,9,14,0.35)] p-3 text-xs leading-relaxed md:hidden"
+            [class.border-teal-800/40]="selMobile.ok"
+            [class.bg-teal-950/30]="selMobile.ok"
+            [class.border-red-800/40]="!selMobile.ok"
+            [class.bg-red-950/30]="!selMobile.ok"
+          >
+            <div
+              class="mb-1.5 flex items-center justify-between gap-2"
+            >
+              <span
+                class="font-semibold tracking-wide"
+                [class.text-teal-200]="selMobile.ok"
+                [class.text-red-200]="!selMobile.ok"
+              >
+                {{ selMobile.nome }} —
+                {{ selMobile.ok ? "OK" : "FALHOU" }}
+              </span>
+              <button
+                type="button"
+                class="inline-flex min-h-[28px] items-center justify-center rounded-md border border-transparent px-2.5 py-1 text-xs font-medium text-[var(--color-text-secondary)] underline decoration-dotted underline-offset-2 transition-colors hover:border-[rgba(142,202,230,0.18)] hover:bg-[rgba(142,202,230,0.08)] hover:text-[var(--foreground)] hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+                (click)="closeDetail.emit()"
+                aria-label="Fechar detalhe"
+              >
+                fechar
+                <span aria-hidden="true" class="ml-1">×</span>
+              </button>
+            </div>
+            @if (selMobile.detail) {
+              <p
+                class="m-0 whitespace-pre-wrap break-words text-[var(--color-text-secondary)]"
+              >
+                {{ selMobile.detail }}
+              </p>
+            }
+            @if (selMobile.stderr) {
+              <pre
+                class="mt-2 max-h-[160px] overflow-auto whitespace-pre-wrap break-words rounded-md bg-[rgba(0,0,0,0.28)] p-2.5 text-[11px] leading-4 text-red-200/90"
+                >{{ selMobile.stderr }}</pre>
+            }
+            @if (!selMobile.detail && !selMobile.stderr) {
+              <p
+                class="m-0 whitespace-pre-wrap break-words text-[var(--color-text-secondary)]"
+              >
+                Nenhum detalhe adicional para
+                <strong
+                  class="font-semibold text-[var(--foreground)]"
+                  >{{ selMobile.nome }}</strong
+                >.
+              </p>
+            }
+          </div>
+        }
+      }
+
+      @if (view().showExpand) {
+        <button
+          type="button"
+          class="col-span-full inline-flex w-fit min-h-[44px] justify-self-center items-center gap-1 rounded-sm px-3 py-2.5 text-xs font-medium text-[var(--brand-teal-500)] underline decoration-[rgba(142,202,230,0.35)] underline-offset-2 transition-colors hover:text-[var(--brand-teal-600)] hover:decoration-[var(--brand-teal-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+          (click)="toggleExpanded.emit()"
+        >
+          @if (view().expanded) {
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+            Mostrar menos
+          } @else {
+            +{{ view().remaining }} fontes
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          }
+        </button>
+      }
+    </div>
+
+    @if (view().selected; as sel) {
+      @if (sel.detail || sel.stderr) {
+        <div
+          id="scraper-detail-panel"
+          role="region"
+          [attr.aria-label]="'Detalhe de ' + sel.nome"
+          class="hidden md:block mt-3 rounded-lg border bg-[rgba(0,9,14,0.35)] p-3 text-xs leading-relaxed"
+          [class.border-teal-800/40]="sel.ok"
+          [class.bg-teal-950/30]="sel.ok"
+          [class.border-red-800/40]="!sel.ok"
+          [class.bg-red-950/30]="!sel.ok"
+        >
+          <div class="mb-1.5 flex items-center justify-between gap-2">
+            <span
+              class="font-semibold tracking-wide"
+              [class.text-teal-200]="sel.ok"
+              [class.text-red-200]="!sel.ok"
+            >
+              {{ sel.nome }} — {{ sel.ok ? "OK" : "FALHOU" }}
+            </span>
+            <button
+              type="button"
+              class="inline-flex min-h-[28px] items-center justify-center rounded-md border border-transparent px-2.5 py-1 text-xs font-medium text-[var(--color-text-secondary)] underline decoration-dotted underline-offset-2 transition-colors hover:border-[rgba(142,202,230,0.18)] hover:bg-[rgba(142,202,230,0.08)] hover:text-[var(--foreground)] hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+              (click)="closeDetail.emit()"
+              aria-label="Fechar detalhe"
+            >
+              fechar
+              <span aria-hidden="true" class="ml-1">×</span>
+            </button>
+          </div>
+          @if (sel.detail) {
+            <p
+              class="m-0 whitespace-pre-wrap break-words text-[var(--color-text-secondary)]"
+            >
+              {{ sel.detail }}
+            </p>
+          }
+          @if (sel.stderr) {
+            <pre
+              class="mt-2 max-h-[160px] overflow-auto whitespace-pre-wrap break-words rounded-md bg-[rgba(0,0,0,0.28)] p-2.5 text-[11px] leading-4 text-red-200/90"
+              >{{ sel.stderr }}</pre>
+          }
+        </div>
+      } @else {
+        <p
+          class="hidden md:block mt-3 rounded-lg border border-[rgba(142,202,230,0.12)] bg-[rgba(142,202,230,0.06)] px-3 py-2 text-xs text-[var(--color-text-secondary)]"
+        >
+          Nenhum detalhe adicional para
+          <strong class="font-semibold text-[var(--foreground)]">{{
+            sel.nome
+          }}</strong
+          >.
+        </p>
+      }
+    }
+  }
+</section>

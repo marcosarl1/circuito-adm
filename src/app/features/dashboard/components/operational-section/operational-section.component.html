@@ -1,0 +1,207 @@
+<section
+  class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3"
+  aria-labelledby="zona-operacional"
+>
+  <h2 id="zona-operacional" class="sr-only">Métrica Operacional e Ações</h2>
+
+  <div class="card flex flex-col p-4 lg:min-h-[320px]">
+    <h3
+      class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+    >
+      Distâncias Populares
+    </h3>
+    <div class="mt-3 flex flex-1 items-center justify-center">
+      @defer (on viewport) {
+        <app-bar-chart [options]="distancias()" klass="w-full" />
+      } @placeholder {
+        <div class="h-[340px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
+      }
+      <table class="sr-only">
+        <caption>
+          Distâncias populares
+        </caption>
+        <thead>
+          <tr>
+            <th>Distância</th>
+            <th>Eventos</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of distanciasTabela(); track item.distancia) {
+            <tr>
+              <td>{{ item.distancia }}</td>
+              <td>{{ item.count }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card flex flex-col p-4 lg:min-h-[430px] lg:h-[430px]">
+    <div class="flex items-center justify-between gap-2">
+      <h3
+        class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+      >
+        @if (view() === "fontes") {
+          Top Fontes
+        } @else {
+          Status Inscrições
+        }
+      </h3>
+      <div
+        class="flex items-center gap-1 rounded-full border border-[var(--sidebar-border-subtle)] p-1"
+      >
+        <button
+          type="button"
+          class="rounded-full px-3 py-1 text-xs font-medium transition-colors"
+          [class.bg-[var(--primary)]]="view() === 'fontes'"
+          [class.text-white]="view() === 'fontes'"
+          [class.text-[var(--muted-foreground)]]="
+            view() !== 'fontes'
+          "
+          (click)="viewChange.emit('fontes')"
+        >
+          Fontes
+        </button>
+        <button
+          type="button"
+          class="rounded-full px-3 py-1 text-xs font-medium transition-colors"
+          [class.bg-[var(--primary)]]="view() === 'inscricoes'"
+          [class.text-white]="view() === 'inscricoes'"
+          [class.text-[var(--muted-foreground)]]="
+            view() !== 'inscricoes'
+          "
+          (click)="viewChange.emit('inscricoes')"
+        >
+          Inscrições
+        </button>
+      </div>
+    </div>
+
+    @if (view() === "fontes") {
+      <div class="mt-4 flex flex-1 flex-col items-center gap-3">
+        @defer (on viewport) {
+          <app-donut-chart [options]="fontes()" klass="w-full" />
+        } @placeholder {
+          <div class="h-[300px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
+        }
+        <div class="flex w-full justify-center gap-2">
+          @for (item of fontesTop(); track item.fonte) {
+            <div
+              class="flex items-center gap-1.5 rounded-full border border-[var(--sidebar-border-subtle)] px-2.5 py-1"
+            >
+              <span
+                class="h-2.5 w-2.5 shrink-0 rounded-full"
+                [style.background]="pieColors()[$index % pieColors().length]"
+              ></span>
+              <span
+                class="max-w-[90px] truncate text-xs font-medium text-[var(--muted-foreground)]"
+                >{{ item.fonte }}</span
+              >
+              <span class="text-xs font-semibold text-[var(--foreground)]">{{
+                item.count
+              }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      @if (inscricoesTotal() === 0) {
+        <p class="mt-6 text-center text-sm text-[var(--muted-foreground)]">
+          Nenhum evento para classificar.
+        </p>
+      } @else {
+        <div class="mt-4 flex flex-1 flex-col items-center gap-3">
+          @defer (on viewport) {
+            <app-donut-chart [options]="statusDonut()" klass="w-full" />
+          } @placeholder {
+            <div class="h-[220px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
+          }
+          <div class="flex w-full flex-col gap-1.5">
+            <div
+              class="flex items-center justify-between rounded-md border border-[var(--sidebar-border-subtle)] px-3 py-2"
+            >
+              <span
+                class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"
+                ><span class="h-2.5 w-2.5 rounded-full bg-[#06d6a0]"></span>
+                Abertas</span
+              >
+              <span class="text-xs font-semibold text-[var(--foreground)]">{{
+                inscricoes().abertas
+              }}</span>
+            </div>
+            <div
+              class="flex items-center justify-between rounded-md border border-[var(--sidebar-border-subtle)] px-3 py-2"
+            >
+              <span
+                class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"
+                ><span class="h-2.5 w-2.5 rounded-full bg-[#ffb703]"></span>
+                Em breve</span
+              >
+              <span class="text-xs font-semibold text-[var(--foreground)]">{{
+                inscricoes().emBreve
+              }}</span>
+            </div>
+            <div
+              class="flex items-center justify-between rounded-md border border-[var(--sidebar-border-subtle)] px-3 py-2"
+            >
+              <span
+                class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted-foreground)]"
+                ><span class="h-2.5 w-2.5 rounded-full bg-[#475569]"></span>
+                Encerradas</span
+              >
+              <span class="text-xs font-semibold text-[var(--foreground)]">{{
+                inscricoes().encerradas
+              }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Col 3: Próximos Eventos -->
+  <div class="card flex flex-col p-4 lg:min-h-[320px]">
+    <h3
+      class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]"
+    >
+      Próximos 30 dias — {{ proximos30d() }}
+    </h3>
+    @if (proximos().length === 0) {
+      <p class="mt-4 text-sm text-[var(--muted-foreground)]">
+        Nenhum evento nos próximos 30 dias.
+      </p>
+    } @else {
+      <ul class="mt-4 space-y-2 flex-1">
+        @for (ev of proximos(); track ev._id) {
+          <li
+            class="flex items-center justify-between gap-3 rounded-md border border-[var(--sidebar-border-subtle)] px-3 py-2"
+          >
+            <div class="min-w-0">
+              <p
+                class="truncate text-sm font-medium text-[var(--foreground)]"
+              >
+                {{ ev.nome_evento }}
+              </p>
+              <p class="truncate text-xs text-[var(--muted-foreground)]">
+                {{ ev.data_realizacao }} • {{ ev.cidade }}/{{ ev.estado }}
+              </p>
+            </div>
+            <span
+              class="shrink-0 text-xs font-medium text-[var(--muted-foreground)]"
+              >{{ ev.organizador }}</span
+            >
+          </li>
+        }
+      </ul>
+      @if (proximos30d() > 5) {
+        <a
+          routerLink="/events"
+          class="mt-3 inline-flex self-end text-xs font-medium text-[var(--primary)] hover:underline"
+          >Ver todos</a
+        >
+      }
+    }
+  </div>
+</section>

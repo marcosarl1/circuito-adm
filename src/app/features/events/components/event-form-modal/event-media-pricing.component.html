@@ -1,0 +1,159 @@
+<section class="grid gap-4">
+  <div class="flex items-center gap-2">
+    <span
+      class="grid h-6 w-6 place-items-center rounded-md bg-[rgba(251,133,0,0.15)] text-xs font-bold text-[var(--primary)]"
+      >2</span
+    >
+    <h4 class="m-0 text-base font-semibold sm:text-lg">Links e mídia</h4>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <label
+        for="url_imagem"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Imagem principal</label
+      >
+      <input
+        id="url_imagem"
+        type="url"
+        [ngModel]="formData().url_imagem"
+        (ngModelChange)="patch({ url_imagem: $event })"
+        placeholder="https://..."
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+    </div>
+
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <label
+        for="url_inscricao"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Link de inscrição *</label
+      >
+      <input
+        id="url_inscricao"
+        type="url"
+        [ngModel]="formData().url_inscricao"
+        (ngModelChange)="patch({ url_inscricao: $event })"
+        placeholder="https://..."
+        aria-required="true"
+        [attr.aria-invalid]="urlInscricaoError() ? 'true' : null"
+        aria-describedby="url_inscricao-error"
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+      <div id="url_inscricao-error" class="min-h-[1.25rem] text-xs text-[#fca5a5]" role="status" aria-live="polite">{{ urlInscricaoError() }}</div>
+    </div>
+
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <label
+        for="site_coleta"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Site/coleta</label
+      >
+      <input
+        id="site_coleta"
+        type="url"
+        [ngModel]="formData().site_coleta"
+        (ngModelChange)="patch({ site_coleta: $event })"
+        placeholder="https://..."
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+    </div>
+
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <label
+        for="link_edital"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Link do edital</label
+      >
+      <input
+        id="link_edital"
+        type="url"
+        [ngModel]="formData().link_edital"
+        (ngModelChange)="patch({ link_edital: $event })"
+        placeholder="https://..."
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+    </div>
+  </div>
+</section>
+
+<div class="border-t border-[var(--color-border-light)]"></div>
+
+<section class="grid gap-4">
+  <div class="flex items-center gap-2">
+    <span
+      class="grid h-6 w-6 place-items-center rounded-md bg-[rgba(251,133,0,0.15)] text-xs font-bold text-[var(--primary)]"
+      >3</span
+    >
+    <h4 class="m-0 text-base font-semibold sm:text-lg">
+      Descrição e valores
+    </h4>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <label
+        for="categorias_premiadas"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Categorias premiadas</label
+      >
+      <textarea
+        id="categorias_premiadas"
+        rows="3"
+        [ngModel]="formData().categorias_premiadas"
+        (ngModelChange)="patch({ categorias_premiadas: $event })"
+        placeholder="Texto livre para categorias premiadas"
+        class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+      ></textarea>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="preco"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Preço</label
+      >
+      <input
+        id="preco"
+        type="text"
+        [ngModel]="formData().preco"
+        (ngModelChange)="patch({ preco: $event })"
+        placeholder="R$ 120,00"
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="precosEntries"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Entradas de preço</label
+      >
+      <textarea
+        id="precosEntries"
+        rows="3"
+        [ngModel]="formData().precosEntriesText"
+        (ngModelChange)="patch({ precosEntriesText: $event })"
+        placeholder="Uma entrada por linha"
+        class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+      ></textarea>
+    </div>
+
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <label
+        for="categorias"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Categorias</label
+      >
+      <textarea
+        id="categorias"
+        rows="3"
+        [ngModel]="formData().categoriasText"
+        (ngModelChange)="patch({ categoriasText: $event })"
+        placeholder="Uma categoria por linha"
+        class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+      ></textarea>
+    </div>
+  </div>
+</section>

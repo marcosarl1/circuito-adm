@@ -1,0 +1,211 @@
+<section class="grid gap-4">
+  <div class="flex items-center gap-2">
+    <span
+      class="grid h-6 w-6 place-items-center rounded-md bg-[rgba(251,133,0,0.15)] text-xs font-bold text-[var(--primary)]"
+      >4</span
+    >
+    <h4 class="m-0 text-base font-semibold sm:text-lg">
+      Percurso e listas
+    </h4>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <label
+        for="local_largada"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Local de largada</label
+      >
+      <input
+        id="local_largada"
+        type="text"
+        [ngModel]="formData().percurso.local_largada"
+        (ngModelChange)="updatePercurso('local_largada', $event)"
+        placeholder="Ex: Orla de Tambaú"
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="trajeto"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Trajeto</label
+      >
+      <input
+        id="trajeto"
+        type="text"
+        [ngModel]="formData().percurso.trajeto"
+        (ngModelChange)="updatePercurso('trajeto', $event)"
+        placeholder="Descrição do percurso"
+        class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+      />
+    </div>
+
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <label
+        for="distancias"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Distâncias</label
+      >
+      <textarea
+        id="distancias"
+        rows="3"
+        [ngModel]="formData().distanciasText"
+        (ngModelChange)="patch({ distanciasText: $event })"
+        placeholder="Uma distância por linha"
+        class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+      ></textarea>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="campos_protegidos"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Campos protegidos</label
+      >
+      <textarea
+        id="campos_protegidos"
+        rows="3"
+        [ngModel]="formData().camposProtegidosText"
+        (ngModelChange)="patch({ camposProtegidosText: $event })"
+        placeholder="Uma entrada por linha"
+        class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.6)] px-3 py-2 text-sm"
+      ></textarea>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="lista_precos"
+        class="text-sm font-medium text-[var(--color-text-secondary)]"
+        >Lista de preços</label
+      >
+      <textarea
+        id="lista_precos"
+        rows="3"
+        [ngModel]="formData().listaPrecosText"
+        (ngModelChange)="patch({ listaPrecosText: $event })"
+        placeholder="Uma entrada por linha"
+        class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.18)] bg-[rgba(1,19,28,0.6)] px-3 py-2 text-sm"
+      ></textarea>
+    </div>
+  </div>
+</section>
+
+<div class="border-t border-[var(--color-border-light)]"></div>
+
+<section class="grid gap-4">
+  <div
+    class="flex items-center justify-between gap-4 max-sm:flex-col max-sm:items-stretch"
+  >
+    <div class="flex items-center gap-2">
+      <span
+        class="grid h-6 w-6 place-items-center rounded-md bg-[rgba(251,133,0,0.15)] text-xs font-bold text-[var(--primary)]"
+        >5</span
+      >
+      <h4 class="m-0 text-base font-semibold sm:text-lg">
+        Kits ({{ formData().kits.length }})
+      </h4>
+    </div>
+    <button
+      class="btn btn-secondary btn-sm"
+      type="button"
+      (click)="addKit.emit()"
+    >
+      + Adicionar kit
+    </button>
+  </div>
+
+  <div class="grid gap-3">
+    @for (kit of formData().kits; track $index; let i = $index) {
+      <div
+        class="rounded-lg border border-[rgba(142,202,230,0.16)] bg-[rgba(1,19,28,0.7)] p-4"
+      >
+        <div class="kit-header mb-3">
+          <strong class="text-sm">Kit {{ i + 1 }}</strong>
+          <button
+            class="btn btn-ghost btn-sm"
+            type="button"
+            (click)="removeKit.emit(i)"
+            [attr.aria-label]="'Remover Kit ' + (i + 1)"
+            [disabled]="formData().kits.length === 1"
+            [title]="
+              formData().kits.length === 1
+                ? 'Pelo menos um kit é necessário'
+                : 'Remover'
+            "
+          >
+            Remover
+          </button>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="flex flex-col gap-2">
+            <label
+              [attr.for]="'kit_nome_' + i"
+              class="text-sm font-medium text-[var(--color-text-secondary)]"
+              >Nome</label
+            >
+            <input
+              [id]="'kit_nome_' + i"
+              type="text"
+              [ngModel]="kit.nome"
+              (ngModelChange)="updateKit(i, 'nome', $event)"
+              placeholder="Kit padrão"
+              class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label
+              [attr.for]="'kit_local_' + i"
+              class="text-sm font-medium text-[var(--color-text-secondary)]"
+              >Local retirada</label
+            >
+            <input
+              [id]="'kit_local_' + i"
+              type="text"
+              [ngModel]="kit.local_retirada"
+              (ngModelChange)="updateKit(i, 'local_retirada', $event)"
+              placeholder="Onde retirar"
+              class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label
+              [attr.for]="'kit_data_' + i"
+              class="text-sm font-medium text-[var(--color-text-secondary)]"
+              >Data retirada</label
+            >
+            <input
+              [id]="'kit_data_' + i"
+              type="datetime-local"
+              [ngModel]="toDateTimeLocal(kit.data_retirada)"
+              (ngModelChange)="
+                updateKit(i, 'data_retirada', fromDatetimeLocal($event))
+              "
+              class="min-h-[44px] w-full rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3"
+            />
+          </div>
+
+          <div class="md:col-span-2 flex flex-col gap-2">
+            <label
+              [attr.for]="'kit_itens_' + i"
+              class="text-sm font-medium text-[var(--color-text-secondary)]"
+              >Itens</label
+            >
+            <textarea
+              [id]="'kit_itens_' + i"
+              rows="3"
+              [ngModel]="kit.itensText"
+              (ngModelChange)="updateKit(i, 'itensText', $event)"
+              placeholder="Um item por linha"
+              class="min-h-[90px] w-full resize-y rounded-md border border-[rgba(142,202,230,0.22)] bg-[rgba(0,9,14,0.62)] px-3 py-2"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</section>
