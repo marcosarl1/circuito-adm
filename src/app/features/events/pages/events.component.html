@@ -61,7 +61,7 @@
   </div>
 }
 @if (showForm()) {
-  @defer (on immediate; prefetch on idle) {
+  @defer (on immediate) {
     <app-event-form-modal
       [(formData)]="formData"
       [editingId]="editingId()"
@@ -210,7 +210,7 @@
   </div>
 }
 @if (showScrapeCooldown()) {
-  @defer (on immediate; prefetch on idle) {
+  @defer (on immediate) {
     <app-scrape-cooldown-modal
       [lastFinishedAt]="lastFinishedAt()"
       (proceed)="confirmRecentScrape()"
@@ -219,7 +219,7 @@
   }
 }
 @if (showScrapeModal()) {
-  @defer (on immediate; prefetch on idle) {
+  @defer (on immediate) {
     <app-scrape-report-modal
       [report]="scrapeReport()"
       [importing]="importing()"
