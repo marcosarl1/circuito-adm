@@ -135,8 +135,6 @@ export class EventsComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit() {
-    this.eventsService.restorePersisted();
-
     const stale = this.eventsService.getStale(this.searchTerm(), this.currentPage(), this.pageSize, EVENT_CARD_FIELDS);
     if (stale) this.applyPage(stale);
 

@@ -20,6 +20,7 @@ export const EVENT_CARD_FIELDS =
   '_id,nome_evento,data_realizacao,datas_realizacao,cidade,estado,organizador,site_coleta,distancias,horario,url_imagem';
 
 const PERSIST_KEY_PREFIX = 'circuito:events:v1:';
+const PERSIST_INDEX_KEY = `${PERSIST_KEY_PREFIX}$index`;
 const PERSIST_TTL_MS = 5 * 60 * 1000;
 
 interface PersistedEntry {
@@ -83,14 +84,16 @@ export class EventsService {
     // memória primeiro
     const mem = this.eventsCache.get(key);
     if (mem) return mem;
-    // depois localStorage
+    const storageKey = PERSIST_KEY_PREFIX + key;
     try {
-      const raw = localStorage.getItem(PERSIST_KEY_PREFIX + key);
+      const raw = localStorage.getItem(storageKey);
       if (!raw) return null;
       const parsed = JSON.parse(raw) as PersistedEntry;
-      if (!parsed?.data || typeof parsed.ts !== 'number') return null;
-      if (Date.now() - parsed.ts > PERSIST_TTL_MS) return null;
-      // hidrata memória para próximos hits
+      if (!parsed?.data || typeof parsed.ts !== 'number' || Date.now() - parsed.ts > PERSIST_TTL_MS) {
+        localStorage.removeItem(storageKey);
+        this.removeFromIndex(key);
+        return null;
+      }
       this.eventsCache.set(key, parsed.data);
       return parsed.data;
     } catch {
@@ -98,32 +101,42 @@ export class EventsService {
     }
   }
 
-  /** Restaura todas as chaves persistidas para o Map em memória (chamado no bootstrap) */
-  restorePersisted(): void {
-    try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (!k || !k.startsWith(PERSIST_KEY_PREFIX)) continue;
-        const raw = localStorage.getItem(k);
-        if (!raw) continue;
-        const parsed = JSON.parse(raw) as PersistedEntry;
-        if (!parsed?.data || typeof parsed.ts !== 'number') continue;
-        if (Date.now() - parsed.ts > PERSIST_TTL_MS) {
-          localStorage.removeItem(k);
-          continue;
-        }
-        const cacheKey = k.slice(PERSIST_KEY_PREFIX.length);
-        if (!this.eventsCache.has(cacheKey)) {
-          this.eventsCache.set(cacheKey, parsed.data);
-        }
-      }
-    } catch { }
-  }
-
   private persist(key: string, data: EventPage): void {
     try {
       const entry: PersistedEntry = { data, ts: Date.now() };
       localStorage.setItem(PERSIST_KEY_PREFIX + key, JSON.stringify(entry));
+      this.addToIndex(key);
+    } catch { }
+  }
+
+  private readIndex(): string[] {
+    try {
+      const raw = localStorage.getItem(PERSIST_INDEX_KEY);
+      if (!raw) return [];
+      const parsed: unknown = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.filter((k): k is string => typeof k === 'string') : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private addToIndex(key: string): void {
+    try {
+      const keys = this.readIndex();
+      if (!keys.includes(key)) {
+        keys.push(key);
+        localStorage.setItem(PERSIST_INDEX_KEY, JSON.stringify(keys));
+      }
+    } catch { }
+  }
+
+  private removeFromIndex(key: string): void {
+    try {
+      const keys = this.readIndex();
+      const next = keys.filter((k) => k !== key);
+      if (next.length !== keys.length) {
+        localStorage.setItem(PERSIST_INDEX_KEY, JSON.stringify(next));
+      }
     } catch { }
   }
 
@@ -219,6 +232,11 @@ export class EventsService {
   clearCache() {
     this.eventsCache.clear();
     try {
+      if (localStorage.getItem(PERSIST_INDEX_KEY) !== null) {
+        this.readIndex().forEach((k) => localStorage.removeItem(PERSIST_KEY_PREFIX + k));
+        localStorage.removeItem(PERSIST_INDEX_KEY);
+        return;
+      }
       const toRemove: string[] = [];
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
