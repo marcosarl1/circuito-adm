@@ -11,9 +11,11 @@ import {
   Subject,
   Subscription,
   catchError,
+  EMPTY,
   exhaustMap,
   map,
   of,
+  switchMap,
   takeUntil,
   takeWhile,
   timeout,
@@ -60,6 +62,8 @@ export class EventsComponent implements OnInit, OnDestroy {
   private toastService = inject(ToastService);
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
+  private reloadSubject = new Subject<void>();
+  private reloadSubscription?: Subscription;
 
   events = signal<Event[]>([]);
   loading = this.loadingService.loading;
@@ -140,13 +144,28 @@ export class EventsComponent implements OnInit, OnDestroy {
 
     this.searchSubscription = this.searchSubject
       .pipe(debounceTime(300))
-      .subscribe(() => this.loadEvents());
+      .subscribe(() => this.reloadSubject.next());
+    this.reloadSubscription = this.reloadSubject
+      .pipe(
+        switchMap(() =>
+          this.eventsService
+            .getEvents(this.searchTerm(), this.currentPage(), this.pageSize, EVENT_CARD_FIELDS)
+            .pipe(
+              catchError((error: Error) => {
+                this.toastService.error('Erro ao carregar eventos: ' + error.message);
+                return EMPTY;
+              }),
+            ),
+        ),
+      )
+      .subscribe((data) => this.applyPage(data));
     if (!stale) this.loadEvents();
     this.loadLastRun();
   }
 
   ngOnDestroy() {
     this.searchSubscription?.unsubscribe();
+    this.reloadSubscription?.unsubscribe();
     this.clearScrapePolling();
   }
 
@@ -164,16 +183,7 @@ export class EventsComponent implements OnInit, OnDestroy {
   }
 
   loadEvents() {
-    this.eventsService
-      .getEvents(this.searchTerm(), this.currentPage(), this.pageSize, EVENT_CARD_FIELDS)
-      .subscribe({
-        next: (data) => {
-          this.applyPage(data);
-        },
-        error: (error) => {
-          this.toastService.error('Erro ao carregar eventos: ' + error.message);
-        },
-      });
+    this.reloadSubject.next();
   }
 
   runScrapers() {
