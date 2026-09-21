@@ -97,6 +97,12 @@ export class DashboardComponent implements OnInit {
   }
 
   porMesSorted = computed(() => [...this.stats().porMes].reverse());
+  // Pré-calculados para o template (evita sort/filter/slice a cada avaliação)
+  porMesTabela = computed(() => this.porMesSorted().slice(0, 6));
+  porDistanciaTabela = computed(() => this.stats().porDistancia.slice(0, 5));
+  valorMedioFmt = computed(() =>
+    `R$ ${this.stats().valorMedio.toFixed(2).replace('.', ',')}`,
+  );
 
   porEstadoPage = signal(0);
   porEstadoPageSize = 8;
@@ -145,20 +151,21 @@ export class DashboardComponent implements OnInit {
       this.porCidadePage.update((p) => p + 1);
   }
   porCidadeMax = computed(() =>
-    Math.max(1, ...this.stats().porCidade.map((c) => c.count)),
+    this.stats().porCidade.reduce((m, c) => Math.max(m, c.count), 1),
   );
 
-  // Top Fontes — pizza interativa bonita e reativa
+
   porFonteSorted = computed(() =>
     [...this.stats().porFonte].sort((a, b) => b.count - a.count).slice(0, 6),
   );
   porFonteTotal = computed(() =>
     this.porFonteSorted().reduce((s, f) => s + f.count, 0),
   );
+  porFonteTop3 = computed(() => this.porFonteSorted().slice(0, 3));
 
-  // Bar scaling: max instead of total for perceptible differences
+
   porEstadoMax = computed(() =>
-    Math.max(1, ...this.stats().porEstado.map((e) => e.count)),
+    this.stats().porEstado.reduce((m, e) => Math.max(m, e.count), 1),
   );
 
   readonly PIE_COLORS = [
@@ -471,6 +478,7 @@ export class DashboardComponent implements OnInit {
       datas_realizacao: p.datas_realizacao,
     })) as unknown as Event[];
   });
+  proximosEventosTop5 = computed(() => this.proximosEventos().slice(0, 5));
 
   ngOnInit(): void {
     this.load();

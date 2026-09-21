@@ -135,7 +135,7 @@
         <p
           class="mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)]"
         >
-          R$ {{ stats().valorMedio.toFixed(2).replace(".", ",") }}
+          {{ valorMedioFmt() }}
         </p>
         <div class="mt-3 flex flex-wrap gap-1.5">
           <span
@@ -186,7 +186,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of porMesSorted().slice(0, 6); track item.label) {
+            @for (item of porMesTabela(); track item.label) {
               <tr>
                 <td>{{ item.label }}</td>
                 <td>{{ item.count }}</td>
@@ -369,7 +369,7 @@
           </thead>
           <tbody>
             @for (
-              item of stats().porDistancia.slice(0, 5);
+              item of porDistanciaTabela();
               track item.distancia
             ) {
               <tr>
@@ -431,7 +431,7 @@
             <div class="h-[300px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
           }
           <div class="flex w-full justify-center gap-2">
-            @for (item of porFonteSorted().slice(0, 3); track item.fonte) {
+            @for (item of porFonteTop3(); track item.fonte) {
               <div
                 class="flex items-center gap-1.5 rounded-full border border-[var(--sidebar-border-subtle)] px-2.5 py-1"
               >
@@ -518,7 +518,7 @@
         </p>
       } @else {
         <ul class="mt-4 space-y-2 flex-1">
-          @for (ev of proximosEventos().slice(0, 5); track ev._id) {
+          @for (ev of proximosEventosTop5(); track ev._id) {
             <li
               class="flex items-center justify-between gap-3 rounded-md border border-[var(--sidebar-border-subtle)] px-3 py-2"
             >
