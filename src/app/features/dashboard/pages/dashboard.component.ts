@@ -2,16 +2,15 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DashboardService, DashboardStats } from '../services/dashboard.service';
 import { Event } from '../../../shared/models/event.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
-import { ChartCoreComponent } from 'ng-apexcharts';
 import type { ApexOptions } from 'ng-apexcharts';
-import 'apexcharts/bar';
-import 'apexcharts/donut';
 import { RouterLink } from '@angular/router';
+import { BarChartComponent } from '../components/bar-chart/bar-chart.component';
+import { DonutChartComponent } from '../components/donut-chart/donut-chart.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [IconComponent, ChartCoreComponent, RouterLink],
+  imports: [IconComponent, BarChartComponent, DonutChartComponent, RouterLink],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
@@ -255,7 +254,7 @@ export class DashboardComponent implements OnInit {
       colors: ['#06d6a0', '#ffb703', '#475569'],
       chart: {
         type: 'donut',
-        height: 190,
+        height: 220,
         background: 'transparent',
         toolbar: { show: false },
       },
@@ -317,7 +316,7 @@ export class DashboardComponent implements OnInit {
       series: [{ name: 'Eventos', data: values }],
       chart: {
         type: 'bar',
-        height: 260,
+        height: 290,
         background: 'transparent',
         toolbar: { show: false },
         fontFamily: 'inherit',
@@ -382,7 +381,7 @@ export class DashboardComponent implements OnInit {
       series: [{ name: 'Eventos', data: data.map((d) => d.count) }],
       chart: {
         type: 'bar',
-        height: 280,
+        height: 340,
         background: 'transparent',
         toolbar: { show: false },
         fontFamily: 'inherit',
@@ -423,7 +422,7 @@ export class DashboardComponent implements OnInit {
     colors: this.PIE_COLORS,
     chart: {
       type: 'donut',
-      height: 220,
+      height: 300,
       background: 'transparent',
       toolbar: { show: false },
     },

@@ -171,23 +171,9 @@
       </div>
       <div class="mt-4 flex flex-1 items-center justify-center">
         @defer (on viewport) {
-          <apx-chart-core
-            [series]="eventosColumnOptions().series!"
-            [chart]="eventosColumnOptions().chart!"
-            [plotOptions]="eventosColumnOptions().plotOptions!"
-            [colors]="eventosColumnOptions().colors!"
-            [dataLabels]="eventosColumnOptions().dataLabels!"
-            [xaxis]="eventosColumnOptions().xaxis!"
-            [yaxis]="eventosColumnOptions().yaxis!"
-            [grid]="eventosColumnOptions().grid!"
-            [tooltip]="eventosColumnOptions().tooltip!"
-            [legend]="eventosColumnOptions().legend!"
-            [noData]="eventosColumnOptions().noData!"
-            [states]="eventosColumnOptions().states!"
-            class="w-full"
-          ></apx-chart-core>
+          <app-bar-chart [options]="eventosColumnOptions()" klass="w-full" />
         } @placeholder {
-          <div class="h-[260px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
+          <div class="h-[290px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
         }
         <table class="sr-only">
           <caption>
@@ -367,21 +353,9 @@
       </h3>
       <div class="mt-3 flex flex-1 items-center justify-center">
         @defer (on viewport) {
-          <apx-chart-core
-            [series]="distanciasChartOptions().series!"
-            [chart]="distanciasChartOptions().chart!"
-            [plotOptions]="distanciasChartOptions().plotOptions!"
-            [colors]="distanciasChartOptions().colors!"
-            [dataLabels]="distanciasChartOptions().dataLabels!"
-            [xaxis]="distanciasChartOptions().xaxis!"
-            [yaxis]="distanciasChartOptions().yaxis!"
-            [grid]="distanciasChartOptions().grid!"
-            [tooltip]="distanciasChartOptions().tooltip!"
-            [legend]="distanciasChartOptions().legend!"
-            class="w-full"
-          ></apx-chart-core>
+          <app-bar-chart [options]="distanciasChartOptions()" klass="w-full" />
         } @placeholder {
-          <div class="h-[280px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
+          <div class="h-[340px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
         }
         <table class="sr-only">
           <caption>
@@ -452,21 +426,9 @@
       @if (operacionalView() === "fontes") {
         <div class="mt-4 flex flex-1 flex-col items-center gap-3">
           @defer (on viewport) {
-            <apx-chart-core
-              [series]="chartOptions().series!"
-              [labels]="chartOptions().labels!"
-              [colors]="chartOptions().colors!"
-              [chart]="chartOptions().chart!"
-              [plotOptions]="chartOptions().plotOptions!"
-              [dataLabels]="chartOptions().dataLabels!"
-              [legend]="chartOptions().legend!"
-              [stroke]="chartOptions().stroke!"
-              [tooltip]="chartOptions().tooltip!"
-              [responsive]="chartOptions().responsive!"
-              class="w-full max-w-[280px]"
-            ></apx-chart-core>
+            <app-donut-chart [options]="chartOptions()" klass="w-full" />
           } @placeholder {
-            <div class="h-[220px] w-full max-w-[280px] animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
+            <div class="h-[300px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
           }
           <div class="flex w-full justify-center gap-2">
             @for (item of porFonteSorted().slice(0, 3); track item.fonte) {
@@ -496,21 +458,9 @@
         } @else {
           <div class="mt-4 flex flex-1 flex-col items-center gap-3">
             @defer (on viewport) {
-              <apx-chart-core
-                [series]="statusDonutOptions().series!"
-                [labels]="statusDonutOptions().labels!"
-                [colors]="statusDonutOptions().colors!"
-                [chart]="statusDonutOptions().chart!"
-                [plotOptions]="statusDonutOptions().plotOptions!"
-                [dataLabels]="statusDonutOptions().dataLabels!"
-                [legend]="statusDonutOptions().legend!"
-                [stroke]="statusDonutOptions().stroke!"
-                [tooltip]="statusDonutOptions().tooltip!"
-                [responsive]="statusDonutOptions().responsive!"
-                class="w-full max-w-[260px]"
-              ></apx-chart-core>
+              <app-donut-chart [options]="statusDonutOptions()" klass="w-full" />
             } @placeholder {
-              <div class="h-[190px] w-full max-w-[260px] animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
+              <div class="h-[220px] w-full animate-pulse rounded bg-[rgba(142,202,230,0.04)]"></div>
             }
             <div class="flex w-full flex-col gap-1.5">
               <div
