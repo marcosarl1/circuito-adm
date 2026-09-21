@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { ChartCoreComponent } from 'ng-apexcharts';
-import type { ApexOptions } from 'ng-apexcharts';
+import type { ApexOptions } from 'apexcharts';
+import { LazyApexChartComponent } from '../lazy-apex-chart/lazy-apex-chart.component';
 import 'apexcharts/donut';
 
 @Component({
   selector: 'app-donut-chart',
   standalone: true,
-  imports: [ChartCoreComponent],
+  imports: [LazyApexChartComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block w-full' },
   styles: `
@@ -14,26 +14,12 @@ import 'apexcharts/donut';
       display: block;
       width: 100%;
     }
-    apx-chart-core {
+    app-lazy-apex-chart {
       display: block;
       width: 100%;
     }
   `,
-  template: `
-    <apx-chart-core
-      [series]="options().series!"
-      [labels]="options().labels!"
-      [colors]="options().colors!"
-      [chart]="options().chart!"
-      [plotOptions]="options().plotOptions!"
-      [dataLabels]="options().dataLabels!"
-      [legend]="options().legend!"
-      [stroke]="options().stroke!"
-      [tooltip]="options().tooltip!"
-      [responsive]="options().responsive!"
-      [class]="klass()"
-    ></apx-chart-core>
-  `,
+  template: `<app-lazy-apex-chart [options]="options()" [class]="klass()" />`,
 })
 export class DonutChartComponent {
   options = input.required<ApexOptions>();

@@ -2,7 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DashboardService, DashboardStats } from '../services/dashboard.service';
 import { Event } from '../../../shared/models/event.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
-import type { ApexOptions } from 'ng-apexcharts';
+import type { ApexOptions } from 'apexcharts';
 import { RouterLink } from '@angular/router';
 import { BarChartComponent } from '../components/bar-chart/bar-chart.component';
 import { DonutChartComponent } from '../components/donut-chart/donut-chart.component';

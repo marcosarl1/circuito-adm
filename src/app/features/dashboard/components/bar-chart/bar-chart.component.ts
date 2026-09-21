@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { ChartCoreComponent } from 'ng-apexcharts';
-import type { ApexOptions } from 'ng-apexcharts';
+import type { ApexOptions } from 'apexcharts';
+import { LazyApexChartComponent } from '../lazy-apex-chart/lazy-apex-chart.component';
 import 'apexcharts/bar';
 
 @Component({
   selector: 'app-bar-chart',
   standalone: true,
-  imports: [ChartCoreComponent],
+  imports: [LazyApexChartComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block w-full' },
   styles: `
@@ -14,28 +14,12 @@ import 'apexcharts/bar';
       display: block;
       width: 100%;
     }
-    apx-chart-core {
+    app-lazy-apex-chart {
       display: block;
       width: 100%;
     }
   `,
-  template: `
-    <apx-chart-core
-      [series]="options().series!"
-      [chart]="options().chart!"
-      [plotOptions]="options().plotOptions!"
-      [colors]="options().colors!"
-      [dataLabels]="options().dataLabels!"
-      [xaxis]="options().xaxis!"
-      [yaxis]="options().yaxis!"
-      [grid]="options().grid!"
-      [tooltip]="options().tooltip!"
-      [legend]="options().legend!"
-      [noData]="options().noData!"
-      [states]="options().states!"
-      [class]="klass()"
-    ></apx-chart-core>
-  `,
+  template: `<app-lazy-apex-chart [options]="options()" [class]="klass()" />`,
 })
 export class BarChartComponent {
   options = input.required<ApexOptions>();
