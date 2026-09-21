@@ -141,7 +141,7 @@ export class EventsComponent implements OnInit, OnDestroy {
     this.searchSubscription = this.searchSubject
       .pipe(debounceTime(300))
       .subscribe(() => this.loadEvents());
-    this.loadEvents();
+    if (!stale) this.loadEvents();
     this.loadLastRun();
   }
 
