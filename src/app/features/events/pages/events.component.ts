@@ -352,7 +352,7 @@ export class EventsComponent implements OnInit, OnDestroy {
             }
             this.clearScrapePolling();
             this.loadEvents();
-            this.openScrapeReport();
+            this.showScrapeModal.set(false);
           } else if (status.status === 'awaiting_import') {
             this.scrapeRunning.set(false);
             this.scraping.set(false);
