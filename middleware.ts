@@ -97,7 +97,8 @@ async function handleProxy(
   const hasBearer = (request.headers.get('authorization') || '').startsWith(
     'Bearer ',
   );
-  if (!isAuthenticated(request) && !hasBearer) {
+  const isPreflight = request.method === 'OPTIONS';
+  if (!isPreflight && !isAuthenticated(request) && !hasBearer) {
     return Response.json({ error: 'Não autenticado' }, { status: 401 });
   }
 
