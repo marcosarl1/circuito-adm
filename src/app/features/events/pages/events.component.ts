@@ -31,7 +31,7 @@ import {
   EventKit,
 } from '../../../shared/models/event.model';
 import { EventFormState, KitForm } from '../models/event-form-state.model';
-import { ScrapeImportResult, ScrapeReport } from '../models/scrape.model';
+import { ScrapeImportResult, ScrapeJobStatus, ScrapeReport } from '../models/scrape.model';
 import { ScrapeReportModalComponent } from '../components/scrape-report-modal/scrape-report-modal.component';
 import { ScrapeCooldownModalComponent } from '../components/scrape-cooldown-modal/scrape-cooldown-modal.component';
 import { LoadingService } from '../../../core/services/loading.service';
@@ -85,6 +85,7 @@ export class EventsComponent implements OnInit, OnDestroy {
   importResult = signal<ScrapeImportResult | null>(null);
   scrapeError = signal<string | null>(null);
   awaitingJobId = signal<string | null>(null);
+  pendingScrapeJob = signal<ScrapeJobStatus | null>(null);
   confirming = signal(false);
   showScrapeCooldown = signal(false);
   lastFinishedAt = signal<string | null>(null);
@@ -167,19 +168,32 @@ export class EventsComponent implements OnInit, OnDestroy {
   recoverAwaitingScrape() {
     this.eventsService.getAwaitingScrape().subscribe({
       next: ({ job }) => {
+        this.pendingScrapeJob.set(job);
         if (!job) return;
-        this.scrapeReport.set(job.report);
-        this.awaitingJobId.set(job.job_id);
-        this.importResult.set(null);
-        this.scrapeError.set(null);
-        this.openScrapeReport();
-        this.toastService.info(
-          'Coleta aguardando confirmação. Revise o relatório para importar ou descartar.',
-          8000,
-        );
+        this.openAwaitingReport(job);
       },
       error: () => { },
     });
+  }
+
+  /** Abre o modal de revisão com o relatório de uma coleta pendente. */
+  private openAwaitingReport(job: ScrapeJobStatus) {
+    this.scrapeReport.set(job.report);
+    this.awaitingJobId.set(job.job_id);
+    this.importResult.set(null);
+    this.scrapeError.set(null);
+    this.openScrapeReport();
+    this.toastService.info(
+      'Coleta aguardando confirmação. Revise o relatório para importar ou descartar.',
+      8000,
+    );
+  }
+
+  rescuePendingScrape() {
+    const job = this.pendingScrapeJob();
+    this.showScrapeCooldown.set(false);
+    if (!job) return;
+    this.openAwaitingReport(job);
   }
 
   confirmScrapeImport() {

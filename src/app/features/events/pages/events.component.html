@@ -213,8 +213,10 @@
   @defer (on immediate) {
     <app-scrape-cooldown-modal
       [lastFinishedAt]="lastFinishedAt()"
+      [pendingScrape]="pendingScrapeJob()"
       (proceed)="confirmRecentScrape()"
       (cancel)="cancelRecentScrape()"
+      (rescue)="rescuePendingScrape()"
     ></app-scrape-cooldown-modal>
   }
 }

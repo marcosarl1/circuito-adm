@@ -17,9 +17,15 @@ import { InteractivityChecker } from '@angular/cdk/a11y';
 })
 export class ScrapeCooldownModalComponent implements AfterViewInit, OnDestroy {
   lastFinishedAt = input<string | null>(null);
+  pendingScrape = input<{
+    job_id: string;
+    started_at: string | null;
+    report: { scrapers: unknown[]; csvs: unknown[] } | null;
+  } | null>(null);
 
   proceed = output<void>();
   cancel = output<void>();
+  rescue = output<void>();
 
   private el = inject(ElementRef<HTMLElement>);
   private checker = inject(InteractivityChecker, { optional: true });
@@ -77,6 +83,12 @@ export class ScrapeCooldownModalComponent implements AfterViewInit, OnDestroy {
   });
 
   hasValidDate = computed<boolean>(() => this.finishedDate() !== null);
+
+  hasPendingScrape = computed<boolean>(() => this.pendingScrape() !== null);
+
+  pendingScraperCount = computed<number>(
+    () => this.pendingScrape()?.report?.scrapers?.length ?? 0,
+  );
 
   @HostListener('window:keydown', ['$event'])
   onWindowKeydown(event: KeyboardEvent): void {

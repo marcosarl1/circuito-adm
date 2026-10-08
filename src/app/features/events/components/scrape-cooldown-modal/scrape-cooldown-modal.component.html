@@ -66,6 +66,19 @@
           <span>Faltam <strong>{{ diasRestantes() }} {{ diasRestantes() === 1 ? "dia" : "dias" }}</strong> para liberar ({{ dataLiberacao() }}), rodar agora pode gerar custo duplicado.</span>
         </div>
       }
+      @if (hasPendingScrape()) {
+        <div
+          class="flex items-start gap-2 rounded-md border border-teal-800/30 bg-teal-950/40 px-3 py-2 text-xs leading-5 text-teal-200"
+          role="status"
+        >
+          <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-teal-400" aria-hidden="true"></span>
+          <span>
+            Existe uma coleta <strong>não importada</strong> com
+            <strong>{{ pendingScraperCount() }} fontes</strong>. Resgate os dados já
+            coletados em vez de rodar os scrapers novamente.
+          </span>
+        </div>
+      }
     </div>
     <div
       class="card-footer flex flex-col-reverse gap-3 border-t border-[rgba(142,202,230,0.18)] p-4 sm:flex-row sm:justify-end"
@@ -78,9 +91,20 @@
       >
         Cancelar
       </button>
+      @if (hasPendingScrape()) {
+        <button
+          type="button"
+          class="btn btn-primary w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500] sm:w-auto"
+          (click)="rescue.emit()"
+        >
+          Resgatar última coleta
+        </button>
+      }
       <button
         type="button"
-        class="btn btn-primary w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)] sm:w-auto"
+        class="btn w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500] sm:w-auto"
+        [class.btn-primary]="!hasPendingScrape()"
+        [class.btn-ghost]="hasPendingScrape()"
         (click)="proceed.emit()"
       >
         Rodar novamente
