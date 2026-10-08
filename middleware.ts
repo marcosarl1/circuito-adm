@@ -93,7 +93,11 @@ async function handleProxy(
   if (!baseUrl || !apiKey) {
     return Response.json({ error: config.envErrorMessage }, { status: 500 });
   }
-  if (!isAuthenticated(request)) {
+
+  const hasBearer = (request.headers.get('authorization') || '').startsWith(
+    'Bearer ',
+  );
+  if (!isAuthenticated(request) && !hasBearer) {
     return Response.json({ error: 'Não autenticado' }, { status: 401 });
   }
 
