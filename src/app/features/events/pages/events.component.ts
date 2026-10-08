@@ -82,7 +82,6 @@ export class EventsComponent implements OnInit, OnDestroy {
   scrapeRunning = signal(false);
   scraping = signal(false);
   scrapeReport = signal<ScrapeReport | null>(null);
-  importing = signal(false);
   importResult = signal<ScrapeImportResult | null>(null);
   scrapeError = signal<string | null>(null);
   showScrapeCooldown = signal(false);
@@ -288,10 +287,12 @@ export class EventsComponent implements OnInit, OnDestroy {
             this.scrapeRunning.set(false);
             this.scraping.set(false);
             this.scrapeReport.set(status.report);
+            this.setImportResultFromReport(status.report);
             if (status.finished_at) {
               this.lastFinishedAt.set(status.finished_at);
             }
             this.clearScrapePolling();
+            this.loadEvents();
             this.openScrapeReport();
           } else if (status.status === 'failed') {
             this.scrapeRunning.set(false);
@@ -337,26 +338,25 @@ export class EventsComponent implements OnInit, OnDestroy {
     this.scraping.set(false);
   }
 
-  importScrapedEvents() {
-    this.importing.set(true);
-    this.scrapeError.set(null);
-    this.eventsService.importScrapedEvents().subscribe({
-      next: (result) => {
-        this.importing.set(false);
-        this.importResult.set(result);
-        this.showScrapeModal.set(false);
-        this.scrapeReport.set(null);
-        this.scrapeError.set(null);
+  private setImportResultFromReport(report: ScrapeReport | null): void {
+    const summary = report?.import_db;
+    if (!summary?.ok) {
+      this.importResult.set(null);
+      return;
+    }
+    const result = {
+      novos: summary.novos ?? 0,
+      atualizados: summary.atualizados ?? 0,
+    };
+    this.eventsService.getEvents('', 1, 1).subscribe({
+      next: (page) => {
+        this.importResult.set({ ...result, total: page.total ?? 0 });
         this.toastService.success(
-          `Importação concluída — ${result.novos} novos e ${result.atualizados} atualizados. Total no banco: ${result.total}.`,
+          `Importação concluída — ${result.novos} novos e ${result.atualizados} atualizados.`,
           15000,
         );
-        this.loadEvents();
       },
-      error: (error) => {
-        this.importing.set(false);
-        this.toastService.error(error.message, 7000);
-      },
+      error: () => this.importResult.set({ ...result, total: 0 }),
     });
   }
 

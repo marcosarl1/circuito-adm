@@ -222,10 +222,8 @@
   @defer (on immediate) {
     <app-scrape-report-modal
       [report]="scrapeReport()"
-      [importing]="importing()"
       [importResult]="importResult()"
       [error]="scrapeError()"
-      (import)="importScrapedEvents()"
       (close)="closeScrapeReport()"
     ></app-scrape-report-modal>
   }

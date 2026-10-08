@@ -13,7 +13,7 @@ import {
   EventPage,
 } from '../../../shared/models/event.model';
 import { SKIP_LOADING } from '../../../core/contexts/skip-loading.context';
-import { ScrapeImportResult, ScrapeJobStatus } from '../models/scrape.model';
+import { ScrapeJobStatus } from '../models/scrape.model';
 import { environment } from '../../../../environments/environment';
 
 export const EVENT_CARD_FIELDS =
@@ -171,16 +171,6 @@ export class EventsService {
     );
   }
 
-  importScrapedEvents(): Observable<ScrapeImportResult> {
-    return this.http.post<ScrapeImportResult>(
-      `${this.baseUrl}/scrape/import`,
-      null,
-      {
-        ...this.scrapeHeaders,
-        context: new HttpContext().set(SKIP_LOADING, true),
-      },
-    );
-  }
 
   createEvent(data: EventCreatePayload): Observable<any> {
     return this.http

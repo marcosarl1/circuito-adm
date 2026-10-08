@@ -18,11 +18,19 @@ export interface ScrapeCsvSummary {
   erros: string[];
 }
 
+export interface ScrapeImportSummary {
+  ok: boolean;
+  novos: number;
+  atualizados: number;
+}
+
 export interface ScrapeReport {
   started_at: string | null;
   finished_at: string | null;
   scrapers: ScrapeScraperResult[];
   csvs: ScrapeCsvSummary[];
+  /** Preenchido quando a importação ocorreu dentro do run. Ausente em jobs antigos. */
+  import_db?: ScrapeImportSummary | null;
 }
 
 export interface ScrapeJobStatus {

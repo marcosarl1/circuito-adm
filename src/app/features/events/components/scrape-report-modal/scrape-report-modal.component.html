@@ -48,7 +48,6 @@
 
         <app-scrape-import-status
           [result]="importResult()"
-          [importing]="importing()"
           [error]="error()"
         />
       </div>
@@ -61,10 +60,13 @@
       <span
         class="text-xs text-[var(--color-text-secondary)] max-md:text-center"
       >
-        @if (hasCsvs()) {
-          {{ totalEventsCount() }} eventos prontos para salvar
+        @if (importResult(); as res) {
+          {{ res.novos }} novos, {{ res.atualizados }} atualizados,
+          {{ res.total }} no banco
+        } @else if (hasCsvs()) {
+          {{ totalEventsCount() }} eventos coletados
         } @else {
-          Nenhum evento para salvar
+          Nenhum evento coletado
         }
       </span>
       <div
@@ -75,7 +77,6 @@
           data-autofocus
           class="btn btn-secondary max-md:w-full min-h-[36px] md:min-h-[44px] inline-flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
           (click)="close.emit()"
-          [disabled]="importing()"
         >
           <app-icon
             name="heroXMark"
@@ -84,31 +85,6 @@
             aria-hidden="true"
           ></app-icon>
           Fechar
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary max-md:w-full min-h-[36px] md:min-h-[44px] inline-flex items-center justify-center gap-1.5"
-          (click)="import.emit()"
-          [disabled]="
-            importing() || !report() || !hasCsvs() || totalEventsCount() === 0
-          "
-          [attr.aria-busy]="importing()"
-        >
-          @if (importing()) {
-            <span
-              class="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
-            ></span>
-            Salvando...
-          } @else {
-            <app-icon
-              name="heroArrowDownTray"
-              size="16"
-              klass="shrink-0 relative top-[3px]"
-              aria-hidden="true"
-            ></app-icon>
-            <span class="hidden md:inline">Confirmar importação</span
-            ><span class="md:hidden">Confirmar</span>
-          }
         </button>
       </div>
     </div>
