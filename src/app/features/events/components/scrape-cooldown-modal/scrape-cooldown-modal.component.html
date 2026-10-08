@@ -81,34 +81,33 @@
       }
     </div>
     <div
-      class="card-footer flex flex-col-reverse gap-3 border-t border-[rgba(142,202,230,0.18)] p-4 sm:flex-row sm:justify-end"
+      class="card-footer flex flex-col gap-2 border-t border-[rgba(142,202,230,0.18)] p-4 sm:flex-row sm:items-center sm:justify-end sm:gap-3"
     >
       <button
         type="button"
-        data-autofocus
-        class="btn btn-secondary w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)] sm:w-auto"
+        [attr.data-autofocus]="hasPendingScrape() ? null : 'true'"
+        class="btn btn-ghost order-3 w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)] sm:order-1 sm:w-auto"
         (click)="cancel.emit()"
       >
         Cancelar
       </button>
+      <button
+        type="button"
+        class="btn btn-secondary order-2 w-full min-h-[44px] whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)] sm:w-auto"
+        (click)="proceed.emit()"
+      >
+        Rodar novamente
+      </button>
       @if (hasPendingScrape()) {
         <button
           type="button"
-          class="btn btn-primary w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500] sm:w-auto"
+          data-autofocus
+          class="btn btn-primary order-1 w-full min-h-[44px] whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)] sm:order-3 sm:w-auto"
           (click)="rescue.emit()"
         >
           Resgatar última coleta
         </button>
       }
-      <button
-        type="button"
-        class="btn w-full min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500] sm:w-auto"
-        [class.btn-primary]="!hasPendingScrape()"
-        [class.btn-ghost]="hasPendingScrape()"
-        (click)="proceed.emit()"
-      >
-        Rodar novamente
-      </button>
     </div>
   </div>
 </div>
