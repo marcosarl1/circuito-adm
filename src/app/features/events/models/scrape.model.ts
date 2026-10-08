@@ -35,7 +35,7 @@ export interface ScrapeReport {
 
 export interface ScrapeJobStatus {
   job_id: string;
-  status: 'running' | 'complete' | 'failed';
+  status: 'queued' | 'running' | 'awaiting_import' | 'complete' | 'failed';
   started_at: string | null;
   finished_at: string | null;
   report: ScrapeReport | null;

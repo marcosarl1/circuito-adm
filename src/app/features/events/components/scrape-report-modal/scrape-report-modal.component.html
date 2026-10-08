@@ -63,6 +63,8 @@
         @if (importResult(); as res) {
           {{ res.novos }} novos, {{ res.atualizados }} atualizados,
           {{ res.total }} no banco
+        } @else if (awaitingJobId()) {
+          Revise antes de importar — nada foi salvo ainda
         } @else if (hasCsvs()) {
           {{ totalEventsCount() }} eventos coletados
         } @else {
@@ -72,9 +74,24 @@
       <div
         class="flex items-center gap-3 max-md:w-full max-md:flex-col-reverse"
       >
+        @if (awaitingJobId()) {
+          <button
+            type="button"
+            class="btn btn-secondary max-md:w-full min-h-[36px] md:min-h-[44px] inline-flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+            (click)="discard.emit()"
+            [disabled]="confirming()"
+          >
+            <app-icon
+              name="heroXMark"
+              size="16"
+              klass="shrink-0 relative top-[3px]"
+              aria-hidden="true"
+            ></app-icon>
+            Descartar
+          </button>
+        }
         <button
           type="button"
-          data-autofocus
           class="btn btn-secondary max-md:w-full min-h-[36px] md:min-h-[44px] inline-flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
           (click)="close.emit()"
         >
@@ -86,6 +103,32 @@
           ></app-icon>
           Fechar
         </button>
+        @if (awaitingJobId()) {
+          <button
+            type="button"
+            data-autofocus
+            class="btn btn-primary max-md:w-full min-h-[36px] md:min-h-[44px] inline-flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-teal-500)]"
+            (click)="confirm.emit()"
+            [disabled]="confirming()"
+            [attr.aria-busy]="confirming()"
+          >
+            @if (confirming()) {
+              <span
+                class="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
+              ></span>
+              Importando...
+            } @else {
+              <app-icon
+                name="heroArrowDownTray"
+                size="16"
+                klass="shrink-0 relative top-[3px]"
+                aria-hidden="true"
+              ></app-icon>
+              <span class="hidden md:inline">Confirmar importação</span>
+              ><span class="md:hidden">Confirmar</span>
+            }
+          </button>
+        }
       </div>
     </div>
   </div>

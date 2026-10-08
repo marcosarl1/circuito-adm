@@ -223,7 +223,11 @@
     <app-scrape-report-modal
       [report]="scrapeReport()"
       [importResult]="importResult()"
+      [awaitingJobId]="awaitingJobId()"
+      [confirming]="confirming()"
       [error]="scrapeError()"
+      (confirm)="confirmScrapeImport()"
+      (discard)="cancelScrapeImport()"
       (close)="closeScrapeReport()"
     ></app-scrape-report-modal>
   }

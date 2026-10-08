@@ -55,8 +55,12 @@ type SortKey = CsvSortKey;
 export class ScrapeReportModalComponent implements AfterViewInit, OnDestroy {
   report = input<ScrapeReport | null>(null);
   importResult = input<ScrapeImportResult | null>(null);
+  awaitingJobId = input<string | null>(null);
+  confirming = input(false);
   error = input<string | null>(null);
 
+  confirm = output<void>();
+  discard = output<void>();
   close = output<void>();
 
   private el = inject(ElementRef<HTMLElement>);

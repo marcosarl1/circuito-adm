@@ -84,6 +84,8 @@ export class EventsComponent implements OnInit, OnDestroy {
   scrapeReport = signal<ScrapeReport | null>(null);
   importResult = signal<ScrapeImportResult | null>(null);
   scrapeError = signal<string | null>(null);
+  awaitingJobId = signal<string | null>(null);
+  confirming = signal(false);
   showScrapeCooldown = signal(false);
   lastFinishedAt = signal<string | null>(null);
   private scrapePollingSub?: Subscription;
@@ -160,6 +162,62 @@ export class EventsComponent implements OnInit, OnDestroy {
       .subscribe((data) => this.applyPage(data));
     if (!stale) this.loadEvents();
     this.loadLastRun();
+    this.recoverAwaitingScrape();
+  }
+  recoverAwaitingScrape() {
+    this.eventsService.getAwaitingScrape().subscribe({
+      next: ({ job }) => {
+        if (!job) return;
+        this.scrapeReport.set(job.report);
+        this.awaitingJobId.set(job.job_id);
+        this.importResult.set(null);
+        this.scrapeError.set(null);
+        this.openScrapeReport();
+        this.toastService.info(
+          'Coleta aguardando confirmação. Revise o relatório para importar ou descartar.',
+          8000,
+        );
+      },
+      error: () => { },
+    });
+  }
+
+  confirmScrapeImport() {
+    const jobId = this.awaitingJobId();
+    if (!jobId) return;
+    this.confirming.set(true);
+    this.eventsService.confirmScrape(jobId).subscribe({
+      next: ({ job_id }) => {
+        this.confirming.set(false);
+        this.awaitingJobId.set(null);
+        this.showScrapeModal.set(false);
+        this.pollScrapeStatus(job_id);
+        this.toastService.info('Importação iniciada.', 5000);
+      },
+      error: (error: Error) => {
+        this.confirming.set(false);
+        this.toastService.error('Falha ao confirmar importação: ' + error.message, 7000);
+      },
+    });
+  }
+
+  cancelScrapeImport() {
+    const jobId = this.awaitingJobId();
+    if (!jobId) return;
+    this.confirming.set(true);
+    this.eventsService.cancelScrape(jobId).subscribe({
+      next: () => {
+        this.confirming.set(false);
+        this.awaitingJobId.set(null);
+        this.showScrapeModal.set(false);
+        this.scrapeReport.set(null);
+        this.toastService.success('Coleta descartada.', 5000);
+      },
+      error: (error: Error) => {
+        this.confirming.set(false);
+        this.toastService.error('Falha ao descartar coleta: ' + error.message, 7000);
+      },
+    });
   }
 
   ngOnDestroy() {
@@ -286,6 +344,7 @@ export class EventsComponent implements OnInit, OnDestroy {
           if (status.status === 'complete') {
             this.scrapeRunning.set(false);
             this.scraping.set(false);
+            this.awaitingJobId.set(null);
             this.scrapeReport.set(status.report);
             this.setImportResultFromReport(status.report);
             if (status.finished_at) {
@@ -294,6 +353,17 @@ export class EventsComponent implements OnInit, OnDestroy {
             this.clearScrapePolling();
             this.loadEvents();
             this.openScrapeReport();
+          } else if (status.status === 'awaiting_import') {
+            this.scrapeRunning.set(false);
+            this.scraping.set(false);
+            this.awaitingJobId.set(status.job_id);
+            this.scrapeReport.set(status.report);
+            this.clearScrapePolling();
+            this.openScrapeReport();
+            this.toastService.info(
+              'Coleta concluída — revise o relatório para importar ou descartar.',
+              8000,
+            );
           } else if (status.status === 'failed') {
             this.scrapeRunning.set(false);
             this.scraping.set(false);

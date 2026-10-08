@@ -171,6 +171,38 @@ export class EventsService {
     );
   }
 
+  getAwaitingScrape(): Observable<{ job: ScrapeJobStatus | null }> {
+    return this.http.get<{ job: ScrapeJobStatus | null }>(
+      `${this.baseUrl}/scrape/awaiting`,
+      {
+        ...this.scrapeHeaders,
+        context: new HttpContext().set(SKIP_LOADING, true),
+      },
+    );
+  }
+
+  confirmScrape(jobId: string): Observable<{ job_id: string }> {
+    return this.http.post<{ job_id: string }>(
+      `${this.baseUrl}/scrape/confirm/${jobId}`,
+      null,
+      {
+        ...this.scrapeHeaders,
+        context: new HttpContext().set(SKIP_LOADING, true),
+      },
+    );
+  }
+
+  /** Descarta a coleta e apaga os CSVs do payload. */
+  cancelScrape(jobId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.baseUrl}/scrape/cancel/${jobId}`,
+      {
+        ...this.scrapeHeaders,
+        context: new HttpContext().set(SKIP_LOADING, true),
+      },
+    );
+  }
+
 
   createEvent(data: EventCreatePayload): Observable<any> {
     return this.http
