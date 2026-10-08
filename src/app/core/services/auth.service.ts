@@ -1,84 +1,127 @@
 import { computed, inject, isDevMode, Service, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, of, throwError } from 'rxjs';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import {
+  catchError,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { SKIP_LOADING } from '../contexts/skip-loading.context';
+import { AuthTokens, AuthUser } from '../../shared/models/auth.model';
+import { ROUTES } from '../../shared/constants/routes.constants';
 
 @Service()
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  private isAuthenticatedSignal = signal<boolean>(false);
+  private accessToken = signal<string | null>(null);
+  private currentUser = signal<AuthUser | null>(null);
+  private refreshTokenInMemory = signal<string | null>(null);
 
-  isAuthenticated = computed(() => this.isAuthenticatedSignal());
+  /** Collapses concurrent refresh calls into a single HTTP request. */
+  private refreshInFlight: Observable<string | null> | null = null;
 
-  checkSession(): Observable<boolean> {
-    if (isDevMode()) {
-      const ok = this.checkLocalCreds();
-      this.isAuthenticatedSignal.set(ok);
-      return of(ok);
-    }
+  readonly user = this.currentUser.asReadonly();
+  readonly isAuthenticated = computed(() => this.currentUser() !== null);
+  readonly isAdmin = computed(() => this.currentUser()?.role === 'ADMIN');
 
-    if (this.isAuthenticatedSignal()) {
-      return of(true);
-    }
-
-    return this.http.get<{ authenticated: boolean }>('/api/me').pipe(
-      map((res) => {
-        this.isAuthenticatedSignal.set(res.authenticated);
-        return res.authenticated;
-      }),
-      catchError(() => {
-        this.isAuthenticatedSignal.set(false);
-        return of(false);
-      }),
-    );
+  private get authBaseUrl(): string {
+    return isDevMode()
+      ? `${environment.apiUrl}api/v1/auth`
+      : '/api/auth-proxy';
   }
 
-  login(username: string, password: string): Observable<boolean> {
-    if (isDevMode()) {
-      const ok =
-        username === environment.adminUser &&
-        password === environment.adminPass;
-      if (ok) sessionStorage.setItem('circuito_auth', 'true');
-      this.isAuthenticatedSignal.set(ok);
-      return of(ok);
-    }
+  currentAccessToken(): string | null {
+    return this.accessToken();
+  }
 
+  login(username: string, password: string): Observable<AuthUser> {
     return this.http
-      .post<{ success: boolean }>('/api/login', { username, password })
+      .post<AuthTokens>(
+        `${this.authBaseUrl}/login`,
+        { username: username.trim(), password },
+        { context: quietContext() },
+      )
       .pipe(
-        map((res) => {
-          this.isAuthenticatedSignal.set(res.success);
-          return res.success;
-        }),
-        catchError((err) => {
-          this.isAuthenticatedSignal.set(false);
-          return throwError(() => err);
-        }),
+        tap((tokens) => this.storeTokens(tokens)),
+        switchMap(() => this.fetchProfile()),
       );
   }
 
+  restoreSession(): Observable<boolean> {
+    if (this.currentUser()) return of(true);
+    return this.rotateTokens().pipe(
+      switchMap((token) =>
+        token ? this.fetchProfile().pipe(map(() => true)) : of(false),
+      ),
+      catchError(() => of(false)),
+    );
+  }
+
+  rotateTokens(): Observable<string | null> {
+    if (this.refreshInFlight) return this.refreshInFlight;
+
+    const request = this.http
+      .post<AuthTokens>(`${this.authBaseUrl}/refresh`, this.refreshBody(), {
+        context: quietContext(),
+      })
+      .pipe(
+        tap((tokens) => this.storeTokens(tokens)),
+        map((tokens) => tokens.access_token),
+        catchError(() => of(null)),
+        tap(() => (this.refreshInFlight = null)),
+        shareReplay({ bufferSize: 1, refCount: false }),
+      );
+
+    this.refreshInFlight = request;
+    return request;
+  }
+
   logout(): void {
-    this.isAuthenticatedSignal.set(false);
-    this.router.navigate(['/login']);
+    this.http
+      .post(`${this.authBaseUrl}/logout`, this.refreshBody(), {
+        context: quietContext(),
+      })
+      .subscribe({ error: () => undefined });
 
-    if (isDevMode()) {
-      sessionStorage.removeItem('circuito_auth');
-      return;
-    }
-
-    this.http.post('/api/logout', {}).subscribe({
-      error: () => {},
-    });
+    this.clearSession();
   }
 
-  private checkLocalCreds(): boolean {
-    try {
-      return sessionStorage.getItem('circuito_auth') === 'true';
-    } catch {
-      return false;
-    }
+  currentSessionLost(): void {
+    this.clearSession();
   }
+
+  private fetchProfile(): Observable<AuthUser> {
+    return this.http
+      .get<AuthUser>(`${this.authBaseUrl}/me`, { context: quietContext() })
+      .pipe(tap((user) => this.currentUser.set(user)));
+  }
+
+  private storeTokens(tokens: AuthTokens): void {
+    this.accessToken.set(tokens.access_token);
+    this.refreshTokenInMemory.set(tokens.refresh_token || null);
+  }
+
+  private refreshBody(): { refresh_token?: string } {
+    const token = this.refreshTokenInMemory();
+    return token ? { refresh_token: token } : {};
+  }
+
+  private clearSession(): void {
+    this.accessToken.set(null);
+    this.currentUser.set(null);
+    this.refreshTokenInMemory.set(null);
+    this.refreshInFlight = null;
+    this.router.navigate([ROUTES.LOGIN]);
+  }
+}
+
+function quietContext(): HttpContext {
+  return new HttpContext().set(SKIP_LOADING, true);
 }

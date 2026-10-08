@@ -9,6 +9,7 @@ import {
 } from '@angular/common/http';
 
 import { routes } from './app.routes';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -16,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
 
-    provideHttpClient(withInterceptors([loadingInterceptor])),
+
+    provideHttpClient(withInterceptors([authInterceptor, loadingInterceptor])),
   ],
 };

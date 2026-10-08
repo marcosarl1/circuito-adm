@@ -154,6 +154,48 @@ function handlePostsProxy(request: Request): Promise<Response | undefined> {
   });
 }
 
+async function handleAuthProxy(
+  request: Request,
+): Promise<Response | undefined> {
+  const url = new URL(request.url);
+  const prefix = '/api/auth-proxy';
+  if (!url.pathname.startsWith(prefix)) return undefined;
+
+  const baseUrl = process.env['API_URL'] as string | undefined;
+  if (!baseUrl) {
+    return Response.json({ detail: 'API_URL não configurado' }, { status: 500 });
+  }
+
+  const path = url.pathname.replace(prefix, '').replace(/^\/+/, '');
+  const targetUrl = `${baseUrl.replace(/\/$/, '')}/api/v1/auth/${path}${url.search}`;
+
+  const headers = new Headers(request.headers);
+  headers.delete('host');
+  headers.delete('content-length');
+
+  const body = ['GET', 'HEAD'].includes(request.method)
+    ? undefined
+    : await request.arrayBuffer();
+
+  try {
+    const response = await fetch(targetUrl, {
+      method: request.method,
+      headers,
+      body,
+    });
+    // Preserva set-cookie: é assim que o refresh HttpOnly chega ao browser.
+    return new Response(await response.arrayBuffer(), {
+      status: response.status,
+      headers: response.headers,
+    });
+  } catch {
+    return Response.json(
+      { detail: 'Erro ao comunicar com a API externa' },
+      { status: 502 },
+    );
+  }
+}
+
 async function handleWarmup(request: Request): Promise<Response | undefined> {
   const url = new URL(request.url);
   if (url.pathname !== '/api/warmup') return undefined;
@@ -162,7 +204,7 @@ async function handleWarmup(request: Request): Promise<Response | undefined> {
   const apiUrl = process.env['API_URL'] as string | undefined;
   if (apiUrl) {
     // endpoint leve e sem auth — ideal para tirar do cold start
-    warmTargets.push(fetch(`${apiUrl.replace(/\/$/, '')}/health`).catch(() => {}));
+    warmTargets.push(fetch(`${apiUrl.replace(/\/$/, '')}/health`).catch(() => { }));
   }
   const postsUrl = process.env['POSTS_API_URL'] as string | undefined;
   const postsKey = process.env['POSTS_API_KEY'] as string | undefined;
@@ -170,7 +212,7 @@ async function handleWarmup(request: Request): Promise<Response | undefined> {
     warmTargets.push(
       fetch(`${postsUrl.replace(/\/$/, '')}/`, {
         headers: { 'x-api-key': postsKey },
-      }).catch(() => {}),
+      }).catch(() => { }),
     );
   }
   // não bloqueia o cron — dispara e responde imediatamente
@@ -193,6 +235,9 @@ export default async function middleware(
 
   const postsProxy = await handlePostsProxy(request);
   if (postsProxy) return postsProxy;
+
+  const authProxy = await handleAuthProxy(request);
+  if (authProxy) return authProxy;
 
   if (pathname.startsWith('/api/')) {
     return handleApi(request);
